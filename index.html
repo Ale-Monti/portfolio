@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alessandro Monticelli</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div id="cursor" class="cursor" aria-hidden="true"></div>
+
+  <!-- Dot grid (sketchbook) -->
+  <div class="dot-grid" aria-hidden="true"></div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="index.html" class="logo-link" aria-label="Home">
+      <img src="logo.png" alt="AM" class="logo-img" width="36">
+    </a>
+    <div class="nav-right">
+      <button id="langToggle" class="nav-control" aria-label="Switch language">IT</button>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <div class="theme-dropdown">
+        <button id="themeToggle" class="nav-control" aria-label="Toggle theme">Auto</button>
+        <div class="theme-menu" id="themeMenu" hidden>
+          <button class="theme-option" data-theme="light">Light</button>
+          <button class="theme-option" data-theme="dark">Dark</button>
+          <button class="theme-option" data-theme="auto">Auto</button>
+        </div>
+      </div>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a href="index.html" class="nav-link is-active" data-i18n="navWork">Work</a>
+      <a href="about.html" class="nav-link" data-i18n="navAbout">About</a>
+    </div>
+  </nav>
+
+  <!-- Cursor-following project preview -->
+  <div class="cursor-preview" id="cursorPreview" aria-hidden="true">
+    <div class="preview-media" id="previewMedia"></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box" id="modalBox" tabindex="-1">
+      <button class="modal-close" id="modalClose" aria-label="Close">&#x2715;</button>
+      <div class="modal-hero" id="modalHero"></div>
+      <div class="modal-content">
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-meta">
+          <div class="modal-meta-item">
+            <span class="modal-meta-label" data-i18n="modalCat">Category</span>
+            <span class="modal-meta-val" id="modalCatVal"></span>
+          </div>
+          <div class="modal-meta-item">
+            <span class="modal-meta-label" data-i18n="modalDate">Date</span>
+            <span class="modal-meta-val" id="modalDateVal"></span>
+          </div>
+          <div class="modal-meta-item">
+            <span class="modal-meta-label" data-i18n="modalClient">Client</span>
+            <span class="modal-meta-val" id="modalClientVal"></span>
+          </div>
+        </div>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-gallery" id="modalGallery"></div>
+      </div>
+    </div>
+  </div>
+
+  <main class="work-main">
+
+    <!-- Greeting + short bio -->
+    <div class="work-bio">
+      <p class="work-greeting" data-i18n="greeting">Hi.</p>
+      <p class="work-bio-text" data-i18n="bio">Designer with roots in visual and digital communication. I work across interfaces, brand identities, and editorial projects — with a precise eye and a curiosity for what makes things work.</p>
+    </div>
+
+    <!-- Project list header -->
+    <div class="work-header">
+      <span data-i18n="tableProject">Project</span>
+      <span data-i18n="tableCat">Category</span>
+      <span data-i18n="tableYear">Year</span>
+      <span></span>
+    </div>
+
+    <!-- Rows injected by script.js -->
+    <div class="work-list" id="workList"></div>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="footerYear"></span></span>
+    <span data-i18n="footerLocation">Rimini, Italy</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

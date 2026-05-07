@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Alessandro Monticelli</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div id="cursor" class="cursor" aria-hidden="true"></div>
+
+  <!-- Dot grid (sketchbook) -->
+  <div class="dot-grid" aria-hidden="true"></div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="index.html" class="logo-link" aria-label="Home">
+      <img src="logo.png" alt="AM" class="logo-img" width="36">
+    </a>
+    <div class="nav-right">
+      <button id="langToggle" class="nav-control" aria-label="Switch language">IT</button>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <div class="theme-dropdown">
+        <button id="themeToggle" class="nav-control" aria-label="Toggle theme">Auto</button>
+        <div class="theme-menu" id="themeMenu" hidden>
+          <button class="theme-option" data-theme="light">Light</button>
+          <button class="theme-option" data-theme="dark">Dark</button>
+          <button class="theme-option" data-theme="auto">Auto</button>
+        </div>
+      </div>
+      <span class="nav-divider" aria-hidden="true"></span>
+      <a href="index.html" class="nav-link" data-i18n="navWork">Work</a>
+      <a href="about.html" class="nav-link is-active" data-i18n="navAbout">About</a>
+    </div>
+  </nav>
+
+  <main class="about-main">
+
+    <!-- Intro -->
+    <section class="about-intro">
+      <span class="label" data-i18n="introLabel">UI / Graphic Designer — Rimini, Italy</span>
+      <h1 class="about-headline" data-i18n="introHeadline" data-i18n-html="true">
+        Digital products, brand identities &amp; visual communication.
+      </h1>
+    </section>
+
+    <!-- Bio + Details -->
+    <section class="about-body">
+
+      <div class="about-bio">
+        <p data-i18n="bioP1">Hi, I'm Alessandro — a designer with a background in Communication Design and a strong focus on visual and digital communication. My skill set has evolved from a broad design education into solid graphic design expertise through hands-on experience, and is now increasingly focused on UI/UX design and digital channels.</p>
+        <p data-i18n="bioP2">A background in language mediation strengthens my communication and listening skills, allowing me to collaborate effectively across different teams and cultural contexts.</p>
+      </div>
+
+      <div class="about-sidebar">
+
+        <div class="sidebar-block">
+          <span class="label" data-i18n="disciplinesLabel">Disciplines</span>
+          <ul>
+            <li>UI / UX Design</li>
+            <li>Brand Identity</li>
+            <li>Motion Design</li>
+            <li>Editorial Design</li>
+            <li>Web Design</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-block">
+          <span class="label" data-i18n="toolsLabel">Tools</span>
+          <ul>
+            <li>Figma</li>
+            <li>Adobe Creative Suite</li>
+            <li>Protopie</li>
+            <li>Claude Code</li>
+            <li>Spline</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-block">
+          <span class="label" data-i18n="languagesLabel">Languages</span>
+          <ul>
+            <li class="lang-item">
+              Italian — Native
+              <span class="lang-dots">
+                <i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i>
+              </span>
+            </li>
+            <li class="lang-item">
+              English — Fluent
+              <span class="lang-dots">
+                <i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot off"></i>
+              </span>
+            </li>
+            <li class="lang-item">
+              German — Advanced
+              <span class="lang-dots">
+                <i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot off"></i><i class="ldot off"></i>
+              </span>
+            </li>
+            <li class="lang-item">
+              French — Spoken
+              <span class="lang-dots">
+                <i class="ldot on"></i><i class="ldot on"></i><i class="ldot off"></i><i class="ldot off"></i><i class="ldot off"></i>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-block">
+          <span class="label" data-i18n="contactLabel">Contact</span>
+          <ul>
+            <li><a href="mailto:alessandromonticelli28@gmail.com">alessandromonticelli28@gmail.com</a></li>
+            <li><a href="https://www.behance.net/alessanmontice" target="_blank" rel="noopener">Behance</a></li>
+            <li><a href="#" target="_blank" rel="noopener">LinkedIn</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="about-experience">
+
+      <div class="exp-header">
+        <span class="label" data-i18n="experienceLabel">Experience</span>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-left">
+          <p class="exp-role">Graphic &amp; Web Designer</p>
+          <p class="exp-company">Terranova</p>
+        </div>
+        <div class="exp-right">
+          <p class="exp-period" data-i18n="exp1Period">Feb 2024 — Present · Rimini, Italy</p>
+          <p class="exp-desc" data-i18n="exp1Desc">Works closely with the Brand Specialist to define and evolve Terranova's visual communication for the Men's department. Oversees the brand's online presence across terranova.com, Instagram, Facebook, and digital advertising channels.</p>
+        </div>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-left">
+          <p class="exp-role">Communication Design Intern</p>
+          <p class="exp-company">Philips Domestic Appliances</p>
+        </div>
+        <div class="exp-right">
+          <p class="exp-period" data-i18n="exp2Period">Mar 2022 — Feb 2023 · Amsterdam, Netherlands</p>
+          <p class="exp-desc" data-i18n="exp2Desc">Developed new visual language for the Garment Care category (irons, steamers). Created packaging prototypes using Illustrator and Photoshop, and participated in workshops to define the next packaging standard.</p>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="exp-header section-gap">
+        <span class="label" data-i18n="educationLabel">Education</span>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-left">
+          <p class="exp-role">UI Design Master</p>
+          <p class="exp-company">Talent Garden</p>
+        </div>
+        <div class="exp-right">
+          <p class="exp-period" data-i18n="edu1Period">Sep 2025 — Dec 2025 · Rome, Italy</p>
+          <p class="exp-desc" data-i18n="edu1Desc">11-week blended programme covering user-centred interface design, modular UI systems, prototyping, and user testing. Mentored by industry professionals throughout.</p>
+        </div>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-left">
+          <p class="exp-role">Bachelor in Design</p>
+          <p class="exp-company">Unirsm Design</p>
+        </div>
+        <div class="exp-right">
+          <p class="exp-period" data-i18n="edu2Period">Oct 2019 — Mar 2023 · San Marino</p>
+          <p class="exp-desc" data-i18n="edu2Desc">Degree covering the history of product and communication design alongside practical workshops in web design, motion design, and sketching.</p>
+        </div>
+      </div>
+
+      <div class="exp-row">
+        <div class="exp-left">
+          <p class="exp-role">Bachelor in Languages &amp; Intercultural Communication</p>
+          <p class="exp-company">Università di Bologna</p>
+        </div>
+        <div class="exp-right">
+          <p class="exp-period" data-i18n="edu3Period">Sep 2015 — Oct 2018 · Italy</p>
+          <p class="exp-desc" data-i18n="edu3Desc">Inter-linguistic and intercultural communication in Italian and three foreign languages. Practical translation and language mediation skills.</p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="footerYear"></span></span>
+    <span data-i18n="footerLocation">Rimini, Italy</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
