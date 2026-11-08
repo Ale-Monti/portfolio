@@ -659,10 +659,10 @@ function openModal(index) {
     if (T[lang][key]) el.textContent = T[lang][key];
   });
 
-  // Gallery (skip first = hero)
+  // Gallery: all project images (the first one is also the cover)
   if (modalGallery) {
     modalGallery.innerHTML = '';
-    const extras = p.images.slice(1);
+    const extras = p.images;
     extras.forEach(img => {
       const div = document.createElement('div');
       div.className = img === 'placeholder'

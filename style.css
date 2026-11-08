@@ -255,7 +255,7 @@ body.is-loaded .hero-label {
 }
 
 .hero-name {
-  font-family: 'Funnel Display', 'Bricolage Grotesque', sans-serif;
+  font-family: 'Funnel Display', sans-serif;
   font-weight: 700;
   font-size: clamp(58px, 10vw, 138px);
   line-height: 0.9;
@@ -362,7 +362,7 @@ body.is-loaded .hero-bio {
 .project-row:hover::before { height: 52%; }
 
 .project-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Funnel Display', sans-serif;
   font-weight: 700;
   font-size: clamp(20px, 2.6vw, 36px);
   line-height: 1.1;
@@ -523,7 +523,7 @@ body.is-loaded .hero-bio {
 }
 
 .modal-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Funnel Display', sans-serif;
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -663,7 +663,7 @@ body.is-loaded .about-label {
 }
 
 .about-headline {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Funnel Display', sans-serif;
   font-weight: 700;
   font-size: clamp(26px, 3.8vw, 50px);
   line-height: 1.14;
@@ -793,7 +793,7 @@ body.is-loaded .about-headline {
 .exp-left {}
 
 .exp-role {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Funnel Display', sans-serif;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.01em;
