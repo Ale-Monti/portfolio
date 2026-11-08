@@ -18,6 +18,10 @@ const T = {
     disciplinesLabel: 'Disciplines',
     toolsLabel:       'Tools',
     languagesLabel:   'Languages',
+    langIt:           'Italian - Native',
+    langEn:           'English - Fluent',
+    langDe:           'German - Advanced',
+    langFr:           'French - Spoken',
     contactLabel:     'Contact',
     experienceLabel:  'Experience',
     educationLabel:   'Education',
@@ -26,6 +30,7 @@ const T = {
     modalClient:      'Client',
     modalClose:       'Close',
     viewProject:      'View on Behance',
+    zoomImage:        'View image fullscreen',
     exp1Period:       'Feb 2024 - Present · Rimini, Italy',
     exp1Desc:         'Works closely with the Brand Specialist to define and evolve Terranova\'s visual communication for the Men\'s department. Oversees the brand\'s online presence across terranova.com, Instagram, Facebook, and digital advertising channels.',
     exp2Period:       'Mar 2022 - Feb 2023 · Amsterdam, Netherlands',
@@ -53,6 +58,10 @@ const T = {
     disciplinesLabel: 'Discipline',
     toolsLabel:       'Strumenti',
     languagesLabel:   'Lingue',
+    langIt:           'Italiano - Madrelingua',
+    langEn:           'Inglese - Fluente',
+    langDe:           'Tedesco - Avanzato',
+    langFr:           'Francese - Parlato',
     contactLabel:     'Contatti',
     experienceLabel:  'Esperienza',
     educationLabel:   'Formazione',
@@ -61,6 +70,7 @@ const T = {
     modalClient:      'Cliente',
     modalClose:       'Chiudi',
     viewProject:      'Vedi su Behance',
+    zoomImage:        'Vedi immagine a schermo intero',
     exp1Period:       'Feb 2024 - Presente · Rimini, Italia',
     exp1Desc:         'Collabora con il Brand Specialist per definire e sviluppare la comunicazione visiva di Terranova per il reparto uomo. Gestisce la presenza online del brand su terranova.com, Instagram, Facebook e canali pubblicitari digitali.',
     exp2Period:       'Mar 2022 - Feb 2023 · Amsterdam, Paesi Bassi',
@@ -282,6 +292,7 @@ let lastMouse = { x: 0, y: 0 };
 let vel       = { x: 0, y: 0 };
 let hoverScale       = 1;
 let targetHoverScale = 1;
+let zoomMode         = false;
 let cursorActive     = false;
 
 document.addEventListener('mousemove', e => {
@@ -304,8 +315,14 @@ document.addEventListener('mousemove', e => {
 });
 
 document.addEventListener('mouseover', e => {
-  const clickable = e.target.closest('a, button, [role="button"], .project-row');
-  targetHoverScale = clickable ? 2.2 : 1;
+  // Over a project image the dot turns into a "+" (click to zoom)
+  zoomMode = !!e.target.closest('.modal-gallery-img:not(.is-placeholder)');
+  const clickable = !zoomMode && e.target.closest('a, button, [role="button"], .project-row');
+  targetHoverScale = zoomMode ? 3.2 : clickable ? 2.2 : 1;
+  if (cursorEl) {
+    cursorEl.classList.toggle('is-hover', !!clickable);
+    cursorEl.classList.toggle('is-zoom', zoomMode);
+  }
 });
 
 function cursorTick() {
@@ -313,9 +330,10 @@ function cursorTick() {
     hoverScale += (targetHoverScale - hoverScale) * 0.13;
 
     const speed   = Math.sqrt(vel.x ** 2 + vel.y ** 2);
-    const stretch = 1 + Math.min(speed, 28) * 0.038;
+    // No stretch or rotation while showing the "+", so it stays upright
+    const stretch = zoomMode ? 1 : 1 + Math.min(speed, 28) * 0.038;
     const squish  = 1 / Math.sqrt(stretch);
-    const angle   = Math.atan2(vel.y, vel.x) * (180 / Math.PI);
+    const angle   = zoomMode ? 0 : Math.atan2(vel.y, vel.x) * (180 / Math.PI);
 
     vel.x *= 0.80;
     vel.y *= 0.80;
@@ -351,7 +369,7 @@ if (workList) {
     // Stagger reveal after hero finishes
     setTimeout(() => row.classList.add('is-revealed'), 550 + i * 65);
 
-    row.addEventListener('click', () => openModal(i));
+    row.addEventListener('click', () => openModal(i, row));
   });
 
   // Hover: dim other rows
@@ -406,7 +424,9 @@ function clearBg() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  PARTICLE LOGO  (index page: shown when no project is previewed)
+//  PARTICLE LOGO
+//  index: fullscreen, hidden while a project is previewed
+//  about: inside the hero (data-mode="hero"), scatters away on scroll
 // ═══════════════════════════════════════════════════════════════════
 const logoFieldEl = document.getElementById('logoField');
 
@@ -420,10 +440,14 @@ if (logoFieldEl) (function initLogoField() {
   const BOX = { x: 0, y: 0, w: 30, h: 24.2 };
 
   const ctx = logoFieldEl.getContext('2d');
+  const heroMode = logoFieldEl.dataset.mode === 'hero';
+  let rect = { left: 0, top: 0 };
+  let scrollK = 0;   // 0 = logo formed, 1 = fully scattered and faded by scrolling
+  let fadeRange = 1; // px of scroll over which the logo scatters away
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   let W = 0, H = 0, dpr = 1, N = 0;
-  let hx, hy, x, y, vx, vy, z, ph;   // typed arrays, sorted by depth bucket
+  let hx, hy, x, y, vx, vy, z, ph, sx, sy;   // typed arrays, sorted by depth bucket
   let bucketEnd = [0, 0, 0];
   let ink = '#141210', baseAlpha = 0.3;
   let startTime = performance.now();
@@ -452,15 +476,45 @@ if (logoFieldEl) (function initLogoField() {
 
   function build() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = window.innerWidth; H = window.innerHeight;
+    W = logoFieldEl.clientWidth || window.innerWidth;
+    H = logoFieldEl.clientHeight || window.innerHeight;
     logoFieldEl.width = Math.round(W * dpr);
     logoFieldEl.height = Math.round(H * dpr);
 
     const mobile = W <= 720;
-    const logoH = mobile ? Math.min(H * 0.5, W * 0.8 * BOX.h / BOX.w) : Math.min(H * 0.8, W * 0.6 * BOX.h / BOX.w);
-    const s = logoH / BOX.h;
-    const ox = W * (mobile ? 0.5 : 0.56) - (BOX.x + BOX.w / 2) * s;
-    const oy = H * 0.5 - (BOX.y + BOX.h / 2) * s;
+    let logoH, ox, oy, s;
+    if (heroMode) {
+      // The canvas is taller than the hero (scattered particles drift below it):
+      // lay the logo out inside the hero only
+      const heroH = logoFieldEl.parentElement.clientHeight;
+      fadeRange = heroH * 0.85;
+      if (mobile) {
+        logoH = Math.min(heroH * 0.48, W * 0.66 * BOX.h / BOX.w);
+        s = logoH / BOX.h;
+        ox = W * 0.5 - (BOX.x + BOX.w / 2) * s;
+        oy = heroH * 0.34 - (BOX.y + BOX.h / 2) * s;   // above the label and headline
+      } else {
+        // Top: as far below the menu as the menu is below the window edge.
+        // Right: aligned with the last menu item ("About"). Bottom: hero padding.
+        const cr = logoFieldEl.getBoundingClientRect();
+        const items = document.querySelectorAll('.nav-right > *');
+        const last = items[items.length - 1].getBoundingClientRect();
+        const top = Math.max(0, last.bottom + last.top - (cr.top + window.scrollY));
+        const right = last.right - cr.left;
+        const bottom = heroH - 52;
+        logoH = Math.max(120, bottom - top);
+        if (logoH * BOX.w / BOX.h > W * 0.5) logoH = W * 0.5 * BOX.h / BOX.w;
+        s = logoH / BOX.h;
+        ox = right - BOX.w * s;
+        oy = bottom - logoH;
+      }
+    } else {
+      fadeRange = H * 0.85;
+      logoH = mobile ? Math.min(H * 0.5, W * 0.8 * BOX.h / BOX.w) : Math.min(H * 0.8, W * 0.6 * BOX.h / BOX.w);
+      s = logoH / BOX.h;
+      ox = W * (mobile ? 0.5 : 0.56) - (BOX.x + BOX.w / 2) * s;
+      oy = H * 0.5 - (BOX.y + BOX.h / 2) * s;
+    }
 
     // Rasterise the logo once and sample points inside it
     const off = document.createElement('canvas');
@@ -479,7 +533,7 @@ if (logoFieldEl) (function initLogoField() {
       return px >= 0 && py >= 0 && px < W && py < H && data[(py * W + px) * 4 + 3] > 128;
     };
 
-    N = Math.round((mobile ? 5500 : 13000) * Math.min(1.25, Math.max(0.6, logoH / 760)));
+    N = Math.round((mobile ? 5500 : 13000) * Math.min(1.25, Math.max(heroMode ? 0.35 : 0.6, logoH / 760)));
     const pts = [];
     let tries = 0;
     while (pts.length < N && tries < N * 40) {
@@ -500,11 +554,18 @@ if (logoFieldEl) (function initLogoField() {
     x = new Float32Array(N);  y = new Float32Array(N);
     vx = new Float32Array(N); vy = new Float32Array(N);
     z = new Float32Array(N);  ph = new Float32Array(N);
+    sx = new Float32Array(N); sy = new Float32Array(N);
+    const lcx = ox + (BOX.x + BOX.w / 2) * s, lcy = oy + (BOX.y + BOX.h / 2) * s;
     bucketEnd = [0, 0, N];
     const intro = !reduceMotion.matches;
     for (let i = 0; i < N; i++) {
       const [px, py, d] = pts[i];
       hx[i] = px; hy[i] = py; z[i] = d; ph[i] = Math.random() * Math.PI * 2;
+      // Where this particle flies when the page scrolls: outwards from the
+      // logo centre, with a random twist and distance
+      const ang = Math.atan2(py - lcy, px - lcx) + gauss() * 1.2;
+      const far = (0.35 + Math.random() * 1.1) * Math.max(W, logoH * 1.6) * 0.55;
+      sx[i] = Math.cos(ang) * far; sy[i] = Math.sin(ang) * far + (heroMode ? far * 0.2 : 0);
       x[i] = intro ? Math.random() * W : px;
       y[i] = intro ? Math.random() * H : py;
       if (d < 0.45) bucketEnd[0] = i + 1;
@@ -525,16 +586,20 @@ if (logoFieldEl) (function initLogoField() {
     const damp = 0.87 + (SETTLE_DAMP - 0.87) * afterK;
     const cx = W * 0.5, cy = H * 0.5;
     const R = Math.min(260, W * 0.3), R2 = R * R;
-    const px = ptr.x, py = ptr.y, pvx = ptr.vx, pvy = ptr.vy;
-    const moveK = Math.min(1, Math.hypot(pvx, pvy) / 12);
+    const px = ptr.x - rect.left, py = ptr.y - rect.top, pvx = ptr.vx, pvy = ptr.vy;
+    const sk = scrollK * scrollK * (3 - 2 * scrollK);   // eased scroll scatter
+    // Scatter grows with pointer speed: a slow pass barely moves the particles,
+    // a fast swipe sprays them (speed in px per pointer event, ~30+ = fast)
+    const speed = Math.hypot(pvx, pvy);
+    const moveK = Math.min(1.25, (speed / 30) ** 1.3);
     const usePtr = ptr.active && moveK > 0.01;
     const parX = ptr.active ? (px - cx) * 0.018 : 0;
     const parY = ptr.active ? (py - cy) * 0.018 : 0;
 
     for (let i = 0; i < N; i++) {
       const d = z[i];
-      const tx = hx[i] + Math.sin(t * 0.55 + ph[i]) * 1.4 * d + parX * (d - 0.4);
-      const ty = hy[i] + Math.cos(t * 0.47 + ph[i] * 1.3) * 1.4 * d + parY * (d - 0.4);
+      const tx = hx[i] + Math.sin(t * 0.55 + ph[i]) * 1.4 * d + parX * (d - 0.4) + sx[i] * sk;
+      const ty = hy[i] + Math.cos(t * 0.47 + ph[i] * 1.3) * 1.4 * d + parY * (d - 0.4) + sy[i] * sk;
       let ax = (tx - x[i]) * spring;
       let ay = (ty - y[i]) * spring;
 
@@ -544,9 +609,13 @@ if (logoFieldEl) (function initLogoField() {
         if (dist2 < R2 && dist2 > 0.01) {
           // Push only while the pointer moves: a still cursor leaves the logo at rest
           const dist = Math.sqrt(dist2);
-          const f = (1 - dist / R) ** 2 * moveK;
-          ax += (dx / dist) * 1.1 * f + pvx * f * 0.035;
-          ay += (dy / dist) * 1.1 * f + pvy * f * 0.035;
+          const f = (1 - dist / R) ** 1.5 * moveK;
+          // Each particle scatters a little differently (own angle and strength),
+          // so the shape breaks apart into a spray instead of a clean hole
+          const kick = 0.6 + d * 1.4;
+          const sa = ph[i] * 3.7;
+          ax += ((dx / dist) * 2.4 + Math.cos(sa) * 1.6) * f * kick + pvx * f * 0.09;
+          ay += ((dy / dist) * 2.4 + Math.sin(sa) * 1.6) * f * kick + pvy * f * 0.09;
         }
       }
       vx[i] = (vx[i] + ax) * damp;
@@ -565,7 +634,7 @@ if (logoFieldEl) (function initLogoField() {
     const alphas = [0.45, 0.7, 1];
     let from = 0;
     for (let b = 0; b < 3; b++) {
-      ctx.globalAlpha = baseAlpha * alphas[b] * introAlpha;
+      ctx.globalAlpha = baseAlpha * alphas[b] * introAlpha * (1 - scrollK) ** 1.1;
       const sz = sizes[b];
       for (let i = from; i < bucketEnd[b]; i++) ctx.fillRect(x[i], y[i], sz, sz);
       from = bucketEnd[b];
@@ -577,7 +646,10 @@ if (logoFieldEl) (function initLogoField() {
   const STEP_MS = 1000 / 60;
   function frame(now) {
     if (!reduceMotion.matches) {
-      const hidden = logoFieldEl.classList.contains('is-hidden');
+      const r = logoFieldEl.getBoundingClientRect();
+      rect = r;
+      scrollK = Math.min(1, Math.max(0, window.scrollY / fadeRange));
+      const hidden = logoFieldEl.classList.contains('is-hidden') || scrollK >= 1 || r.bottom < 0;
       if (hidden && !hiddenAt) hiddenAt = now;
       if (!hidden) hiddenAt = 0;
       // Keep simulating while visible or still fading out; idle afterwards
@@ -599,7 +671,11 @@ if (logoFieldEl) (function initLogoField() {
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { startTime = performance.now() - INTRO_S * 1000; build(); }, 150);
+    resizeTimer = setTimeout(() => {
+      // Mobile browsers resize on scroll (URL bar): ignore height-only changes in the hero
+      if (heroMode && logoFieldEl.clientWidth === W) return;
+      startTime = performance.now() - INTRO_S * 1000; build();
+    }, 150);
   });
   new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
@@ -610,6 +686,9 @@ if (logoFieldEl) (function initLogoField() {
 })();
 
 function initScrollBg() {
+  // Touch screens only: on desktop the background follows the hovered row,
+  // so scrolling alone never swaps in a project image
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   const rows = workList.querySelectorAll('.project-row');
   let isHovering = false;
 
@@ -641,8 +720,8 @@ function initScrollBg() {
 // ═══════════════════════════════════════════════════════════════════
 const modalOverlay   = document.getElementById('modalOverlay');
 const modalPanel     = document.getElementById('modalPanel');
-const modalHero      = document.getElementById('modalHero');
 const modalTitle     = document.getElementById('modalTitle');
+const modalFocus     = document.getElementById('modalFocusTitle');
 const modalCatVal    = document.getElementById('modalCatVal');
 const modalDateVal   = document.getElementById('modalDateVal');
 const modalClientVal = document.getElementById('modalClientVal');
@@ -651,15 +730,25 @@ const modalClose     = document.getElementById('modalClose');
 const modalGallery   = document.getElementById('modalGallery');
 const modalLink      = document.getElementById('modalLink');
 const modalLinkText  = document.getElementById('modalLinkText');
+let modalRow = null;
 
-function openModal(index) {
+// Place the sharp title copy exactly over the clicked row's title
+function placeModalFocus() {
+  if (!modalFocus || !modalRow) return;
+  const titleEl = modalRow.querySelector('.project-title');
+  const rowRect = modalRow.getBoundingClientRect();
+  const cs = getComputedStyle(titleEl);
+  modalFocus.style.fontSize = cs.fontSize;
+  modalFocus.style.letterSpacing = cs.letterSpacing;
+  modalFocus.style.left = (rowRect.left + titleEl.offsetLeft) + 'px';
+  modalFocus.style.top  = (rowRect.top + titleEl.offsetTop) + 'px';
+}
+window.addEventListener('resize', placeModalFocus);
+
+function openModal(index, row) {
   if (!modalOverlay) return;
   const p    = projects[index];
   const lang = currentLang;
-
-  modalHero.style.background           = p.preview;
-  modalHero.style.backgroundSize       = 'cover';
-  modalHero.style.backgroundPosition   = 'center';
 
   modalTitle.textContent     = p.title;
   modalCatVal.textContent    = p.category[lang];
@@ -667,29 +756,45 @@ function openModal(index) {
   modalClientVal.textContent = p.client;
   modalDesc.textContent      = p.description[lang];
 
+  if (modalRow) modalRow.classList.remove('is-modal-source');
+  modalRow = row || null;
+  if (modalRow) modalRow.classList.add('is-modal-source');
+  if (modalFocus) {
+    modalFocus.textContent = modalRow ? p.title : '';
+    placeModalFocus();
+  }
+
   // Update meta labels
   document.querySelectorAll('.modal-meta-label[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if (T[lang][key]) el.textContent = T[lang][key];
   });
 
-  // Gallery: all project images (the first one is also the cover)
+  // Gallery: every project image, full width, at its own proportions
   if (modalGallery) {
     modalGallery.innerHTML = '';
-    const extras = p.images;
-    extras.forEach(img => {
-      const div = document.createElement('div');
-      div.className = img === 'placeholder'
-        ? 'modal-gallery-img is-placeholder'
-        : 'modal-gallery-img';
-      if (img !== 'placeholder') {
-        div.style.background           = img;
-        div.style.backgroundSize       = 'cover';
-        div.style.backgroundPosition   = 'center';
+    p.images.forEach((img, i) => {
+      if (img === 'placeholder') {
+        const div = document.createElement('div');
+        div.className = 'modal-gallery-img is-placeholder';
+        modalGallery.appendChild(div);
+        return;
       }
-      modalGallery.appendChild(div);
+      const el = document.createElement('img');
+      el.className = 'modal-gallery-img';
+      el.src = imageSrc(img);
+      el.alt = `${p.title} (${i + 1}/${p.images.length})`;
+      el.loading = i < 2 ? 'eager' : 'lazy';
+      el.decoding = 'async';
+      // Click (or Enter) opens the image fullscreen
+      el.tabIndex = 0;
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', `${T[lang].zoomImage}: ${el.alt}`);
+      el.addEventListener('click', () => openLightbox(p, i));
+      el.addEventListener('keydown', ev => { if (ev.key === 'Enter') openLightbox(p, i); });
+      modalGallery.appendChild(el);
     });
-    modalGallery.style.display = extras.length ? 'grid' : 'none';
+    modalGallery.style.display = p.images.length ? '' : 'none';
   }
 
   // Behance link
@@ -710,15 +815,85 @@ function openModal(index) {
 
 function closeModal() {
   if (!modalOverlay) return;
+  closeLightbox();
   modalOverlay.classList.remove('is-open');
   document.body.style.overflow = '';
+  if (modalRow) modalRow.classList.remove('is-modal-source');
+  modalRow = null;
+}
+
+// ─── Lightbox: fullscreen carousel of the open project's images ──────
+const lightbox      = document.getElementById('lightbox');
+const lightboxImg   = document.getElementById('lightboxImg');
+const lightboxPrev  = document.getElementById('lightboxPrev');
+const lightboxNext  = document.getElementById('lightboxNext');
+const lightboxClose = document.getElementById('lightboxClose');
+let lbImages = [], lbIndex = 0, lbTitle = '';
+
+function imageSrc(img) {
+  const m = img.match(/url\(['"]?([^'")]+)['"]?\)/);
+  return m ? m[1] : img;
+}
+
+function showLightboxImage(i) {
+  if (!lbImages.length) return;
+  lbIndex = (i + lbImages.length) % lbImages.length;
+  lightboxImg.src = lbImages[lbIndex];
+  lightboxImg.alt = `${lbTitle} (${lbIndex + 1}/${lbImages.length})`;
+  const single = lbImages.length < 2;
+  lightboxPrev.hidden = single;
+  lightboxNext.hidden = single;
+}
+
+function openLightbox(p, index) {
+  if (!lightbox) return;
+  lbImages = p.images.filter(img => img !== 'placeholder').map(imageSrc);
+  lbTitle = p.title;
+  const target = imageSrc(p.images[index]);
+  showLightboxImage(Math.max(0, lbImages.indexOf(target)));
+  lightbox.classList.add('is-open');
+  lightboxClose.focus({ preventScroll: true });
+}
+
+function closeLightbox() {
+  if (lightbox) lightbox.classList.remove('is-open');
+}
+
+function lightboxOpen() {
+  return !!lightbox && lightbox.classList.contains('is-open');
+}
+
+if (lightbox) {
+  lightboxPrev.addEventListener('click', e => { e.stopPropagation(); showLightboxImage(lbIndex - 1); });
+  lightboxNext.addEventListener('click', e => { e.stopPropagation(); showLightboxImage(lbIndex + 1); });
+  lightboxClose.addEventListener('click', closeLightbox);
+  // Any click outside the image (and the buttons) closes the viewer
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+  // Swipe between images on touch screens
+  let touchX = null;
+  lightbox.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  lightbox.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) showLightboxImage(lbIndex + (dx < 0 ? 1 : -1));
+    touchX = null;
+  });
 }
 
 if (modalClose)   modalClose.addEventListener('click', closeModal);
 if (modalOverlay) modalOverlay.addEventListener('click', e => {
   if (e.target === modalOverlay) closeModal();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (lightboxOpen()) {
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowLeft') showLightboxImage(lbIndex - 1);
+    else if (e.key === 'ArrowRight') showLightboxImage(lbIndex + 1);
+    return;
+  }
+  if (e.key === 'Escape') closeModal();
+});
 
 // ═══════════════════════════════════════════════════════════════════
 //  INIT

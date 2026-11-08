@@ -8,15 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=d76d6ff2">
+  <link rel="stylesheet" href="style.css?v=63c426c1">
 </head>
 <body>
 
   <!-- Custom cursor -->
   <div id="cursor" class="cursor" aria-hidden="true"></div>
-
-  <!-- Dot grid -->
-  <div class="dot-grid" aria-hidden="true"></div>
 
   <!-- Nav -->
   <nav class="nav">
@@ -44,6 +41,7 @@
 
     <!-- Hero: label + large headline -->
     <section class="about-hero">
+      <canvas class="logo-field logo-field--hero" id="logoField" data-mode="hero" aria-hidden="true"></canvas>
       <span class="about-label" data-i18n="introLabel">UI / Graphic Designer, Rimini, Italy</span>
       <h1 class="about-headline" data-i18n="introHeadline" data-i18n-html="true">
         Digital products, brand identities &amp; visual communication.
@@ -60,6 +58,7 @@
 
       <aside class="about-sidebar">
 
+        <div class="sidebar-row">
         <div class="sidebar-block">
           <span class="sidebar-label" data-i18n="disciplinesLabel">Disciplines</span>
           <ul>
@@ -81,30 +80,31 @@
             <li>Spline</li>
           </ul>
         </div>
+        </div>
 
         <div class="sidebar-block">
           <span class="sidebar-label" data-i18n="languagesLabel">Languages</span>
           <ul>
             <li class="lang-item">
-              Italian - Native
+              <span data-i18n="langIt">Italian - Native</span>
               <span class="lang-dots">
                 <i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i>
               </span>
             </li>
             <li class="lang-item">
-              English - Fluent
+              <span data-i18n="langEn">English - Fluent</span>
               <span class="lang-dots">
                 <i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot off"></i>
               </span>
             </li>
             <li class="lang-item">
-              German - Advanced
+              <span data-i18n="langDe">German - Advanced</span>
               <span class="lang-dots">
                 <i class="ldot on"></i><i class="ldot on"></i><i class="ldot on"></i><i class="ldot off"></i><i class="ldot off"></i>
               </span>
             </li>
             <li class="lang-item">
-              French - Spoken
+              <span data-i18n="langFr">French - Spoken</span>
               <span class="lang-dots">
                 <i class="ldot on"></i><i class="ldot on"></i><i class="ldot off"></i><i class="ldot off"></i><i class="ldot off"></i>
               </span>
@@ -200,6 +200,6 @@
     <span data-i18n="footerLocation">Rimini, Italy</span>
   </footer>
 
-  <script src="script.js?v=d76d6ff2"></script>
+  <script src="script.js?v=63c426c1"></script>
 </body>
 </html>
