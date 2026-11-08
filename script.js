@@ -100,8 +100,8 @@ const projects = [
       en: 'News aggregation app for Gen Z. From research insights to tested interactive prototype: a full UX/UI case study covering discovery, information architecture, visual design, and usability testing.',
       it: 'App di aggregazione notizie per la Gen Z - da insights di ricerca a prototipo interattivo testato. Case study UX/UI completo: discovery, architettura informativa, visual design e test di usabilità.',
     },
-    preview: "url('images/news.png')",
-    images:  ["url('images/newsquest-cover.png')", "url('images/newsquest-2.png')"],
+    preview: "url('images/newsquest-cover.jpg')",
+    images:  ["url('images/newsquest-cover.jpg')", "url('images/newsquest-2.jpg')", "url('images/newsquest-3.jpg')", "url('images/newsquest-4.jpg')"],
     url: 'https://www.behance.net/gallery/241354399/NewsQuest-GenZ-News-App-UX-UI-Design-Project',
   },
   {
@@ -113,8 +113,8 @@ const projects = [
       en: 'UX/UI design for leARn, an augmented reality app teaching English to children. Designed to be age-appropriate, engaging, and technically innovative - combining physical play with digital learning.',
       it: 'UX/UI design per leARn, un\'app in realtà aumentata per l\'apprendimento dell\'inglese per bambini. Progettata per essere adatta all\'età, coinvolgente e innovativa - tra gioco fisico e apprendimento digitale.',
     },
-    preview: "url('images/learn-cover.png')",
-    images:  ["url('images/learn-cover.png')", "url('images/learn-2.png')"],
+    preview: "url('images/learn-cover.jpg')",
+    images:  ["url('images/learn-cover.jpg')", "url('images/learn-2.jpg')", "url('images/learn-3.jpg')", "url('images/learn-4.jpg')"],
     url: 'https://www.behance.net/gallery/167692593/leARn-English-for-kids-in-AR',
   },
   {
@@ -126,8 +126,8 @@ const projects = [
       en: 'Brand identity for Vidia Club Cesena. A bold visual system built around a distinctive logotype and a warm red-pink palette, with the tagline "disobbedisciti" (disobey yourself) at its core.',
       it: 'Identità visiva per Vidia Club Cesena. Un sistema visivo audace basato su un logotipo distintivo e una palette rosso-rosa caldo, con il payoff "disobbedisciti" al centro del progetto.',
     },
-    preview: "url('images/vidia-cover.png')",
-    images:  ["url('images/vidia-cover.png')", "url('images/vidia-2.png')"],
+    preview: "url('images/vidia-cover.jpg')",
+    images:  ["url('images/vidia-cover.jpg')", "url('images/vidia-2.jpg')", "url('images/vidia-3.jpg')", "url('images/vidia-4.jpg')"],
     url: 'https://www.behance.net/gallery/168405025/Vidia-Club-Cesena-Brand-Identity',
   },
   {
@@ -139,8 +139,8 @@ const projects = [
       en: 'UX/UI design for BeeSide, a "friend app" designed to raise awareness of electromagnetic field threats hidden in everyday technology. Inspired by the bee - a natural EMF indicator - it guides users towards healthy habits to protect physical and mental well-being.',
       it: 'UX/UI design per BeeSide, una "friend app" pensata per sensibilizzare sui rischi dei campi elettromagnetici nascosti nella tecnologia di ogni giorno. Ispirata all\'ape - naturale indicatore di EMF - guida l\'utente verso abitudini sane per proteggere salute fisica e mentale.',
     },
-    preview: "url('images/beeside-cover.png')",
-    images:  ["url('images/beeside-cover.png')", "url('images/beeside-2.png')"],
+    preview: "url('images/beeside-cover.jpg')",
+    images:  ["url('images/beeside-cover.jpg')", "url('images/beeside-2.jpg')", "url('images/beeside-3.jpg')"],
     url: 'https://www.behance.net/gallery/169424935/BeeSide-Electromagnetic-Health',
   },
   {
@@ -165,8 +165,8 @@ const projects = [
       en: 'Visual identity system for micronations - small political entities that come into existence for subversive reasons, issuing their own coins, stamps, passports, and emblems.',
       it: 'Sistema di identità visiva per micronazioni - piccole entità politiche nate per ragioni sovversive, dotate di proprie monete, francobolli, passaporti ed emblemi.',
     },
-    preview: "url('images/nations.png')",
-    images:  ["url('images/nations.png')", "url('images/imaginations-2.png')", "url('images/imaginations-3.png')"],
+    preview: "url('images/imaginations-cover.jpg')",
+    images:  ["url('images/imaginations-cover.jpg')", "url('images/imaginations-2.jpg')", "url('images/imaginations-3.jpg')", "url('images/imaginations-4.jpg')"],
     url: 'https://www.behance.net/gallery/168854265/ImagiNations-Visual-Identity',
   },
   {
@@ -178,8 +178,8 @@ const projects = [
       en: 'Visual identity for the 50th anniversary of diplomatic relations between the People\'s Republic of China and the Republic of San Marino. A geometric system merging Eastern and Western design traditions.',
       it: 'Identità visiva per il 50° anniversario delle relazioni diplomatiche tra la RPC e la Repubblica di San Marino. Un sistema geometrico che unisce tradizioni di design orientali e occidentali.',
     },
-    preview: "url('images/china-sanmarino-cover.png')",
-    images:  ["url('images/china-sanmarino-cover.png')", "url('images/china-sanmarino-2.png')"],
+    preview: "url('images/china-cover.jpg')",
+    images:  ["url('images/china-cover.jpg')", "url('images/china-2.jpg')", "url('images/china-3.jpg')", "url('images/china-4.jpg')"],
     url: 'https://www.behance.net/gallery/169164871/China-and-San-Marino-50th-Anniversary-Visual-Identity',
   },
   {
@@ -191,8 +191,8 @@ const projects = [
       en: 'Web design for a comic book collecting e-commerce platform. Built around Italian comics culture, with a bold editorial aesthetic blending dark backgrounds, red accents, and dynamic typography.',
       it: 'Web design per una piattaforma e-commerce di collezionismo fumetti. Costruita attorno alla cultura del fumetto italiano, con un\'estetica editoriale audace: sfondi scuri, accenti rossi, tipografia dinamica.',
     },
-    preview: "url('images/comic-cover.png')",
-    images:  ["url('images/comic-cover.png')", "url('images/comic-2.png')"],
+    preview: "url('images/comic-cover.jpg')",
+    images:  ["url('images/comic-cover.jpg')", "url('images/comic-2.jpg')"],
     url: 'https://www.behance.net/gallery/169624267/COMIC-Comic-Book-Website',
   },
   {
@@ -204,8 +204,8 @@ const projects = [
       en: 'A series of staged photographs prompting reflection on human impact on the environment. Created during the Covid-19 lockdown, the work highlights links between environmental emergencies and human health.',
       it: 'Una serie di fotografie allestite per riflettere sull\'impatto dell\'uomo sull\'ambiente, realizzata durante il lockdown da Covid-19. Il progetto evidenzia i legami tra emergenze ambientali e salute umana.',
     },
-    preview: "url('images/climate-cover.png')",
-    images:  ["url('images/climate-cover.png')", "url('images/climate-2.png')", "url('images/climate-3.png')"],
+    preview: "url('images/climate-cover.jpg')",
+    images:  ["url('images/climate-cover.jpg')", "url('images/climate-2.jpg')", "url('images/climate-3.jpg')", "url('images/climate-4.jpg')"],
     url: 'https://www.behance.net/gallery/168463065/Climate-Change-Photography-Project',
   },
 ];
@@ -444,7 +444,7 @@ if (logoFieldEl) (function initLogoField() {
     ink = cs.getPropertyValue('--ink').trim() || ink;
     const bg = cs.getPropertyValue('--bg').trim();
     const dark = bg && parseInt(bg.replace('#', '').slice(0, 2), 16) < 0x50;
-    baseAlpha = dark ? 0.34 : 0.26;
+    baseAlpha = dark ? 0.34 : 0.4;
     if (reduceMotion.matches) draw();
   }
 
@@ -516,9 +516,15 @@ if (logoFieldEl) (function initLogoField() {
   function step(now) {
     const t = (now - startTime) / 1000;
     const introK = Math.min(1, t / INTRO_S);
-    const spring = 0.003 + 0.033 * introK * introK;
+    // Strong pull while gathering, then a soft, near-critically damped return
+    // (slow and not elastic) once the logo has formed
+    const SETTLE_SPRING = 0.0025, SETTLE_DAMP = 0.9;
+    const afterK = t < INTRO_S ? 0 : Math.min(1, (t - INTRO_S) / 1.5);
+    const introSpring = 0.003 + 0.033 * introK * introK;
+    const spring = introSpring + (SETTLE_SPRING - introSpring) * afterK;
+    const damp = 0.87 + (SETTLE_DAMP - 0.87) * afterK;
     const cx = W * 0.5, cy = H * 0.5;
-    const R = Math.min(170, W * 0.22), R2 = R * R;
+    const R = Math.min(260, W * 0.3), R2 = R * R;
     const px = ptr.x, py = ptr.y, pvx = ptr.vx, pvy = ptr.vy;
     const moveK = Math.min(1, Math.hypot(pvx, pvy) / 12);
     const usePtr = ptr.active && moveK > 0.01;
@@ -539,12 +545,12 @@ if (logoFieldEl) (function initLogoField() {
           // Push only while the pointer moves: a still cursor leaves the logo at rest
           const dist = Math.sqrt(dist2);
           const f = (1 - dist / R) ** 2 * moveK;
-          ax += (dx / dist) * 1.8 * f + pvx * f * 0.05;
-          ay += (dy / dist) * 1.8 * f + pvy * f * 0.05;
+          ax += (dx / dist) * 1.1 * f + pvx * f * 0.035;
+          ay += (dy / dist) * 1.1 * f + pvy * f * 0.035;
         }
       }
-      vx[i] = (vx[i] + ax) * 0.87;
-      vy[i] = (vy[i] + ay) * 0.87;
+      vx[i] = (vx[i] + ax) * damp;
+      vy[i] = (vy[i] + ay) * damp;
       x[i] += vx[i];
       y[i] += vy[i];
     }
@@ -567,7 +573,8 @@ if (logoFieldEl) (function initLogoField() {
     ctx.globalAlpha = 1;
   }
 
-  let hiddenAt = 0;
+  let hiddenAt = 0, lastFrame = 0, acc = 0;
+  const STEP_MS = 1000 / 60;
   function frame(now) {
     if (!reduceMotion.matches) {
       const hidden = logoFieldEl.classList.contains('is-hidden');
@@ -575,8 +582,15 @@ if (logoFieldEl) (function initLogoField() {
       if (!hidden) hiddenAt = 0;
       // Keep simulating while visible or still fading out; idle afterwards
       if (!hidden || now - hiddenAt < 700) {
-        step(now);
+        // Fixed 60 Hz physics so the motion feels the same on 60 and 120 Hz screens
+        if (!lastFrame) lastFrame = now;
+        acc = Math.min(acc + (now - lastFrame), 100);
+        lastFrame = now;
+        let steps = 0;
+        while (acc >= STEP_MS && steps < 4) { step(now); acc -= STEP_MS; steps++; }
         draw(Math.min(1, (now - startTime) / 2200));
+      } else {
+        lastFrame = 0;
       }
     }
     requestAnimationFrame(frame);
