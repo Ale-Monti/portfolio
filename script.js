@@ -144,6 +144,19 @@ const projects = [
     url: 'https://www.behance.net/gallery/169424935/BeeSide-Electromagnetic-Health',
   },
   {
+    title:       'Philips DA: Sustainable Packaging',
+    category:    { en: 'Packaging', it: 'Packaging' },
+    date:        { en: '2022', it: '2022' },
+    client:      'Philips Domestic Appliances',
+    description: {
+      en: 'New packaging standard for Philips Domestic Appliances, developed with the Versuni Design team during my internship in Amsterdam, where I worked on idea creation and implementation. Products now ship in a 100% recycled kraft box with art printed directly on the board and much less ink. A universal pack with global information can be sold anywhere in the world, while plastic bags are replaced by recycled paper and a QR code on the inner flaps leads to the Home.id portal, cutting printed in-box material.',
+      it: 'Nuovo standard di packaging per Philips Domestic Appliances, sviluppato con il team Versuni Design durante il tirocinio ad Amsterdam, dove ho lavorato all\'ideazione e all\'implementazione. I prodotti arrivano ora in una scatola di cartone kraft riciclato al 100%, con la grafica stampata direttamente sul cartone e molto meno inchiostro. Un packaging universale con informazioni globali permette di venderlo in tutto il mondo, mentre i sacchetti di plastica sono sostituiti da carta riciclata e un QR code sulle alette interne porta al portale Home.id, riducendo il materiale stampato nella scatola.',
+    },
+    preview: "url('images/philips-cover.jpg')",
+    images:  ["url('images/philips-cover.jpg')", "url('images/philips-range.jpg')", "url('images/philips-airfryer.jpg')", "url('images/philips-dieline.jpg')", "url('images/philips-journey.jpg')"],
+    url: '',
+  },
+  {
     title:       'ImagiNations',
     category:    { en: 'Branding', it: 'Branding' },
     date:        { en: 'January 2022', it: 'Gennaio 2022' },
@@ -381,6 +394,7 @@ function setBgProject(index) {
   incoming.classList.add('is-active');
   outgoing.classList.remove('is-active');
   bgActiveLayer = bgActiveLayer === 'A' ? 'B' : 'A';
+  logoFieldVisible(false);
 }
 
 function clearBg() {
@@ -388,7 +402,198 @@ function clearBg() {
   currentBgIndex = -1;
   bgLayerA.classList.remove('is-active');
   bgLayerB.classList.remove('is-active');
+  logoFieldVisible(true);
 }
+
+// ═══════════════════════════════════════════════════════════════════
+//  PARTICLE LOGO  (index page: shown when no project is previewed)
+// ═══════════════════════════════════════════════════════════════════
+const logoFieldEl = document.getElementById('logoField');
+
+function logoFieldVisible(show) {
+  if (logoFieldEl) logoFieldEl.classList.toggle('is-hidden', !show);
+}
+
+if (logoFieldEl) (function initLogoField() {
+  // Same path as favicon.svg, clipped flat at top and bottom like logo.png
+  const LOGO = new Path2D('M0.00992366 24.1499L8.3179 -0.357261C8.49984 -0.894806 9.08369 -1.18425 9.62289 -1.00066C9.9388 -0.893152 10.1637 -0.650016 10.2679 -0.357261L19.6808 23.5941L16.5729 23.5379L26.0156 -0.779027C26.8773 -2.88951 29.957 -2.30069 29.9967 -0.0380411C30.0281 0.0248103 29.9752 24.2044 29.9967 24.2921C29.9967 25.9841 28.6255 27.3553 26.9335 27.3569C25.2415 27.3569 23.8687 25.9858 23.8687 24.2938C23.9166 23.8984 25.8121 0.282832 25.865 -0.0843527L29.8445 0.779028C29.8181 0.840225 19.656 24.7999 19.6312 24.8561C19.0407 26.2504 17.0245 26.1611 16.5481 24.7403L8.31459 0.357262H10.2646L0.830301 24.4509C0.62686 24.957 -0.158783 24.7072 0.00992366 24.1515V24.1499Z');
+  const BOX = { x: 0, y: 0, w: 30, h: 24.2 };
+
+  const ctx = logoFieldEl.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  let W = 0, H = 0, dpr = 1, N = 0;
+  let hx, hy, x, y, vx, vy, z, ph;   // typed arrays, sorted by depth bucket
+  let bucketEnd = [0, 0, 0];
+  let ink = '#141210', baseAlpha = 0.3;
+  let startTime = performance.now();
+  const INTRO_S = 3.6; // seconds for particles to gather into the logo
+
+  // Pointer (mouse or touch), with its own smoothed velocity
+  const ptr = { x: -9999, y: -9999, vx: 0, vy: 0, active: false };
+  window.addEventListener('pointermove', e => {
+    ptr.vx = e.clientX - (ptr.active ? ptr.x : e.clientX);
+    ptr.vy = e.clientY - (ptr.active ? ptr.y : e.clientY);
+    ptr.x = e.clientX; ptr.y = e.clientY; ptr.active = true;
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { ptr.active = false; });
+  window.addEventListener('touchend', () => { ptr.active = false; }, { passive: true });
+
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    ink = cs.getPropertyValue('--ink').trim() || ink;
+    const bg = cs.getPropertyValue('--bg').trim();
+    const dark = bg && parseInt(bg.replace('#', '').slice(0, 2), 16) < 0x50;
+    baseAlpha = dark ? 0.34 : 0.26;
+    if (reduceMotion.matches) draw();
+  }
+
+  function gauss() { return (Math.random() + Math.random() + Math.random() - 1.5) / 1.5; }
+
+  function build() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    logoFieldEl.width = Math.round(W * dpr);
+    logoFieldEl.height = Math.round(H * dpr);
+
+    const mobile = W <= 720;
+    const logoH = mobile ? Math.min(H * 0.5, W * 0.8 * BOX.h / BOX.w) : Math.min(H * 0.8, W * 0.6 * BOX.h / BOX.w);
+    const s = logoH / BOX.h;
+    const ox = W * (mobile ? 0.5 : 0.56) - (BOX.x + BOX.w / 2) * s;
+    const oy = H * 0.5 - (BOX.y + BOX.h / 2) * s;
+
+    // Rasterise the logo once and sample points inside it
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const octx = off.getContext('2d', { willReadFrequently: true });
+    octx.setTransform(s, 0, 0, s, ox, oy);
+    octx.beginPath();
+    octx.rect(BOX.x, BOX.y, BOX.w, BOX.h);
+    octx.clip();
+    octx.fill(LOGO);
+    const data = octx.getImageData(0, 0, W, H).data;
+    const bx0 = Math.max(0, Math.floor(ox + BOX.x * s)), bx1 = Math.min(W, Math.ceil(ox + (BOX.x + BOX.w) * s));
+    const by0 = Math.max(0, Math.floor(oy + BOX.y * s)), by1 = Math.min(H, Math.ceil(oy + (BOX.y + BOX.h) * s));
+    const inside = (px, py) => {
+      px |= 0; py |= 0;
+      return px >= 0 && py >= 0 && px < W && py < H && data[(py * W + px) * 4 + 3] > 128;
+    };
+
+    N = Math.round((mobile ? 5500 : 13000) * Math.min(1.25, Math.max(0.6, logoH / 760)));
+    const pts = [];
+    let tries = 0;
+    while (pts.length < N && tries < N * 40) {
+      tries++;
+      let px = bx0 + Math.random() * (bx1 - bx0);
+      let py = by0 + Math.random() * (by1 - by0);
+      if (!inside(px, py)) continue;
+      const r = Math.random();
+      if (r < 0.16) { px += gauss() * 7; py += gauss() * 7; }        // grainy edges
+      else if (r < 0.19) { px += gauss() * 34; py += gauss() * 34; } // sparse strays
+      const depth = Math.random() ** 1.6;
+      pts.push([px, py, depth]);
+    }
+    N = pts.length;
+    pts.sort((a, b) => a[2] - b[2]);
+
+    hx = new Float32Array(N); hy = new Float32Array(N);
+    x = new Float32Array(N);  y = new Float32Array(N);
+    vx = new Float32Array(N); vy = new Float32Array(N);
+    z = new Float32Array(N);  ph = new Float32Array(N);
+    bucketEnd = [0, 0, N];
+    const intro = !reduceMotion.matches;
+    for (let i = 0; i < N; i++) {
+      const [px, py, d] = pts[i];
+      hx[i] = px; hy[i] = py; z[i] = d; ph[i] = Math.random() * Math.PI * 2;
+      x[i] = intro ? Math.random() * W : px;
+      y[i] = intro ? Math.random() * H : py;
+      if (d < 0.45) bucketEnd[0] = i + 1;
+      if (d < 0.8)  bucketEnd[1] = i + 1;
+    }
+    if (!intro) draw();
+  }
+
+  function step(now) {
+    const t = (now - startTime) / 1000;
+    const introK = Math.min(1, t / INTRO_S);
+    const spring = 0.003 + 0.033 * introK * introK;
+    const cx = W * 0.5, cy = H * 0.5;
+    const R = Math.min(170, W * 0.22), R2 = R * R;
+    const px = ptr.x, py = ptr.y, pvx = ptr.vx, pvy = ptr.vy;
+    const moveK = Math.min(1, Math.hypot(pvx, pvy) / 12);
+    const usePtr = ptr.active && moveK > 0.01;
+    const parX = ptr.active ? (px - cx) * 0.018 : 0;
+    const parY = ptr.active ? (py - cy) * 0.018 : 0;
+
+    for (let i = 0; i < N; i++) {
+      const d = z[i];
+      const tx = hx[i] + Math.sin(t * 0.55 + ph[i]) * 1.4 * d + parX * (d - 0.4);
+      const ty = hy[i] + Math.cos(t * 0.47 + ph[i] * 1.3) * 1.4 * d + parY * (d - 0.4);
+      let ax = (tx - x[i]) * spring;
+      let ay = (ty - y[i]) * spring;
+
+      if (usePtr) {
+        const dx = x[i] - px, dy = y[i] - py;
+        const dist2 = dx * dx + dy * dy;
+        if (dist2 < R2 && dist2 > 0.01) {
+          // Push only while the pointer moves: a still cursor leaves the logo at rest
+          const dist = Math.sqrt(dist2);
+          const f = (1 - dist / R) ** 2 * moveK;
+          ax += (dx / dist) * 1.8 * f + pvx * f * 0.05;
+          ay += (dy / dist) * 1.8 * f + pvy * f * 0.05;
+        }
+      }
+      vx[i] = (vx[i] + ax) * 0.87;
+      vy[i] = (vy[i] + ay) * 0.87;
+      x[i] += vx[i];
+      y[i] += vy[i];
+    }
+    ptr.vx *= 0.85; ptr.vy *= 0.85;
+  }
+
+  function draw(introAlpha = 1) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = ink;
+    const sizes = [1, 1.15, 1.6];
+    const alphas = [0.45, 0.7, 1];
+    let from = 0;
+    for (let b = 0; b < 3; b++) {
+      ctx.globalAlpha = baseAlpha * alphas[b] * introAlpha;
+      const sz = sizes[b];
+      for (let i = from; i < bucketEnd[b]; i++) ctx.fillRect(x[i], y[i], sz, sz);
+      from = bucketEnd[b];
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  let hiddenAt = 0;
+  function frame(now) {
+    if (!reduceMotion.matches) {
+      const hidden = logoFieldEl.classList.contains('is-hidden');
+      if (hidden && !hiddenAt) hiddenAt = now;
+      if (!hidden) hiddenAt = 0;
+      // Keep simulating while visible or still fading out; idle afterwards
+      if (!hidden || now - hiddenAt < 700) {
+        step(now);
+        draw(Math.min(1, (now - startTime) / 2200));
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { startTime = performance.now() - INTRO_S * 1000; build(); }, 150);
+  });
+  new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
+
+  readColors();
+  build();
+  requestAnimationFrame(frame);
+})();
 
 function initScrollBg() {
   const rows = workList.querySelectorAll('.project-row');

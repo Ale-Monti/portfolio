@@ -107,6 +107,19 @@ html.has-mouse * { cursor: none !important; }
 }
 html.has-mouse .dot-grid { opacity: 1; }
 
+/* ─── Particle logo field ────────────────────────────────────────── */
+.logo-field {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.9s ease;
+}
+.logo-field.is-hidden { opacity: 0; transition-duration: 0.5s; }
+
 /* ─── Nav ────────────────────────────────────────────────────────── */
 .nav {
   position: fixed;
@@ -242,8 +255,8 @@ body.is-loaded .hero-label {
 }
 
 .hero-name {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 800;
+  font-family: 'Funnel Display', 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
   font-size: clamp(58px, 10vw, 138px);
   line-height: 0.9;
   letter-spacing: -0.03em;
