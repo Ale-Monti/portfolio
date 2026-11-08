@@ -79,6 +79,19 @@ const T = {
 // ═══════════════════════════════════════════════════════════════════
 const projects = [
   {
+    title:       'Bugonia: Promotional Website',
+    category:    { en: 'UI Design', it: 'UI Design' },
+    date:        { en: 'April 2026', it: 'Aprile 2026' },
+    client:      'Talent Garden',
+    description: {
+      en: 'Fictional website promoting the theatrical release of the film Bugonia, designed for the UI Challenge with Mirko Santangelo at Talent Garden. A cinematic, editorial landing page built in Figma, with a full-screen menu, serif typography and a persistent call to action for tickets.',
+      it: 'Sito fittizio per promuovere l\'uscita in sala del film Bugonia, progettato per la UI Challenge con Mirko Santangelo di Talent Garden. Una landing page editoriale e cinematografica realizzata in Figma, con menu a schermo intero, tipografia serif e una call to action sempre visibile per i biglietti.',
+    },
+    preview: "url('images/bugonia-cover.jpg')",
+    images:  ["url('images/bugonia-cover.jpg')", "url('images/bugonia-2.jpg')", "url('images/bugonia-3.jpg')"],
+    url: 'https://www.behance.net/gallery/247463845/Bugonia-promotional-Website-UI-Challenge',
+  },
+  {
     title:       'NewsQuest: GenZ News App',
     category:    { en: 'UI/UX', it: 'UI/UX' },
     date:        { en: 'November 2025', it: 'Novembre 2025' },
@@ -89,7 +102,7 @@ const projects = [
     },
     preview: "url('images/news.png')",
     images:  ["url('images/newsquest-cover.png')", "url('images/newsquest-2.png')"],
-    url: 'https://www.behance.net/gallery/216882651/NewsQuest-GenZ-News-App-UX-UI-Design-Project',
+    url: 'https://www.behance.net/gallery/241354399/NewsQuest-GenZ-News-App-UX-UI-Design-Project',
   },
   {
     title:       'leARn: English for Kids in AR',
@@ -102,7 +115,7 @@ const projects = [
     },
     preview: "url('images/learn-cover.png')",
     images:  ["url('images/learn-cover.png')", "url('images/learn-2.png')"],
-    url: 'https://www.behance.net/gallery/169441153/leARn-English-for-kids-in-AR',
+    url: 'https://www.behance.net/gallery/167692593/leARn-English-for-kids-in-AR',
   },
   {
     title:       'Vidia Club Cesena',
@@ -115,7 +128,7 @@ const projects = [
     },
     preview: "url('images/vidia-cover.png')",
     images:  ["url('images/vidia-cover.png')", "url('images/vidia-2.png')"],
-    url: 'https://www.behance.net/gallery/168516875/Vidia-Club-Cesena-Brand-Identity',
+    url: 'https://www.behance.net/gallery/168405025/Vidia-Club-Cesena-Brand-Identity',
   },
   {
     title:       'BeeSide: Electromagnetic Health',
@@ -128,7 +141,7 @@ const projects = [
     },
     preview: "url('images/beeside-cover.png')",
     images:  ["url('images/beeside-cover.png')", "url('images/beeside-2.png')"],
-    url: 'https://www.behance.net/gallery/163046285/BeeSide-Electromagnetic-Health',
+    url: 'https://www.behance.net/gallery/169424935/BeeSide-Electromagnetic-Health',
   },
   {
     title:       'ImagiNations',
@@ -141,7 +154,7 @@ const projects = [
     },
     preview: "url('images/nations.png')",
     images:  ["url('images/nations.png')", "url('images/imaginations-2.png')", "url('images/imaginations-3.png')"],
-    url: 'https://www.behance.net/gallery/137753221/ImagiNations-Visual-Identity',
+    url: 'https://www.behance.net/gallery/168854265/ImagiNations-Visual-Identity',
   },
   {
     title:       'China & San Marino 50th Anniversary',
@@ -154,7 +167,7 @@ const projects = [
     },
     preview: "url('images/china-sanmarino-cover.png')",
     images:  ["url('images/china-sanmarino-cover.png')", "url('images/china-sanmarino-2.png')"],
-    url: 'https://www.behance.net/gallery/131399963/China-and-San-Marino-50th-Anniversary-Visual-Identity',
+    url: 'https://www.behance.net/gallery/169164871/China-and-San-Marino-50th-Anniversary-Visual-Identity',
   },
   {
     title:       '.COMIC',
@@ -167,7 +180,7 @@ const projects = [
     },
     preview: "url('images/comic-cover.png')",
     images:  ["url('images/comic-cover.png')", "url('images/comic-2.png')"],
-    url: 'https://www.behance.net/gallery/143007031/COMIC-Comic-Book-Website',
+    url: 'https://www.behance.net/gallery/169624267/COMIC-Comic-Book-Website',
   },
   {
     title:       'Climate Change',
@@ -180,7 +193,7 @@ const projects = [
     },
     preview: "url('images/climate-cover.png')",
     images:  ["url('images/climate-cover.png')", "url('images/climate-2.png')", "url('images/climate-3.png')"],
-    url: 'https://www.behance.net/gallery/100033059/Climate-Change-Photography-Project',
+    url: 'https://www.behance.net/gallery/168463065/Climate-Change-Photography-Project',
   },
 ];
 
