@@ -4,16 +4,16 @@
 const T = {
   en: {
     navWork:          'Work',
-    navAbout:         'About',    // stays "About" in both languages
+    navAbout:         'About',
     tableProject:     'Project',
     tableCat:         'Category',
     tableYear:        'Year',
     greeting:         'Hi.',
-    bio:              'Designer with roots in visual and digital communication. I work across interfaces, brand identities, and editorial projects — with a precise eye and a curiosity for what makes things work.',
+    bio:              'Designer with roots in visual and digital communication. I work across interfaces, brand identities, and editorial projects - with a precise eye and a curiosity for what makes things work.',
     footerLocation:   'Rimini, Italy',
-    introLabel:       'UI / Graphic Designer — Rimini, Italy',
+    introLabel:       'UI / Graphic Designer, Rimini, Italy',
     introHeadline:    'Digital products, brand identities &amp; visual communication.',
-    bioP1:            'Hi, I\'m Alessandro — a designer with a background in Communication Design and a strong focus on visual and digital communication. My skill set has evolved from a broad design education into solid graphic design expertise through hands-on experience, and is now increasingly focused on UI/UX design and digital channels.',
+    bioP1:            'Hi, I\'m Alessandro, a designer with a background in Communication Design and a strong focus on visual and digital communication. My skill set has evolved from a broad design education into solid graphic design expertise through hands-on experience, and is now increasingly focused on UI/UX design and digital channels.',
     bioP2:            'A background in language mediation strengthens my communication and listening skills, allowing me to collaborate effectively across different teams and cultural contexts.',
     disciplinesLabel: 'Disciplines',
     toolsLabel:       'Tools',
@@ -24,29 +24,31 @@ const T = {
     modalCat:         'Category',
     modalDate:        'Date',
     modalClient:      'Client',
-    exp1Period:       'Feb 2024 — Present · Rimini, Italy',
+    modalClose:       'Close',
+    viewProject:      'View on Behance',
+    exp1Period:       'Feb 2024 - Present · Rimini, Italy',
     exp1Desc:         'Works closely with the Brand Specialist to define and evolve Terranova\'s visual communication for the Men\'s department. Oversees the brand\'s online presence across terranova.com, Instagram, Facebook, and digital advertising channels.',
-    exp2Period:       'Mar 2022 — Feb 2023 · Amsterdam, Netherlands',
+    exp2Period:       'Mar 2022 - Feb 2023 · Amsterdam, Netherlands',
     exp2Desc:         'Developed new visual language for the Garment Care category (irons, steamers). Created packaging prototypes using Illustrator and Photoshop, and participated in workshops to define the next packaging standard.',
-    edu1Period:       'Sep 2025 — Dec 2025 · Rome, Italy',
+    edu1Period:       'Sep 2025 - Dec 2025 · Rome, Italy',
     edu1Desc:         '11-week blended programme covering user-centred interface design, modular UI systems, prototyping, and user testing. Mentored by industry professionals throughout.',
-    edu2Period:       'Oct 2019 — Mar 2023 · San Marino',
+    edu2Period:       'Oct 2019 - Mar 2023 · San Marino',
     edu2Desc:         'Degree covering the history of product and communication design alongside practical workshops in web design, motion design, and sketching.',
-    edu3Period:       'Sep 2015 — Oct 2018 · Italy',
+    edu3Period:       'Sep 2015 - Oct 2018 · Italy',
     edu3Desc:         'Inter-linguistic and intercultural communication in Italian and three foreign languages. Practical translation and language mediation skills.',
   },
   it: {
     navWork:          'Lavori',
-    navAbout:         'About',    // stays "About" in Italian too
+    navAbout:         'About',
     tableProject:     'Progetto',
     tableCat:         'Categoria',
     tableYear:        'Anno',
     greeting:         'Ciao.',
-    bio:              'Designer con radici nel visual e nel digitale. Lavoro su interfacce, identità di marca e progetti editoriali — con un occhio preciso e la curiosità di capire cosa fa funzionare le cose.',
+    bio:              'Designer con radici nel visual e nel digitale. Lavoro su interfacce, identità di marca e progetti editoriali - con un occhio preciso e la curiosità di capire cosa fa funzionare le cose.',
     footerLocation:   'Rimini, Italia',
-    introLabel:       'UI / Graphic Designer — Rimini, Italia',
+    introLabel:       'UI / Graphic Designer, Rimini, Italia',
     introHeadline:    'Prodotti digitali, Brand Identity &amp; comunicazione visiva.',
-    bioP1:            'Ciao, sono Alessandro — un designer con un background in Communication Design e un forte focus sulla comunicazione visiva e digitale. Il mio skill set si è evoluto da una formazione ampia in design verso una solida esperienza nel graphic design, sempre più orientata verso UI/UX e i canali digitali.',
+    bioP1:            'Ciao, sono Alessandro, un designer con un background in Communication Design e un forte focus sulla comunicazione visiva e digitale. Il mio skill set si è evoluto da una formazione ampia in design verso una solida esperienza nel graphic design, sempre più orientata verso UI/UX e i canali digitali.',
     bioP2:            'Un background in mediazione linguistica rafforza le mie capacità comunicative, permettendomi di collaborare efficacemente con team diversi e in contesti culturali differenti.',
     disciplinesLabel: 'Discipline',
     toolsLabel:       'Strumenti',
@@ -57,49 +59,49 @@ const T = {
     modalCat:         'Categoria',
     modalDate:        'Data',
     modalClient:      'Cliente',
-    exp1Period:       'Feb 2024 — Presente · Rimini, Italia',
+    modalClose:       'Chiudi',
+    viewProject:      'Vedi su Behance',
+    exp1Period:       'Feb 2024 - Presente · Rimini, Italia',
     exp1Desc:         'Collabora con il Brand Specialist per definire e sviluppare la comunicazione visiva di Terranova per il reparto uomo. Gestisce la presenza online del brand su terranova.com, Instagram, Facebook e canali pubblicitari digitali.',
-    exp2Period:       'Mar 2022 — Feb 2023 · Amsterdam, Paesi Bassi',
+    exp2Period:       'Mar 2022 - Feb 2023 · Amsterdam, Paesi Bassi',
     exp2Desc:         'Ha sviluppato nuovo linguaggio visivo per la categoria Garment Care (ferro da stiro, vaporizzatori). Ha creato prototipi di packaging con Illustrator e Photoshop, partecipando a workshop per definire il nuovo standard di packaging.',
-    edu1Period:       'Set 2025 — Dic 2025 · Roma, Italia',
+    edu1Period:       'Set 2025 - Dic 2025 · Roma, Italia',
     edu1Desc:         'Programma blended di 11 settimane su UI design centrato sull\'utente, sistemi UI modulari, prototipazione e user testing. Mentorship da professionisti del settore.',
-    edu2Period:       'Ott 2019 — Mar 2023 · San Marino',
+    edu2Period:       'Ott 2019 - Mar 2023 · San Marino',
     edu2Desc:         'Laurea con materie che spaziano dalla storia del design di prodotto e comunicativo a workshop pratici in web design, motion design e sketching.',
-    edu3Period:       'Set 2015 — Ott 2018 · Italia',
+    edu3Period:       'Set 2015 - Ott 2018 · Italia',
     edu3Desc:         'Comunicazione interlinguistica e interculturale in italiano e tre lingue straniere. Competenze pratiche di traduzione e mediazione linguistica.',
   }
 };
 
 // ═══════════════════════════════════════════════════════════════════
 //  PROJECTS
-//  preview: used for hover image and modal hero
-//  images:  additional photos shown in the modal gallery
 // ═══════════════════════════════════════════════════════════════════
 const projects = [
   {
-    title:       'NewsQuest — GenZ News App',
+    title:       'NewsQuest: GenZ News App',
     category:    { en: 'UI/UX', it: 'UI/UX' },
     date:        { en: 'November 2025', it: 'Novembre 2025' },
     client:      'Talent Garden',
     description: {
-      en: 'News aggregation app for Gen Z — from research insights to tested interactive prototype. Full UX/UI case study covering discovery, information architecture, visual design, and usability testing.',
-      it: 'App di aggregazione notizie per la Gen Z — da insights di ricerca a prototipo interattivo testato. Case study UX/UI completo: discovery, architettura informativa, visual design e test di usabilità.',
+      en: 'News aggregation app for Gen Z. From research insights to tested interactive prototype: a full UX/UI case study covering discovery, information architecture, visual design, and usability testing.',
+      it: 'App di aggregazione notizie per la Gen Z - da insights di ricerca a prototipo interattivo testato. Case study UX/UI completo: discovery, architettura informativa, visual design e test di usabilità.',
     },
     preview: "url('images/news.png')",
-    images:  ["url('images/news.png')", 'placeholder'],
+    images:  ["url('images/newsquest-cover.png')", "url('images/newsquest-2.png')"],
     url: 'https://www.behance.net/gallery/216882651/NewsQuest-GenZ-News-App-UX-UI-Design-Project',
   },
   {
-    title:       'leARn — English for Kids in AR',
+    title:       'leARn: English for Kids in AR',
     category:    { en: 'UI/UX', it: 'UI/UX' },
     date:        { en: 'May 2023', it: 'Maggio 2023' },
     client:      'University Project',
     description: {
-      en: 'UX/UI design for leARn, an augmented reality app teaching English to children. Designed to be age-appropriate, engaging, and technically innovative — combining physical play with digital learning.',
-      it: 'UX/UI design per leARn, un\'app in realtà aumentata per l\'apprendimento dell\'inglese per bambini. Progettata per essere adatta all\'età, coinvolgente e innovativa — tra gioco fisico e apprendimento digitale.',
+      en: 'UX/UI design for leARn, an augmented reality app teaching English to children. Designed to be age-appropriate, engaging, and technically innovative - combining physical play with digital learning.',
+      it: 'UX/UI design per leARn, un\'app in realtà aumentata per l\'apprendimento dell\'inglese per bambini. Progettata per essere adatta all\'età, coinvolgente e innovativa - tra gioco fisico e apprendimento digitale.',
     },
     preview: "url('images/learn-cover.png')",
-    images:  ["url('images/learn-cover.png')", 'placeholder'],
+    images:  ["url('images/learn-cover.png')", "url('images/learn-2.png')"],
     url: 'https://www.behance.net/gallery/169441153/leARn-English-for-kids-in-AR',
   },
   {
@@ -112,20 +114,20 @@ const projects = [
       it: 'Identità visiva per Vidia Club Cesena. Un sistema visivo audace basato su un logotipo distintivo e una palette rosso-rosa caldo, con il payoff "disobbedisciti" al centro del progetto.',
     },
     preview: "url('images/vidia-cover.png')",
-    images:  ["url('images/vidia-cover.png')", 'placeholder'],
+    images:  ["url('images/vidia-cover.png')", "url('images/vidia-2.png')"],
     url: 'https://www.behance.net/gallery/168516875/Vidia-Club-Cesena-Brand-Identity',
   },
   {
-    title:       'BeeSide — Electromagnetic Health',
+    title:       'BeeSide: Electromagnetic Health',
     category:    { en: 'UI/UX', it: 'UI/UX' },
     date:        { en: 'October 2023', it: 'Ottobre 2023' },
     client:      'BeeSide',
     description: {
-      en: 'UX/UI design for BeeSide, a "friend app" designed to raise awareness of electromagnetic field threats hidden in everyday technology. Inspired by the bee — a natural EMF indicator — it guides users towards healthy habits to protect physical and mental well-being.',
-      it: 'UX/UI design per BeeSide, una "friend app" pensata per sensibilizzare sui rischi dei campi elettromagnetici nascosti nella tecnologia di ogni giorno. Ispirata all\'ape — naturale indicatore di EMF — guida l\'utente verso abitudini sane per proteggere salute fisica e mentale.',
+      en: 'UX/UI design for BeeSide, a "friend app" designed to raise awareness of electromagnetic field threats hidden in everyday technology. Inspired by the bee - a natural EMF indicator - it guides users towards healthy habits to protect physical and mental well-being.',
+      it: 'UX/UI design per BeeSide, una "friend app" pensata per sensibilizzare sui rischi dei campi elettromagnetici nascosti nella tecnologia di ogni giorno. Ispirata all\'ape - naturale indicatore di EMF - guida l\'utente verso abitudini sane per proteggere salute fisica e mentale.',
     },
     preview: "url('images/beeside-cover.png')",
-    images:  ["url('images/beeside-cover.png')", 'placeholder'],
+    images:  ["url('images/beeside-cover.png')", "url('images/beeside-2.png')"],
     url: 'https://www.behance.net/gallery/163046285/BeeSide-Electromagnetic-Health',
   },
   {
@@ -134,11 +136,11 @@ const projects = [
     date:        { en: 'January 2022', it: 'Gennaio 2022' },
     client:      'University Project',
     description: {
-      en: 'Visual identity system for micronations — small political entities that come into existence for subversive reasons, issuing their own coins, stamps, passports, and emblems.',
-      it: 'Sistema di identità visiva per micronazioni — piccole entità politiche nate per ragioni sovversive, dotate di proprie monete, francobolli, passaporti ed emblemi.',
+      en: 'Visual identity system for micronations - small political entities that come into existence for subversive reasons, issuing their own coins, stamps, passports, and emblems.',
+      it: 'Sistema di identità visiva per micronazioni - piccole entità politiche nate per ragioni sovversive, dotate di proprie monete, francobolli, passaporti ed emblemi.',
     },
     preview: "url('images/nations.png')",
-    images:  ["url('images/nations.png')", 'placeholder', 'placeholder'],
+    images:  ["url('images/nations.png')", "url('images/imaginations-2.png')", "url('images/imaginations-3.png')"],
     url: 'https://www.behance.net/gallery/137753221/ImagiNations-Visual-Identity',
   },
   {
@@ -151,7 +153,7 @@ const projects = [
       it: 'Identità visiva per il 50° anniversario delle relazioni diplomatiche tra la RPC e la Repubblica di San Marino. Un sistema geometrico che unisce tradizioni di design orientali e occidentali.',
     },
     preview: "url('images/china-sanmarino-cover.png')",
-    images:  ["url('images/china-sanmarino-cover.png')", 'placeholder'],
+    images:  ["url('images/china-sanmarino-cover.png')", "url('images/china-sanmarino-2.png')"],
     url: 'https://www.behance.net/gallery/131399963/China-and-San-Marino-50th-Anniversary-Visual-Identity',
   },
   {
@@ -164,7 +166,7 @@ const projects = [
       it: 'Web design per una piattaforma e-commerce di collezionismo fumetti. Costruita attorno alla cultura del fumetto italiano, con un\'estetica editoriale audace: sfondi scuri, accenti rossi, tipografia dinamica.',
     },
     preview: "url('images/comic-cover.png')",
-    images:  ["url('images/comic-cover.png')", 'placeholder'],
+    images:  ["url('images/comic-cover.png')", "url('images/comic-2.png')"],
     url: 'https://www.behance.net/gallery/143007031/COMIC-Comic-Book-Website',
   },
   {
@@ -177,7 +179,7 @@ const projects = [
       it: 'Una serie di fotografie allestite per riflettere sull\'impatto dell\'uomo sull\'ambiente, realizzata durante il lockdown da Covid-19. Il progetto evidenzia i legami tra emergenze ambientali e salute umana.',
     },
     preview: "url('images/climate-cover.png')",
-    images:  ["url('images/climate-cover.png')", 'placeholder', 'placeholder'],
+    images:  ["url('images/climate-cover.png')", "url('images/climate-2.png')", "url('images/climate-3.png')"],
     url: 'https://www.behance.net/gallery/100033059/Climate-Change-Photography-Project',
   },
 ];
@@ -217,6 +219,14 @@ function applyLanguage(lang) {
       if (catEl) catEl.textContent = projects[idx].category[lang];
     }
   });
+
+  // Update modal close button text
+  const closeTextEl = document.getElementById('modalCloseText');
+  if (closeTextEl) closeTextEl.textContent = T[lang].modalClose;
+
+  // Update modal link text if visible
+  const linkTextEl = document.getElementById('modalLinkText');
+  if (linkTextEl) linkTextEl.textContent = T[lang].viewProject;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -236,9 +246,9 @@ function applyTheme(theme) {
 // ═══════════════════════════════════════════════════════════════════
 //  CURSOR
 // ═══════════════════════════════════════════════════════════════════
-const cursorEl   = document.getElementById('cursor');
-const dotGridEl  = document.querySelector('.dot-grid');
-const SIZE = 9;
+const cursorEl  = document.getElementById('cursor');
+const dotGridEl = document.querySelector('.dot-grid');
+const SIZE = 10;
 const HALF = SIZE / 2;
 
 let mouse     = { x: 0, y: 0 };
@@ -256,7 +266,6 @@ document.addEventListener('mousemove', e => {
   mouse.x = e.clientX;
   mouse.y = e.clientY;
 
-  // Update dot grid position
   if (dotGridEl) {
     dotGridEl.style.setProperty('--cx', `${e.clientX}px`);
     dotGridEl.style.setProperty('--cy', `${e.clientY}px`);
@@ -268,24 +277,22 @@ document.addEventListener('mousemove', e => {
   }
 });
 
-// Track hovered element type
 document.addEventListener('mouseover', e => {
   const clickable = e.target.closest('a, button, [role="button"], .project-row');
-  targetHoverScale = clickable ? 2.4 : 1;
+  targetHoverScale = clickable ? 2.2 : 1;
 });
 
 function cursorTick() {
   if (cursorEl && cursorActive) {
-    hoverScale += (targetHoverScale - hoverScale) * 0.12;
+    hoverScale += (targetHoverScale - hoverScale) * 0.13;
 
-    // Velocity-based oval — more noticeable
     const speed   = Math.sqrt(vel.x ** 2 + vel.y ** 2);
-    const stretch = 1 + Math.min(speed, 30) * 0.04;  // max ~2.2x
+    const stretch = 1 + Math.min(speed, 28) * 0.038;
     const squish  = 1 / Math.sqrt(stretch);
     const angle   = Math.atan2(vel.y, vel.x) * (180 / Math.PI);
 
-    vel.x *= 0.82;
-    vel.y *= 0.82;
+    vel.x *= 0.80;
+    vel.y *= 0.80;
 
     cursorEl.style.transform =
       `translate(${mouse.x - HALF}px, ${mouse.y - HALF}px)` +
@@ -314,91 +321,94 @@ if (workList) {
       <span class="project-arrow">&#x2192;</span>
     `;
     workList.appendChild(row);
-    setTimeout(() => row.classList.add('is-revealed'), 60 + i * 70);
+
+    // Stagger reveal after hero finishes
+    setTimeout(() => row.classList.add('is-revealed'), 550 + i * 65);
+
     row.addEventListener('click', () => openModal(i));
   });
 
-  initHover();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-//  HOVER PREVIEW
-// ═══════════════════════════════════════════════════════════════════
-const cursorPreview = document.getElementById('cursorPreview');
-const previewMedia  = document.getElementById('previewMedia');
-
-const PREVIEW_W = 440;
-const PREVIEW_H = 280;
-const OFFSET_X  = 32;
-const LERP      = 0.09;
-
-let previewPos       = { x: 0, y: 0 };
-let isPreviewVisible = false;
-
-function showPreview() {
-  if (!cursorPreview) return;
-  if (!isPreviewVisible) { previewPos.x = mouse.x; previewPos.y = mouse.y; }
-  isPreviewVisible = true;
-  cursorPreview.classList.add('is-visible');
-}
-function hidePreview() {
-  if (!cursorPreview) return;
-  isPreviewVisible = false;
-  cursorPreview.classList.remove('is-visible');
-}
-
-function previewTick() {
-  if (isPreviewVisible && cursorPreview) {
-    previewPos.x += (mouse.x - previewPos.x) * LERP;
-    previewPos.y += (mouse.y - previewPos.y) * LERP;
-
-    let x = previewPos.x + OFFSET_X;
-    let y = previewPos.y - PREVIEW_H / 2;
-    if (x + PREVIEW_W > window.innerWidth - 16) x = previewPos.x - PREVIEW_W - OFFSET_X;
-    if (y < 80) y = 80;
-    if (y + PREVIEW_H > window.innerHeight - 16) y = window.innerHeight - PREVIEW_H - 16;
-
-    cursorPreview.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-  }
-  requestAnimationFrame(previewTick);
-}
-previewTick();
-
-function initHover() {
-  const rows = workList.querySelectorAll('.project-row');
-
-  rows.forEach(row => {
-    row.addEventListener('mouseenter', () => {
-      const p = projects[parseInt(row.dataset.index)];
-      previewMedia.style.background     = p.preview;
-      previewMedia.style.backgroundSize = 'cover';
-      previewMedia.style.backgroundPosition = 'center';
-      showPreview();
-      rows.forEach(r => {
-        r.style.transition = 'opacity 0.25s ease';
-        r.style.opacity    = r === row ? '1' : '0.18';
-      });
-      const arrow = row.querySelector('.project-arrow');
-      if (arrow) { arrow.style.opacity = '1'; arrow.style.transform = 'translateX(0)'; }
-    });
-
-    row.addEventListener('mouseleave', () => {
-      const arrow = row.querySelector('.project-arrow');
-      if (arrow) { arrow.style.opacity = '0'; arrow.style.transform = 'translateX(-5px)'; }
-    });
-  });
+  // Hover: dim other rows
+  workList.addEventListener('mouseenter', () => {
+    workList.classList.add('is-hovering');
+  }, true);
 
   workList.addEventListener('mouseleave', () => {
-    rows.forEach(r => { r.style.transition = 'opacity 0.32s ease'; r.style.opacity = '1'; });
-    hidePreview();
+    workList.classList.remove('is-hovering');
+    clearBg();
   });
+
+  workList.querySelectorAll('.project-row').forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      setBgProject(parseInt(row.dataset.index));
+    });
+  });
+
+  initScrollBg();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  FULLSCREEN BACKGROUND
+// ═══════════════════════════════════════════════════════════════════
+const bgLayerA = document.getElementById('bgLayerA');
+const bgLayerB = document.getElementById('bgLayerB');
+let bgActiveLayer  = 'A';
+let currentBgIndex = -1;
+
+function setBgProject(index) {
+  if (!bgLayerA || !bgLayerB || index === currentBgIndex) return;
+  currentBgIndex = index;
+  const p        = projects[index];
+  const incoming = bgActiveLayer === 'A' ? bgLayerB : bgLayerA;
+  const outgoing = bgActiveLayer === 'A' ? bgLayerA : bgLayerB;
+
+  incoming.style.background         = p.preview;
+  incoming.style.backgroundSize     = 'cover';
+  incoming.style.backgroundPosition = 'center';
+  incoming.classList.add('is-active');
+  outgoing.classList.remove('is-active');
+  bgActiveLayer = bgActiveLayer === 'A' ? 'B' : 'A';
+}
+
+function clearBg() {
+  if (!bgLayerA || !bgLayerB) return;
+  currentBgIndex = -1;
+  bgLayerA.classList.remove('is-active');
+  bgLayerB.classList.remove('is-active');
+}
+
+function initScrollBg() {
+  const rows = workList.querySelectorAll('.project-row');
+  let isHovering = false;
+
+  workList.addEventListener('mouseenter', () => { isHovering = true; }, true);
+  workList.addEventListener('mouseleave', () => { isHovering = false; });
+
+  function getClosestRowIndex() {
+    const viewCenter = window.innerHeight / 2;
+    let minDist = Infinity;
+    let idx = -1;
+    rows.forEach(row => {
+      const rect = row.getBoundingClientRect();
+      const dist = Math.abs(rect.top + rect.height / 2 - viewCenter);
+      if (dist < minDist) { minDist = dist; idx = parseInt(row.dataset.index); }
+    });
+    return minDist < window.innerHeight * 0.6 ? idx : -1;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (isHovering) return;
+    const idx = getClosestRowIndex();
+    if (idx >= 0) setBgProject(idx);
+    else clearBg();
+  }, { passive: true });
 }
 
 // ═══════════════════════════════════════════════════════════════════
 //  MODAL
 // ═══════════════════════════════════════════════════════════════════
 const modalOverlay   = document.getElementById('modalOverlay');
-const modalBox       = document.getElementById('modalBox');
+const modalPanel     = document.getElementById('modalPanel');
 const modalHero      = document.getElementById('modalHero');
 const modalTitle     = document.getElementById('modalTitle');
 const modalCatVal    = document.getElementById('modalCatVal');
@@ -407,52 +417,63 @@ const modalClientVal = document.getElementById('modalClientVal');
 const modalDesc      = document.getElementById('modalDesc');
 const modalClose     = document.getElementById('modalClose');
 const modalGallery   = document.getElementById('modalGallery');
+const modalLink      = document.getElementById('modalLink');
+const modalLinkText  = document.getElementById('modalLinkText');
 
 function openModal(index) {
   if (!modalOverlay) return;
   const p    = projects[index];
   const lang = currentLang;
 
-  // Hero
-  modalHero.style.background     = p.preview;
-  modalHero.style.backgroundSize = 'cover';
-  modalHero.style.backgroundPosition = 'center';
+  modalHero.style.background           = p.preview;
+  modalHero.style.backgroundSize       = 'cover';
+  modalHero.style.backgroundPosition   = 'center';
 
-  // Content
   modalTitle.textContent     = p.title;
   modalCatVal.textContent    = p.category[lang];
   modalDateVal.textContent   = p.date[lang];
   modalClientVal.textContent = p.client;
   modalDesc.textContent      = p.description[lang];
 
-  // Update labels
+  // Update meta labels
   document.querySelectorAll('.modal-meta-label[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     if (T[lang][key]) el.textContent = T[lang][key];
   });
 
-  // Gallery (skip first image = hero)
+  // Gallery (skip first = hero)
   if (modalGallery) {
     modalGallery.innerHTML = '';
     const extras = p.images.slice(1);
     extras.forEach(img => {
       const div = document.createElement('div');
-      if (img === 'placeholder') {
-        div.className = 'modal-gallery-img is-placeholder';
-      } else {
-        div.className = 'modal-gallery-img';
-        div.style.background = img;
-        div.style.backgroundSize = 'cover';
-        div.style.backgroundPosition = 'center';
+      div.className = img === 'placeholder'
+        ? 'modal-gallery-img is-placeholder'
+        : 'modal-gallery-img';
+      if (img !== 'placeholder') {
+        div.style.background           = img;
+        div.style.backgroundSize       = 'cover';
+        div.style.backgroundPosition   = 'center';
       }
       modalGallery.appendChild(div);
     });
     modalGallery.style.display = extras.length ? 'grid' : 'none';
   }
 
+  // Behance link
+  if (modalLink) {
+    if (p.url) {
+      modalLink.href  = p.url;
+      modalLink.style.display = '';
+      if (modalLinkText) modalLinkText.textContent = T[lang].viewProject;
+    } else {
+      modalLink.style.display = 'none';
+    }
+  }
+
   document.body.style.overflow = 'hidden';
   modalOverlay.classList.add('is-open');
-  modalBox.scrollTop = 0;
+  if (modalPanel) modalPanel.scrollTop = 0;
 }
 
 function closeModal() {
@@ -461,16 +482,25 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-if (modalClose) modalClose.addEventListener('click', closeModal);
-if (modalOverlay) modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+if (modalClose)   modalClose.addEventListener('click', closeModal);
+if (modalOverlay) modalOverlay.addEventListener('click', e => {
+  if (e.target === modalOverlay) closeModal();
+});
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 // ═══════════════════════════════════════════════════════════════════
-//  CONTROLS INIT
+//  INIT
 // ═══════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme(currentTheme);
   applyLanguage(currentLang);
+
+  // Double RAF ensures initial paint is committed before reveal transitions start
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.body.classList.add('is-loaded');
+    });
+  });
 
   // Theme dropdown
   const themeBtn  = document.getElementById('themeToggle');
