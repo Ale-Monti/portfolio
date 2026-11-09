@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="auto">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Brief progetto – Alessandro Monticelli</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=63c426c1">
+  <link rel="stylesheet" href="brief.css?v=1">
+</head>
+<body class="brief-page">
+
+  <div id="cursor" class="cursor" aria-hidden="true"></div>
+
+  <a class="skip-link" href="#briefForm">Vai al modulo</a>
+
+  <!-- Nav: solo logo e tema (pagina solo in italiano) -->
+  <nav class="nav">
+    <a href="index.html" class="logo-link" aria-label="Home">
+      <img src="logo.png" alt="AM" class="logo-img" width="34">
+    </a>
+    <div class="nav-right">
+      <div class="theme-dropdown">
+        <button id="themeToggle" class="nav-control" aria-label="Cambia tema">Auto</button>
+        <div class="theme-menu" id="themeMenu" hidden>
+          <button class="theme-option" data-theme="light">Light</button>
+          <button class="theme-option" data-theme="dark">Dark</button>
+          <button class="theme-option" data-theme="auto">Auto</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Barra di avanzamento sotto la nav -->
+  <div class="brief-progress" role="progressbar" aria-label="Avanzamento del brief" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1" aria-valuetext="Step 1 di 7: Il cliente">
+    <span class="brief-progress-fill" id="progressFill"></span>
+  </div>
+
+  <main class="brief-main">
+
+    <header class="brief-hero">
+      <span class="about-label">Brief progetto</span>
+      <h1 class="about-headline">Raccontami il tuo progetto.</h1>
+      <p class="brief-intro">
+        Bastano una decina di minuti. Sono obbligatori solo i campi con <span class="req-inline">*</span>,
+        il resto aiuta a capire meglio cosa ti serve. I progressi restano salvati su questo dispositivo.
+      </p>
+    </header>
+
+    <div class="brief-layout" id="briefLayout">
+
+      <!-- Elenco step (desktop) -->
+      <aside class="brief-aside">
+        <ol class="step-list" id="stepList">
+          <li><button type="button" data-goto="1"><span class="step-num">01</span>Il cliente</button></li>
+          <li><button type="button" data-goto="2"><span class="step-num">02</span>Obiettivo</button></li>
+          <li><button type="button" data-goto="3"><span class="step-num">03</span>Contenuti</button></li>
+          <li><button type="button" data-goto="4"><span class="step-num">04</span>Stile</button></li>
+          <li><button type="button" data-goto="5"><span class="step-num">05</span>Servizi extra</button></li>
+          <li><button type="button" data-goto="6"><span class="step-num">06</span>Pratica</button></li>
+          <li><button type="button" data-goto="7"><span class="step-num">07</span>Riepilogo</button></li>
+        </ol>
+      </aside>
+
+      <div class="brief-content">
+
+        <div class="brief-notice" id="draftNotice" hidden>
+          <p>Ho ripristinato la bozza che avevi lasciato a metà.</p>
+          <p class="brief-notice-files" id="draftFiles" hidden></p>
+          <button type="button" class="link-btn" id="resetDraft">Ricomincia da zero</button>
+        </div>
+
+        <p class="step-counter" id="stepCounter" aria-hidden="true">Step 1 di 7 · Il cliente</p>
+
+        <form id="briefForm" novalidate>
+
+          <!-- Honeypot: deve restare vuoto -->
+          <div class="hp" aria-hidden="true">
+            <label for="f-website-url">Lascia vuoto questo campo</label>
+            <input id="f-website-url" name="website_url" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <!-- ─── STEP 1 · CLIENTE ─────────────────────────────── -->
+          <section class="step" data-step="1" data-title="Il cliente" aria-labelledby="s1-title">
+            <h2 class="step-title" id="s1-title" tabindex="-1">Il cliente</h2>
+            <p class="step-lead">Chi sei e di cosa si occupa la tua attività.</p>
+
+            <div class="grid-2">
+              <div class="field" data-label="Nome e cognome">
+                <label for="f-nome">Nome e cognome <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-nome" name="nome" type="text" autocomplete="name" maxlength="120" required>
+              </div>
+              <div class="field" data-label="Attività / brand">
+                <label for="f-attivita">Attività / brand <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-attivita" name="attivita" type="text" autocomplete="organization" maxlength="120" required>
+              </div>
+              <div class="field" data-label="Email">
+                <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="160" required>
+              </div>
+              <div class="field" data-label="Telefono">
+                <label for="f-telefono">Telefono</label>
+                <input id="f-telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" data-pattern="phone">
+              </div>
+              <div class="field" data-label="Settore">
+                <label for="f-settore">Settore <span class="req" aria-hidden="true">*</span></label>
+                <div class="select-wrap">
+                  <select id="f-settore" name="settore" required>
+                    <option value="">Seleziona…</option>
+                    <option value="ristorazione">Ristorazione / bar</option>
+                    <option value="ospitalita">Hotel / B&amp;B / ospitalità</option>
+                    <option value="negozio">Negozio / commercio</option>
+                    <option value="benessere">Benessere / estetica</option>
+                    <option value="salute">Salute / studio medico</option>
+                    <option value="professionista">Libero professionista / studio</option>
+                    <option value="artigianato">Artigianato / produzione</option>
+                    <option value="casa">Casa / edilizia / impianti</option>
+                    <option value="sport">Sport / fitness</option>
+                    <option value="eventi">Eventi / intrattenimento</option>
+                    <option value="associazione">Associazione / no profit</option>
+                    <option value="altro">Altro</option>
+                  </select>
+                </div>
+                <div class="reveal" data-show-when="settore=altro">
+                  <div class="reveal-inner">
+                    <label for="f-settore-altro" class="sub-label">Quale settore? <span class="req" aria-hidden="true">*</span></label>
+                    <input id="f-settore-altro" name="settore_altro" type="text" maxlength="80" data-required-when="settore=altro">
+                  </div>
+                </div>
+              </div>
+              <div class="field" data-label="Sito o social attuali">
+                <label for="f-sito">Sito o social attuali</label>
+                <input id="f-sito" name="sito_attuale" type="text" inputmode="url" maxlength="300" placeholder="es. instagram.com/tuaattivita">
+              </div>
+            </div>
+
+            <div class="field" data-label="Descrizione dell'attività">
+              <label for="f-descrizione">Descrivi brevemente la tua attività <span class="req" aria-hidden="true">*</span></label>
+              <textarea id="f-descrizione" name="descrizione" rows="4" maxlength="1500" required placeholder="Cosa fai, da quanto tempo, cosa ti distingue…"></textarea>
+            </div>
+
+            <fieldset class="field field-group-plain" data-label="Indirizzo dell'attività" id="addressGroup">
+              <legend>Indirizzo dell'attività</legend>
+
+              <div class="reveal" data-show-when="extra=foto">
+                <div class="reveal-inner">
+                  <p class="callout" id="addressCallout">
+                    <strong>Serve l'indirizzo completo.</strong>
+                    Hai chiesto il servizio fotografico sul posto (step 5): mi serve sapere dove venire a scattare.
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid-address">
+                <div class="field field-nested addr-via" data-label="Via">
+                  <label for="f-via">Via / piazza <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-via" name="via" type="text" autocomplete="address-line1" maxlength="160" data-required-when="extra=foto">
+                </div>
+                <div class="field field-nested addr-civico" data-label="Numero civico">
+                  <label for="f-civico">N° civico <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-civico" name="civico" type="text" maxlength="12" data-required-when="extra=foto">
+                </div>
+                <div class="field field-nested addr-cap" data-label="CAP">
+                  <label for="f-cap">CAP <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-cap" name="cap" type="text" autocomplete="postal-code" inputmode="numeric" maxlength="5" data-pattern="cap" data-required-when="extra=foto">
+                </div>
+                <div class="field field-nested addr-citta" data-label="Città">
+                  <label for="f-citta">Città <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-citta" name="citta" type="text" autocomplete="address-level2" maxlength="80" required>
+                </div>
+              </div>
+            </fieldset>
+          </section>
+
+          <!-- ─── STEP 2 · OBIETTIVO ───────────────────────────── -->
+          <section class="step" data-step="2" data-title="Obiettivo" aria-labelledby="s2-title" hidden>
+            <h2 class="step-title" id="s2-title" tabindex="-1">Obiettivo</h2>
+            <p class="step-lead">Cosa deve fare il sito per te, prima di tutto.</p>
+
+            <fieldset class="field" data-label="Obiettivo principale" data-required>
+              <legend>Obiettivo principale del sito <span class="req" aria-hidden="true">*</span></legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="obiettivo" value="trovare"><span>Farsi trovare online</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="contatti"><span>Ricevere contatti e richieste</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="portfolio"><span>Mostrare i miei lavori</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="prenotazioni"><span>Ricevere prenotazioni</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="vendere"><span>Vendere online</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="altro"><span>Altro</span></label>
+              </div>
+              <div class="reveal" data-show-when="obiettivo=altro">
+                <div class="reveal-inner">
+                  <label for="f-obiettivo-altro" class="sub-label">Qual è l'obiettivo? <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-obiettivo-altro" name="obiettivo_altro" type="text" maxlength="200" data-required-when="obiettivo=altro">
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="field" data-label="Pubblico target">
+              <label for="f-pubblico">A chi ti rivolgi?</label>
+              <textarea id="f-pubblico" name="pubblico" rows="3" maxlength="1000" placeholder="es. famiglie in vacanza, aziende della zona, giovani 20–35…"></textarea>
+            </div>
+
+            <div class="field" data-label="Call to action principale">
+              <label for="f-cta">Cosa vorresti che facesse chi visita il sito?</label>
+              <input id="f-cta" name="cta" type="text" maxlength="200" placeholder="es. chiamare, scrivere su WhatsApp, prenotare un tavolo…">
+            </div>
+          </section>
+
+          <!-- ─── STEP 3 · CONTENUTI ───────────────────────────── -->
+          <section class="step" data-step="3" data-title="Contenuti" aria-labelledby="s3-title" hidden>
+            <h2 class="step-title" id="s3-title" tabindex="-1">Contenuti</h2>
+            <p class="step-lead">Quali pagine o sezioni servono, e cosa hai già pronto.</p>
+
+            <fieldset class="field" data-label="Sezioni must-have" data-required>
+              <legend>Sezioni indispensabili <span class="req" aria-hidden="true">*</span></legend>
+              <p class="hint" id="sezioni-hint">Seleziona tutte quelle che servono.</p>
+              <div class="choices" aria-describedby="sezioni-hint">
+                <label class="choice"><input type="checkbox" name="sezioni" value="home"><span>Home</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="chi_siamo"><span>Chi siamo</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="servizi"><span>Servizi</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="portfolio"><span>Portfolio / gallery</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="menu"><span>Menu / listino</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="recensioni"><span>Recensioni</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="faq"><span>FAQ</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="contatti"><span>Contatti</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="blog"><span>Blog / news</span></label>
+                <label class="choice"><input type="checkbox" name="sezioni" value="altro"><span>Altro</span></label>
+              </div>
+              <div class="reveal" data-show-when="sezioni=altro">
+                <div class="reveal-inner">
+                  <label for="f-sezioni-altro" class="sub-label">Quali altre sezioni? <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-sezioni-altro" name="sezioni_altro" type="text" maxlength="200" data-required-when="sezioni=altro">
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="field" data-label="Sezioni facoltative">
+              <label for="f-sezioni-facoltative">Sezioni facoltative</label>
+              <textarea id="f-sezioni-facoltative" name="sezioni_facoltative" rows="2" maxlength="800" placeholder="Sezioni che ti piacerebbe avere, ma solo se c'è spazio."></textarea>
+            </div>
+
+            <fieldset class="field" data-label="Lingue del sito">
+              <legend>In che lingue dev'essere il sito?</legend>
+              <div class="choices">
+                <label class="choice"><input type="checkbox" name="lingue" value="it"><span>Italiano</span></label>
+                <label class="choice"><input type="checkbox" name="lingue" value="en"><span>Inglese</span></label>
+                <label class="choice"><input type="checkbox" name="lingue" value="de"><span>Tedesco</span></label>
+                <label class="choice"><input type="checkbox" name="lingue" value="fr"><span>Francese</span></label>
+                <label class="choice"><input type="checkbox" name="lingue" value="es"><span>Spagnolo</span></label>
+                <label class="choice"><input type="checkbox" name="lingue" value="altro"><span>Altra</span></label>
+              </div>
+              <div class="reveal" data-show-when="lingue=altro">
+                <div class="reveal-inner">
+                  <label for="f-lingue-altro" class="sub-label">Quali?</label>
+                  <input id="f-lingue-altro" name="lingue_altro" type="text" maxlength="120">
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="grid-3">
+              <fieldset class="field" data-label="Testi già pronti">
+                <legend>Hai già i testi?</legend>
+                <div class="choices choices-tight">
+                  <label class="choice"><input type="radio" name="ha_testi" value="si"><span>Sì</span></label>
+                  <label class="choice"><input type="radio" name="ha_testi" value="in_parte"><span>In parte</span></label>
+                  <label class="choice"><input type="radio" name="ha_testi" value="no"><span>No</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="field" data-label="Foto già pronte">
+                <legend>Hai già le foto?</legend>
+                <div class="choices choices-tight">
+                  <label class="choice"><input type="radio" name="ha_foto" value="si"><span>Sì</span></label>
+                  <label class="choice"><input type="radio" name="ha_foto" value="in_parte"><span>In parte</span></label>
+                  <label class="choice"><input type="radio" name="ha_foto" value="no"><span>No</span></label>
+                </div>
+              </fieldset>
+              <fieldset class="field" data-label="Logo esistente">
+                <legend>Hai già un logo?</legend>
+                <div class="choices choices-tight">
+                  <label class="choice"><input type="radio" name="ha_logo" value="si"><span>Sì</span></label>
+                  <label class="choice"><input type="radio" name="ha_logo" value="in_parte"><span>Da sistemare</span></label>
+                  <label class="choice"><input type="radio" name="ha_logo" value="no"><span>No</span></label>
+                </div>
+              </fieldset>
+            </div>
+          </section>
+
+          <!-- ─── STEP 4 · STILE ───────────────────────────────── -->
+          <section class="step" data-step="4" data-title="Stile" aria-labelledby="s4-title" hidden>
+            <h2 class="step-title" id="s4-title" tabindex="-1">Stile</h2>
+            <p class="step-lead">Cosa ti piace, cosa no. Anche pochi esempi aiutano tantissimo.</p>
+
+            <fieldset class="field" data-label="Siti di ispirazione" id="inspoField">
+              <legend>Siti di ispirazione</legend>
+              <p class="hint">Fino a 5 siti, anche di settori diversi dal tuo. Dimmi cosa ti piace di ciascuno.</p>
+              <ol class="inspo-list" id="inspoList"></ol>
+              <button type="button" class="btn btn-ghost btn-small" id="addInspo">+ Aggiungi un sito</button>
+            </fieldset>
+
+            <fieldset class="field" data-label="Aggettivi per lo stile">
+              <legend>Come dovrebbe sembrare il sito?</legend>
+              <div class="choices">
+                <label class="choice"><input type="checkbox" name="aggettivi" value="minimal"><span>Minimal</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="elegante"><span>Elegante</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="accogliente"><span>Accogliente</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="moderno"><span>Moderno</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="classico"><span>Classico</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="audace"><span>Audace</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="giocoso"><span>Giocoso</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="naturale"><span>Naturale</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="lussuoso"><span>Lussuoso</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="artigianale"><span>Artigianale</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="tecnico"><span>Tecnico</span></label>
+                <label class="choice"><input type="checkbox" name="aggettivi" value="colorato"><span>Colorato</span></label>
+              </div>
+              <label for="f-aggettivi-altri" class="sub-label">Altre parole?</label>
+              <input id="f-aggettivi-altri" name="aggettivi_altri" type="text" maxlength="200" placeholder="es. luminoso, mediterraneo…">
+            </fieldset>
+
+            <div class="grid-2">
+              <div class="field" data-label="Colori preferiti">
+                <label for="f-colori-si">Colori preferiti</label>
+                <input id="f-colori-si" name="colori_preferiti" type="text" maxlength="200" placeholder="es. verde salvia, sabbia">
+              </div>
+              <div class="field" data-label="Colori da evitare">
+                <label for="f-colori-no">Colori da evitare</label>
+                <input id="f-colori-no" name="colori_evitare" type="text" maxlength="200" placeholder="es. rosso, fluo">
+              </div>
+            </div>
+
+            <div class="field" data-label="Reference visive e logo" id="filesField">
+              <span class="field-label" id="files-label">Reference visive e logo esistente</span>
+              <p class="hint" id="files-hint">Immagini che ti piacciono, foto del locale, il logo attuale. Fino a 8 file JPG, PNG, WEBP, PDF o SVG, massimo 5 MB ciascuno.</p>
+              <div class="dropzone" id="dropzone">
+                <input id="f-files" type="file" class="sr-only" multiple
+                       accept=".jpg,.jpeg,.png,.webp,.pdf,.svg,image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"
+                       aria-labelledby="files-label" aria-describedby="files-hint files-count">
+                <svg class="dropzone-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+                <p>Trascina qui i file oppure <label for="f-files" class="link-btn">sfoglia</label></p>
+                <p class="dropzone-count" id="files-count" aria-live="polite">0 di 8 file</p>
+              </div>
+              <ul class="file-list" id="fileList"></ul>
+            </div>
+          </section>
+
+          <!-- ─── STEP 5 · SERVIZI EXTRA ───────────────────────── -->
+          <section class="step" data-step="5" data-title="Servizi extra" aria-labelledby="s5-title" hidden>
+            <h2 class="step-title" id="s5-title" tabindex="-1">Servizi extra</h2>
+            <p class="step-lead">Oltre al sito, ti serve qualcos'altro? È tutto facoltativo: seleziona quello che ti interessa e ne parliamo.</p>
+
+            <fieldset class="field" data-label="Servizi selezionati">
+              <legend class="sr-only">Servizi extra</legend>
+              <div class="services">
+                <label class="service"><input type="checkbox" name="extra" value="logo">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M8.5 15.5 12 8l3.5 7.5"/></svg>
+                    <strong>Logo</strong><span>Un logo nuovo o il restyling di quello che hai.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="brand">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M4 17h16M4 20.5h10"/></svg>
+                    <strong>Mini brand identity</strong><span>Palette, font e linee guida essenziali.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="foto">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                    <strong>Servizio fotografico sul posto</strong><span>Vengo da te a fotografare locale, prodotti o persone.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="biglietti">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M7 11h6M7 14h4"/></svg>
+                    <strong>Biglietti da visita</strong><span>Progettati in coordinato con il sito.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="stampati">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 13h6M9 16h4"/></svg>
+                    <strong>Materiale stampato</strong><span>Volantini, menu, listini e simili.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="social">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.5" cy="7.5" r=".6"/></svg>
+                    <strong>Kit grafico social</strong><span>Immagine profilo, copertine e template. Non include la gestione dei social.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="copy">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg>
+                    <strong>Testi del sito</strong><span>Scrivo io i testi delle pagine (copywriting).</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="gbp">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+                    <strong>Scheda Google Business</strong><span>Creazione o ottimizzazione della scheda su Google.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="qr">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/></svg>
+                    <strong>QR code personalizzato</strong><span>Con i tuoi colori, per menu, vetrine o stampati.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="firma">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>
+                    <strong>Firma email</strong><span>Coordinata con il sito e il logo.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="traduzioni">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+                    <strong>Traduzioni</strong><span>I testi del sito in altre lingue.</span>
+                  </span></label>
+                <label class="service"><input type="checkbox" name="extra" value="supporto">
+                  <span class="service-body">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1"/><rect x="17" y="13" width="4" height="6" rx="1"/></svg>
+                    <strong>Supporto dopo la consegna</strong><span>Modifiche e aggiornamenti quando ti servono.</span>
+                  </span></label>
+              </div>
+            </fieldset>
+
+            <!-- Dettagli per ogni servizio selezionato -->
+            <div class="extra-details">
+              <div class="reveal" data-show-when="extra=logo"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Logo</h3>
+                <fieldset class="field field-nested" data-label="Logo">
+                  <legend class="sub-label">Cosa ti serve?</legend>
+                  <div class="choices choices-tight">
+                    <label class="choice"><input type="radio" name="logo_tipo" value="nuovo"><span>Un logo nuovo</span></label>
+                    <label class="choice"><input type="radio" name="logo_tipo" value="restyling"><span>Restyling di quello esistente</span></label>
+                  </div>
+                </fieldset>
+                <div class="field field-nested" data-label="Note sul logo">
+                  <label for="f-note-logo" class="sub-label">Note</label>
+                  <textarea id="f-note-logo" name="note_logo" rows="2" maxlength="800"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=brand"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Mini brand identity</h3>
+                <div class="field field-nested" data-label="Note sulla brand identity">
+                  <label for="f-note-brand" class="sub-label">Note</label>
+                  <textarea id="f-note-brand" name="note_brand" rows="2" maxlength="800"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=foto"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Servizio fotografico sul posto</h3>
+                <p class="callout callout-small">Ti chiederò l'indirizzo completo dell'attività allo step 1.</p>
+                <fieldset class="field field-nested" data-label="Cosa fotografare">
+                  <legend class="sub-label">Cosa fotografare?</legend>
+                  <div class="choices choices-tight">
+                    <label class="choice"><input type="checkbox" name="foto_soggetti" value="locale"><span>Locale</span></label>
+                    <label class="choice"><input type="checkbox" name="foto_soggetti" value="prodotti"><span>Prodotti</span></label>
+                    <label class="choice"><input type="checkbox" name="foto_soggetti" value="staff"><span>Staff</span></label>
+                    <label class="choice"><input type="checkbox" name="foto_soggetti" value="piatti"><span>Piatti</span></label>
+                    <label class="choice"><input type="checkbox" name="foto_soggetti" value="altro"><span>Altro</span></label>
+                  </div>
+                  <div class="reveal" data-show-when="foto_soggetti=altro">
+                    <div class="reveal-inner">
+                      <label for="f-foto-altro" class="sub-label">Cos'altro?</label>
+                      <input id="f-foto-altro" name="foto_soggetti_altro" type="text" maxlength="200">
+                    </div>
+                  </div>
+                </fieldset>
+                <div class="field field-nested" data-label="Disponibilità indicativa">
+                  <label for="f-foto-disp" class="sub-label">Disponibilità indicativa</label>
+                  <input id="f-foto-disp" name="foto_disponibilita" type="text" maxlength="200" placeholder="es. mattine infrasettimanali, da marzo">
+                </div>
+                <div class="field field-nested" data-label="Note sul servizio fotografico">
+                  <label for="f-note-foto" class="sub-label">Note</label>
+                  <textarea id="f-note-foto" name="note_foto" rows="2" maxlength="800"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=biglietti"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Biglietti da visita</h3>
+                <div class="field field-nested" data-label="Note sui biglietti">
+                  <label for="f-note-biglietti" class="sub-label">Note</label>
+                  <textarea id="f-note-biglietti" name="note_biglietti" rows="2" maxlength="800" placeholder="es. quante persone, fronte/retro…"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=stampati"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Materiale stampato</h3>
+                <div class="field field-nested" data-label="Cosa stampare">
+                  <label for="f-stampati-cosa" class="sub-label">Cosa ti serve?</label>
+                  <input id="f-stampati-cosa" name="stampati_cosa" type="text" maxlength="300" placeholder="es. menu A4, volantino A5 per l'apertura">
+                </div>
+                <div class="field field-nested" data-label="Note sugli stampati">
+                  <label for="f-note-stampati" class="sub-label">Note</label>
+                  <textarea id="f-note-stampati" name="note_stampati" rows="2" maxlength="800"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=social"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Kit grafico social</h3>
+                <div class="field field-nested" data-label="Note sul kit social">
+                  <label for="f-note-social" class="sub-label">Note</label>
+                  <textarea id="f-note-social" name="note_social" rows="2" maxlength="800" placeholder="es. quali social usi"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=copy"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Testi del sito</h3>
+                <div class="field field-nested" data-label="Note sui testi">
+                  <label for="f-note-copy" class="sub-label">Note</label>
+                  <textarea id="f-note-copy" name="note_copy" rows="2" maxlength="800" placeholder="es. tono di voce, parole da usare o evitare"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=gbp"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Scheda Google Business</h3>
+                <div class="field field-nested" data-label="Note su Google Business">
+                  <label for="f-note-gbp" class="sub-label">Note</label>
+                  <textarea id="f-note-gbp" name="note_gbp" rows="2" maxlength="800" placeholder="es. la scheda esiste già?"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=qr"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">QR code personalizzato</h3>
+                <div class="field field-nested" data-label="Note sul QR code">
+                  <label for="f-note-qr" class="sub-label">Note</label>
+                  <textarea id="f-note-qr" name="note_qr" rows="2" maxlength="800" placeholder="es. a cosa deve rimandare"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=firma"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Firma email</h3>
+                <div class="field field-nested" data-label="Note sulla firma">
+                  <label for="f-note-firma" class="sub-label">Note</label>
+                  <textarea id="f-note-firma" name="note_firma" rows="2" maxlength="800" placeholder="es. per quante persone"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=traduzioni"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Traduzioni</h3>
+                <div class="field field-nested" data-label="Lingue delle traduzioni">
+                  <label for="f-traduzioni-lingue" class="sub-label">In quali lingue?</label>
+                  <input id="f-traduzioni-lingue" name="traduzioni_lingue" type="text" maxlength="200">
+                </div>
+                <div class="field field-nested" data-label="Note sulle traduzioni">
+                  <label for="f-note-traduzioni" class="sub-label">Note</label>
+                  <textarea id="f-note-traduzioni" name="note_traduzioni" rows="2" maxlength="800"></textarea>
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="extra=supporto"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Supporto dopo la consegna</h3>
+                <div class="field field-nested" data-label="Note sul supporto">
+                  <label for="f-note-supporto" class="sub-label">Note</label>
+                  <textarea id="f-note-supporto" name="note_supporto" rows="2" maxlength="800" placeholder="es. ogni quanto pensi di aggiornare il sito"></textarea>
+                </div>
+              </div></div></div>
+            </div>
+
+            <div class="field" data-label="Altro di cui avresti bisogno">
+              <label for="f-altro-bisogno">Altro di cui avresti bisogno?</label>
+              <textarea id="f-altro-bisogno" name="altro_bisogno" rows="3" maxlength="1500"></textarea>
+            </div>
+          </section>
+
+          <!-- ─── STEP 6 · PRATICA ─────────────────────────────── -->
+          <section class="step" data-step="6" data-title="Pratica" aria-labelledby="s6-title" hidden>
+            <h2 class="step-title" id="s6-title" tabindex="-1">Pratica</h2>
+            <p class="step-lead">Tempi, budget e qualche dettaglio tecnico.</p>
+
+            <fieldset class="field" data-label="Tempistiche" data-required>
+              <legend>Entro quando ti serve il sito? <span class="req" aria-hidden="true">*</span></legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="tempistiche" value="asap"><span>Il prima possibile</span></label>
+                <label class="choice"><input type="radio" name="tempistiche" value="1mese"><span>Entro 1 mese</span></label>
+                <label class="choice"><input type="radio" name="tempistiche" value="3mesi"><span>Entro 3 mesi</span></label>
+                <label class="choice"><input type="radio" name="tempistiche" value="flessibile"><span>Nessuna fretta</span></label>
+                <label class="choice"><input type="radio" name="tempistiche" value="data"><span>Ho una data precisa</span></label>
+              </div>
+              <div class="reveal" data-show-when="tempistiche=data">
+                <div class="reveal-inner">
+                  <label for="f-scadenza" class="sub-label">Data <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-scadenza" name="scadenza_data" type="date" data-required-when="tempistiche=data" data-pattern="future-date">
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="field" data-label="Budget indicativo">
+              <legend>Budget indicativo</legend>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="budget" value="b1"><span>Meno di 1.000 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b2"><span>1.000 – 2.500 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b3"><span>2.500 – 5.000 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b4"><span>Oltre 5.000 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="nd"><span>Preferisco parlarne</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="field" data-label="Dominio">
+              <legend>Hai già un dominio (es. tuaattivita.it)?</legend>
+              <div class="choices choices-tight">
+                <label class="choice"><input type="radio" name="dominio" value="si"><span>Sì</span></label>
+                <label class="choice"><input type="radio" name="dominio" value="no"><span>No</span></label>
+                <label class="choice"><input type="radio" name="dominio" value="non_so"><span>Non so</span></label>
+              </div>
+              <div class="reveal" data-show-when="dominio=si">
+                <div class="reveal-inner">
+                  <label for="f-dominio-nome" class="sub-label">Quale? <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-dominio-nome" name="dominio_nome" type="text" inputmode="url" maxlength="120" data-required-when="dominio=si" placeholder="tuaattivita.it">
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="field" data-label="Funzionalità extra">
+              <legend>Funzionalità del sito</legend>
+              <div class="choices">
+                <label class="choice"><input type="checkbox" name="funzionalita" value="form"><span>Form contatti</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="mappa"><span>Mappa</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="prenotazioni"><span>Prenotazioni</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="newsletter"><span>Newsletter</span></label>
+              </div>
+              <label for="f-funz-altro" class="sub-label">Altro?</label>
+              <input id="f-funz-altro" name="funzionalita_altro" type="text" maxlength="200" placeholder="es. area riservata, chat WhatsApp">
+            </fieldset>
+
+            <div class="field" data-label="Note">
+              <label for="f-note">Note libere</label>
+              <textarea id="f-note" name="note" rows="4" maxlength="3000" placeholder="Qualsiasi cosa non abbia trovato posto nelle domande."></textarea>
+            </div>
+          </section>
+
+          <!-- ─── STEP 7 · RIEPILOGO ───────────────────────────── -->
+          <section class="step" data-step="7" data-title="Riepilogo" aria-labelledby="s7-title" hidden>
+            <h2 class="step-title" id="s7-title" tabindex="-1">Riepilogo</h2>
+            <p class="step-lead">Controlla che sia tutto giusto. Puoi tornare a modificare qualsiasi step.</p>
+
+            <div class="review" id="review"></div>
+
+            <fieldset class="field field-privacy" data-label="Privacy">
+              <legend class="sr-only">Privacy</legend>
+              <label class="check">
+                <input type="checkbox" name="privacy" value="ok" id="f-privacy" required>
+                <span>Ho letto l'<a href="privacy.html" target="_blank" rel="noopener">informativa sulla privacy</a> e acconsento al trattamento dei dati per ricevere una proposta. <span class="req" aria-hidden="true">*</span></span>
+              </label>
+            </fieldset>
+
+            <!-- Site key Turnstile: sostituisci il segnaposto (vedi README_BRIEF.md).
+                 In locale (localhost) brief.js usa in automatico la chiave di test di Cloudflare. -->
+            <div class="turnstile-wrap" id="turnstileBox" data-sitekey="INSERISCI_LA_SITE_KEY_TURNSTILE"></div>
+
+            <div class="form-error" id="formError" role="alert" hidden></div>
+          </section>
+
+          <!-- Navigazione step -->
+          <div class="brief-actions">
+            <button type="button" class="btn btn-ghost" id="prevBtn">← Indietro</button>
+            <button type="button" class="btn btn-ghost" id="reviewBtn" hidden>Vai al riepilogo</button>
+            <button type="submit" class="btn btn-primary" id="nextBtn">Avanti →</button>
+          </div>
+        </form>
+
+        <!-- Conferma dopo l'invio -->
+        <section class="brief-done" id="briefDone" hidden tabindex="-1" aria-labelledby="done-title">
+          <span class="about-label">Brief inviato</span>
+          <h2 class="done-title" id="done-title">Grazie, ho ricevuto tutto.</h2>
+          <p class="done-text" id="doneText">Leggo il brief con calma e ti ricontatto nei prossimi giorni. Intanto ti ho mandato un'email di conferma.</p>
+          <a href="index.html" class="btn btn-ghost">Guarda i miei lavori</a>
+        </section>
+
+        <p class="sr-only" id="live" aria-live="polite"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span>&#169; <span id="footerYear"></span></span>
+    <a href="privacy.html">Privacy</a>
+  </footer>
+
+  <template id="inspoTemplate">
+    <li class="inspo-row">
+      <div class="field field-nested">
+        <label class="sub-label">Sito <span class="inspo-n"></span></label>
+        <input type="text" inputmode="url" maxlength="300" data-inspo="url" placeholder="https://" data-pattern="url">
+      </div>
+      <div class="field field-nested">
+        <label class="sub-label">Cosa ti piace?</label>
+        <input type="text" maxlength="300" data-inspo="nota">
+      </div>
+      <button type="button" class="icon-btn inspo-remove">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </li>
+  </template>
+
+  <script src="script.js?v=63c426c1"></script>
+  <script src="brief.js?v=1"></script>
+</body>
+</html>
