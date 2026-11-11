@@ -64,9 +64,9 @@ const L = {
   tempistiche: {
     asap: 'Il prima possibile', '1mese': 'Entro 1 mese', '3mesi': 'Entro 3 mesi', flessibile: 'Nessuna fretta', data: 'Data precisa',
   },
-  budget: { b1: 'Meno di 1.000 €', b2: '1.000 – 2.500 €', b3: '2.500 – 5.000 €', b4: 'Oltre 5.000 €', nd: 'Preferisce parlarne' },
+  budget: { b1: '200 €', b2: '200 – 300 €', b3: '300 – 500 €', b4: '500 – 700 €', b5: '700 – 1.000 €', b6: '1.000 € o più', nd: 'Preferisce parlarne' },
   dominio: { si: 'Sì', no: 'No', non_so: 'Non sa' },
-  funzionalita: { form: 'Form contatti', mappa: 'Mappa', prenotazioni: 'Prenotazioni', newsletter: 'Newsletter' },
+  funzionalita: { prenotazioni: 'Prenotazioni', ecommerce: 'Vendita online (e-commerce)', whatsapp: 'Chat WhatsApp', newsletter: 'Newsletter', area_riservata: 'Area riservata' },
 };
 
 // Servizi che pesano su tempi e preventivo: evidenziati nell'email
@@ -370,6 +370,9 @@ function buildMarkdown(b, d, ctx) {
   out.push('## Sezioni facoltative');
   out.push(para(b.sezioni_facoltative));
   out.push('');
+  out.push('## Funzionalità');
+  out.push(d.funzionalita.length ? d.funzionalita.map(f => `- ${oneLine(f)}`).join('\n') : NA);
+  out.push('');
   out.push(item('Lingue del sito', d.lingue.join(', ')));
   out.push(item('Testi già pronti', lab(L.possesso, b.ha_testi)));
   out.push(item('Foto già pronte', lab(L.possesso, b.ha_foto)));
@@ -397,8 +400,7 @@ function buildMarkdown(b, d, ctx) {
   }
   out.push('');
 
-  out.push('## Funzionalità');
-  out.push(item('Funzionalità richieste', d.funzionalita.join(', ')));
+  out.push('## Dominio');
   out.push(item('Dominio già posseduto', b.dominio ? `${lab(L.dominio, b.dominio)}${b.dominio_nome ? ` (${b.dominio_nome})` : ''}` : ''));
   out.push('');
 
@@ -445,7 +447,7 @@ function buildMarkdown(b, d, ctx) {
   out.push('3. **Obiettivo e CTA:** ogni scelta (gerarchia, posizione dei pulsanti, contenuti in evidenza) deve servire l\'obiettivo principale e la call to action indicata.');
   out.push('4. **Stile:** segui aggettivi e colori indicati ed evita i colori da escludere. Usa i siti di ispirazione e le reference visive per capire il gusto del cliente, senza copiarli.');
   out.push('5. **Qualità:** mobile-first e responsive, HTML semantico, accessibile (contrasti AA, testi alternativi, navigazione da tastiera), SEO di base (`title`, meta description, `lang`), immagini leggere.');
-  out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsante prenotazioni). Niente backend.');
+  out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsanti per prenotazioni o WhatsApp, carrello e-commerce come segnaposto). Niente backend.');
   out.push(`7. **Lingue:** crea la bozza in ${mainLang}. Se sono richieste altre lingue, predisponi solo il selettore e la struttura, senza tradurre.`);
   out.push('8. **Non inventare informazioni.** Dove manca un dato (orari, prezzi, indirizzo, numeri, nomi, recensioni, servizi specifici…) inserisci un segnaposto evidente come `[DA FORNIRE: orari di apertura]` invece di inventarlo.');
   if (copy) {
@@ -558,7 +560,6 @@ function buildOwnerEmail(b, d, ctx) {
     `<div style="font-family:${DISPLAY};font-size:24px;line-height:28px;font-weight:700;color:${C.ink};margin:0 0 14px;">${esc(d.scadenza)}</div>`,
     kv('Budget indicativo', lab(L.budget, b.budget) || 'Non indicato'),
     kv('Dominio', b.dominio ? `${lab(L.dominio, b.dominio)}${b.dominio_nome ? ` · ${b.dominio_nome}` : ''}` : 'Non indicato'),
-    kv('Funzionalità', d.funzionalita.join(', ') || 'Nessuna indicata'),
   ].join('');
   parts.push(row(card('Cliente', contatti), card('Tempistiche e budget', tempi)));
 
@@ -595,6 +596,7 @@ function buildOwnerEmail(b, d, ctx) {
   const sezioni = [
     chips(d.sezioni),
     kv('Facoltative', b.sezioni_facoltative),
+    kv('Funzionalità', d.funzionalita.join(', ') || 'Nessuna indicata'),
     kv('Lingue', d.lingue.join(', ') || 'Non indicate'),
     kv('Materiali pronti', `Testi: ${lab(L.possesso, b.ha_testi) || '–'} · Foto: ${lab(L.possesso, b.ha_foto) || '–'} · Logo: ${lab(L.logo, b.ha_logo) || '–'}`),
   ].join('');
@@ -647,8 +649,8 @@ function buildOwnerEmail(b, d, ctx) {
 
   // Piede
   parts.push(row(`<td colspan="2" style="padding:14px 8px 0;font-family:${FONT};font-size:12px;line-height:18px;color:${C.muted};">
-    In allegato <strong>brief.md</strong>, pronto per Claude Code.<br>
-    Cartella R2: <code>${esc(ctx.folder)}</code> · ${link(ctx.mdUrl, 'brief.md')} · ${link(ctx.jsonUrl, 'brief.json')}<br>
+    In allegato <strong>${esc(ctx.mdName)}</strong>, pronto per Claude Code.<br>
+    Cartella R2: <code>${esc(ctx.folder)}</code> · ${link(ctx.mdUrl, ctx.mdName)} · ${link(ctx.jsonUrl, 'brief.json')}<br>
     Rispondi a questa email per scrivere direttamente a ${esc(b.nome)}.
   </td>`));
 
@@ -831,10 +833,12 @@ export async function onRequestPost({ request, env }) {
       files.push({ name, key, original: p.original, ext: p.ext, type: p.type, size: p.size, url: await signUrl(origin, key) });
     }
 
-    const mdKey = `${folder}/brief.md`;
+    // Nome univoco: brief-AAAA-MM-GG-slug-attivita.md
+    const mdName = `brief-${folder}.md`;
+    const mdKey = `${folder}/${mdName}`;
     const jsonKey = `${folder}/brief.json`;
     const ctx = {
-      date, folder, files,
+      date, folder, files, mdName,
       mdUrl: await signUrl(origin, mdKey),
       jsonUrl: await signUrl(origin, jsonKey),
     };
@@ -865,7 +869,7 @@ export async function onRequestPost({ request, env }) {
         subject: `Nuovo brief – ${b.attivita} – scadenza ${d.scadenza}`,
         html: buildOwnerEmail(b, d, ctx),
         text: markdown,
-        attachments: [{ filename: 'brief.md', content: base64(markdown) }],
+        attachments: [{ filename: mdName, content: base64(markdown) }],
       }, `brief-owner-${folder}`);
     } catch (err) {
       console.error('brief: invio email al titolare fallito', folder, err);

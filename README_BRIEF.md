@@ -3,8 +3,8 @@
 La pagina `/brief` raccoglie le richieste dei nuovi clienti. Ogni invio:
 
 1. viene verificato con Cloudflare Turnstile e con un campo honeypot;
-2. salva su R2 i file, `brief.md` e `brief.json` in una cartella `AAAA-MM-GG-slug-attivita/`;
-3. ti manda un'email a bento box con `brief.md` allegato;
+2. salva su R2 i file, `brief-AAAA-MM-GG-slug-attivita.md` e `brief.json` in una cartella `AAAA-MM-GG-slug-attivita/`;
+3. ti manda un'email con il brief in Markdown allegato (stesso nome univoco);
 4. manda al cliente una breve email di conferma.
 
 La pagina non è linkata da nessuna parte del sito e ha `noindex, nofollow`, sia nel meta tag che nell'header `X-Robots-Tag` (file `_headers`). Anche `/privacy` ha `noindex`.
@@ -113,7 +113,7 @@ Serve Node.js 18 o superiore ([nodejs.org](https://nodejs.org)).
    ```
 3. Apri `http://localhost:8788/brief`, compila e invia.
 4. Controlla:
-   - che arrivino l'email con il riepilogo e `brief.md` allegato, e la conferma al cliente;
+   - che arrivino l'email con il riepilogo e il file `.md` allegato, e la conferma al cliente;
    - che i link alle reference nell'email si aprano. In locale funzionano solo mentre `wrangler pages dev` è attivo;
    - i file salvati nel bucket simulato, dentro `.wrangler/state/` (anche questa cartella è in `.gitignore`).
 5. Casi da provare:

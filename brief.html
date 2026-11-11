@@ -243,6 +243,20 @@
               <textarea id="f-sezioni-facoltative" name="sezioni_facoltative" rows="2" maxlength="800" placeholder="Sezioni che ti piacerebbe avere, ma solo se c'è spazio."></textarea>
             </div>
 
+            <fieldset class="field" data-label="Funzionalità">
+              <legend>Oltre alle sezioni, cosa deve poter fare chi visita il sito?</legend>
+              <p class="hint" id="funz-hint">Form contatti e mappa sono già compresi nella sezione Contatti.</p>
+              <div class="choices" aria-describedby="funz-hint">
+                <label class="choice"><input type="checkbox" name="funzionalita" value="prenotazioni"><span>Prenotare</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="ecommerce"><span>Acquistare online</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="whatsapp"><span>Scrivere su WhatsApp</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="newsletter"><span>Iscriversi alla newsletter</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="area_riservata"><span>Accedere a un'area riservata</span></label>
+              </div>
+              <label for="f-funz-altro" class="sub-label">Altro?</label>
+              <input id="f-funz-altro" name="funzionalita_altro" type="text" maxlength="200" placeholder="es. configurare un prodotto, scaricare un catalogo">
+            </fieldset>
+
             <fieldset class="field" data-label="Lingue del sito">
               <legend>In che lingue dev'essere il sito?</legend>
               <div class="choices">
@@ -562,7 +576,7 @@
           <!-- ─── STEP 6 · PRATICA ─────────────────────────────── -->
           <section class="step" data-step="6" data-title="Pratica" aria-labelledby="s6-title" hidden>
             <h2 class="step-title" id="s6-title" tabindex="-1">Pratica</h2>
-            <p class="step-lead">Tempi, budget e qualche dettaglio tecnico.</p>
+            <p class="step-lead">Tempi, budget e dominio.</p>
 
             <fieldset class="field" data-label="Tempistiche" data-required>
               <legend>Entro quando ti serve il sito? <span class="req" aria-hidden="true">*</span></legend>
@@ -584,10 +598,12 @@
             <fieldset class="field" data-label="Budget indicativo">
               <legend>Budget indicativo</legend>
               <div class="choices">
-                <label class="choice"><input type="radio" name="budget" value="b1"><span>Meno di 1.000 €</span></label>
-                <label class="choice"><input type="radio" name="budget" value="b2"><span>1.000 – 2.500 €</span></label>
-                <label class="choice"><input type="radio" name="budget" value="b3"><span>2.500 – 5.000 €</span></label>
-                <label class="choice"><input type="radio" name="budget" value="b4"><span>Oltre 5.000 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b1"><span>200 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b2"><span>200 – 300 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b3"><span>300 – 500 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b4"><span>500 – 700 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b5"><span>700 – 1.000 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b6"><span>1.000 € o più</span></label>
                 <label class="choice"><input type="radio" name="budget" value="nd"><span>Preferisco parlarne</span></label>
               </div>
             </fieldset>
@@ -605,18 +621,6 @@
                   <input id="f-dominio-nome" name="dominio_nome" type="text" inputmode="url" maxlength="120" data-required-when="dominio=si" placeholder="tuaattivita.it">
                 </div>
               </div>
-            </fieldset>
-
-            <fieldset class="field" data-label="Funzionalità extra">
-              <legend>Funzionalità del sito</legend>
-              <div class="choices">
-                <label class="choice"><input type="checkbox" name="funzionalita" value="form"><span>Form contatti</span></label>
-                <label class="choice"><input type="checkbox" name="funzionalita" value="mappa"><span>Mappa</span></label>
-                <label class="choice"><input type="checkbox" name="funzionalita" value="prenotazioni"><span>Prenotazioni</span></label>
-                <label class="choice"><input type="checkbox" name="funzionalita" value="newsletter"><span>Newsletter</span></label>
-              </div>
-              <label for="f-funz-altro" class="sub-label">Altro?</label>
-              <input id="f-funz-altro" name="funzionalita_altro" type="text" maxlength="200" placeholder="es. area riservata, chat WhatsApp">
             </fieldset>
 
             <div class="field" data-label="Note">
@@ -642,7 +646,7 @@
 
             <!-- Site key Turnstile: sostituisci il segnaposto (vedi README_BRIEF.md).
                  In locale (localhost) brief.js usa in automatico la chiave di test di Cloudflare. -->
-            <div class="turnstile-wrap" id="turnstileBox" data-sitekey="INSERISCI_LA_SITE_KEY_TURNSTILE"></div>
+            <div class="turnstile-wrap" id="turnstileBox" data-sitekey="0x4AAAAAAF8EqNxFj4kppI7f"></div>
 
             <div class="form-error" id="formError" role="alert" hidden></div>
           </section>
