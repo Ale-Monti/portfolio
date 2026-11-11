@@ -3,13 +3,16 @@
 //  upload con anteprime, Turnstile, invio a /api/brief
 //  (tema, cursore e nav arrivano da script.js; i prezzi da pricing.js)
 // ═══════════════════════════════════════════════════════════════════
-import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro } from './pricing.js?v=3';
+import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro, costText } from './pricing.js?v=4';
 
 (() => {
   'use strict';
 
   const STORAGE_KEY = 'am_brief_v1';
-  const TOTAL_STEPS = 7;
+  const TOTAL_STEPS = 8;
+  const STEP_FILES = 5;      // Stile: reference visive
+  const STEP_SERVICES = 6;   // Servizi extra: da qui si vede la stima
+  const DRAFT_VERSION = 2;   // v1 aveva 7 step: si ripristinano i dati, non la posizione
   const MAX_FILES = 8;
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
   const MAX_INSPO = 5;
@@ -45,7 +48,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
 
   let current = 1;
   let maxVisited = 1;
-  let files = [];            // { id, file, url }
+  let files = [];            // { id, file, url, nota }
   let uid = 0;
   let turnstileId = null;
   let turnstileToken = '';
@@ -89,7 +92,8 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
   function cond(expr) {
     if (!expr) return false;
     const [name, value] = expr.split('=');
-    return values(name).includes(value);
+    const v = values(name);
+    return value.split('|').some(x => v.includes(x));
   }
 
   const isShown = el => !el.closest('.reveal:not(.is-open)');
@@ -119,6 +123,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
       }
     });
     $$('fieldset[data-required]', form).forEach(fs => fs.classList.add('is-required'));
+    $$('fieldset[data-required-when]', form).forEach(fs => fs.classList.toggle('is-required', cond(fs.dataset.requiredWhen)));
   }
 
   // ═════════════════════════════════════════════════════════════════
@@ -188,6 +193,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
 
   function checkGroup(fs) {
     if (!isShown(fs)) return '';
+    if (fs.dataset.requiredWhen && !cond(fs.dataset.requiredWhen)) return '';
     const inputs = $$('input[type="checkbox"], input[type="radio"]', fs);
     if (inputs.some(i => i.checked)) return '';
     return inputs[0]?.type === 'radio' ? 'Seleziona un\'opzione.' : 'Seleziona almeno un\'opzione.';
@@ -213,7 +219,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
       if (el.type === 'checkbox') { if (el.name === 'privacy') t.push(el); return; }
       t.push(el);
     });
-    $$('fieldset[data-required]', step).forEach(fs => t.push(fs));
+    $$('fieldset[data-required], fieldset[data-required-when]', step).forEach(fs => t.push(fs));
     return t;
   }
 
@@ -231,7 +237,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
     targetsOf(step).forEach(t => {
       if (!validateTarget(t)) { count++; if (!first) first = t; }
     });
-    if (n === 4 && fileInput.getAttribute('aria-invalid') === 'true') {
+    if (n === STEP_FILES && fileInput.getAttribute('aria-invalid') === 'true') {
       // errori di upload già mostrati: non bloccano (i file scartati non sono in lista)
       clearError(fileInput);
     }
@@ -265,7 +271,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
     nextBtn.textContent = n === TOTAL_STEPS ? 'Invia il brief' : n === TOTAL_STEPS - 1 ? 'Vai al riepilogo →' : 'Avanti →';
 
     if (n === TOTAL_STEPS) { buildReview(); renderTurnstile(); }
-    if (n >= 5) renderEstimate();
+    if (n >= STEP_SERVICES) renderEstimate();
     formError.hidden = true;
 
     if (focus) {
@@ -360,7 +366,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
       if (files.some(f => f.file.name === file.name && f.file.size === file.size)) continue;
       if (files.length >= MAX_FILES) { rejected.push(`${file.name}: hai già raggiunto il massimo di ${MAX_FILES} file`); continue; }
       const isImage = ext !== 'pdf';
-      files.push({ id: ++uid, file, url: isImage ? URL.createObjectURL(file) : '' });
+      files.push({ id: ++uid, file, url: isImage ? URL.createObjectURL(file) : '', nota: '' });
     }
     renderFiles();
     if (rejected.length) {
@@ -411,7 +417,16 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
       rm.setAttribute('aria-label', `Rimuovi ${f.file.name}`);
       rm.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
       rm.addEventListener('click', () => removeFile(f.id));
-      li.append(thumb, name, rm);
+      // Nota sul file: senza name, così non entra nei campi del modulo (va in data.file_note)
+      const nota = document.createElement('input');
+      nota.type = 'text';
+      nota.className = 'file-note';
+      nota.maxLength = 200;
+      nota.placeholder = 'Cos\'è? Cosa ti piace?';
+      nota.setAttribute('aria-label', `Nota su ${f.file.name}: cos'è o cosa ti piace`);
+      nota.value = f.nota;
+      nota.addEventListener('input', () => { f.nota = nota.value; });
+      li.append(thumb, name, nota, rm);
       fileListEl.appendChild(li);
     });
     filesCount.textContent = `${files.length} di ${MAX_FILES} file`;
@@ -485,7 +500,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       storage.set({
-        v: 1,
+        v: DRAFT_VERSION,
         savedAt: Date.now(),
         step: current,
         maxVisited,
@@ -503,16 +518,18 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
 
   function loadDraft() {
     const draft = storage.get();
-    if (!draft || draft.v !== 1 || !draft.data) return false;
+    if (!draft || ![1, DRAFT_VERSION].includes(draft.v) || !draft.data) return false;
     restore(draft.data);
     if (!hasContent(draft.data)) return false;
-    maxVisited = Math.min(Math.max(1, +draft.maxVisited || 1), TOTAL_STEPS);
-    current = Math.min(Math.max(1, +draft.step || 1), maxVisited);
+    if (draft.v === DRAFT_VERSION) {
+      maxVisited = Math.min(Math.max(1, +draft.maxVisited || 1), TOTAL_STEPS);
+      current = Math.min(Math.max(1, +draft.step || 1), maxVisited);
+    }
     $('#draftNotice').hidden = false;
     if (Array.isArray(draft.fileNames) && draft.fileNames.length) {
       const p = $('#draftFiles');
       p.hidden = false;
-      p.textContent = `Avevi caricato ${draft.fileNames.join(', ')}. Il browser non conserva i file: ricaricali allo step 4.`;
+      p.textContent = `Avevi caricato ${draft.fileNames.join(', ')}. Il browser non conserva i file: ricaricali allo step ${STEP_FILES}.`;
     }
     return true;
   }
@@ -564,6 +581,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
 
   function fieldIsRequired(field) {
     if (field.matches('fieldset[data-required]')) return true;
+    if (field.matches('fieldset[data-required-when]')) return cond(field.dataset.requiredWhen);
     return $$('input, select, textarea', field).some(el =>
       el.closest('.field[data-label]') === field && isShown(el) &&
       el.type !== 'checkbox' && el.type !== 'radio' && isRequired(el));
@@ -605,8 +623,9 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
             node.className = 'review-thumbs';
             files.forEach(f => {
               let t;
-              if (f.url) { t = document.createElement('img'); t.src = f.url; t.alt = f.file.name; }
-              else { t = document.createElement('span'); t.textContent = 'PDF'; t.title = f.file.name; }
+              const label = f.nota.trim() ? `${f.file.name} — ${f.nota.trim()}` : f.file.name;
+              if (f.url) { t = document.createElement('img'); t.src = f.url; t.alt = label; t.title = label; }
+              else { t = document.createElement('span'); t.textContent = 'PDF'; t.title = label; }
               node.appendChild(t);
             });
             value = 'x';
@@ -699,6 +718,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
     data.ispirazioni = data.ispirazioni
       .map(i => ({ url: i.url.trim(), nota: i.nota.trim() }))
       .filter(i => i.url);
+    data.file_note = files.map(f => f.nota.trim());   // stesso ordine dei file inviati
     return data;
   }
 
@@ -882,7 +902,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
   }
 
   // ─── Stima indicativa ────────────────────────────────────────────
-  const costRange = (min, max) => (max === null ? (min ? `da ${euro(min)}` : 'da valutare') : max === 0 ? 'gratis' : range(min, max));
+  const costRange = (min, max) => costText({ min, max });
 
   function estRow(label, note, priceEl, cls = '') {
     const row = make('div', `est-row ${cls}`.trim());
@@ -893,8 +913,8 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
     return row;
   }
 
-  function costList(title, list, total, per) {
-    const box = make('div', 'est-cost');
+  function costList(title, list, total, per, cls = '') {
+    const box = make('div', `est-cost ${cls}`.trim());
     box.append(make('h4', '', title));
     const ul = make('ul');
     list.forEach(c => {
@@ -902,10 +922,15 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
       const left = make('span');
       left.append(make('span', '', c.label));
       if (c.note) left.append(make('small', '', c.note));
-      li.append(left, make('span', 'est-cost-val', costRange(c.min, c.max)));
+      // I facoltativi mostrano il massimo: partono tutti da zero
+      const val = c.per
+        ? (c.max ? `fino a ${euro(c.max)}${c.per === 'anno' ? '/anno' : ''}` : 'gratis')
+        : costRange(c.min, c.max);
+      li.append(left, make('span', 'est-cost-val', val));
       ul.appendChild(li);
     });
-    box.append(ul, make('p', 'est-cost-total', `Totale: ${costRange(total.min, total.max)}${per}`));
+    box.append(ul);
+    if (total) box.append(make('p', 'est-cost-total', `Totale: ${costRange(total.min, total.max)}${per}`));
     return box;
   }
 
@@ -950,6 +975,11 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
       make('p', 'est-costs-lead', 'Li paghi direttamente ai fornitori e non fanno parte del mio compenso. Sono stime.'),
       costs,
     );
+    if (c.optional.length) {
+      const opt = costList('Solo se ti servono', c.optional, null, '', 'est-cost-optional');
+      opt.insertBefore(make('p', 'est-cost-lead', 'Partono da zero: si pagano solo se scegli un piano superiore. Ne parliamo insieme.'), opt.querySelector('ul'));
+      wrap.append(opt);
+    }
     frag.appendChild(wrap);
 
     frag.appendChild(make('p', 'est-foot', `È una stima per orientarti, con i prezzi di lancio. Dopo aver letto il brief ti mando un preventivo definitivo. Acconto del ${Math.round(DEPOSIT * 100)}% alla conferma, saldo alla consegna.`));
@@ -985,7 +1015,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro 
     }
     renderEstimate();
     if (el.type === 'radio' || el.type === 'checkbox') {
-      const fs = el.closest('fieldset[data-required]');
+      const fs = el.closest('fieldset[data-required], fieldset[data-required-when]');
       if (fs && fs.classList.contains('has-error')) validateTarget(fs);
       if (el.name === 'privacy' && el.getAttribute('aria-invalid')) validateTarget(el);
     } else if (el.type !== 'file' && el.getAttribute('aria-invalid')) {

@@ -15,7 +15,7 @@
 //    SITE_URL              (facoltativa) es. https://tuodominio.it
 // ═══════════════════════════════════════════════════════════════════
 
-import { RATE, DEPOSIT, REVISIONS, suggest, range, euro, listino } from '../../pricing.js';
+import { RATE, DEPOSIT, REVISIONS, suggest, range, euro, listino, costText, costSummary } from '../../pricing.js';
 
 const MAX_FILES = 8;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -40,7 +40,7 @@ const L = {
     eventi: 'Eventi / intrattenimento', associazione: 'Associazione / no profit', altro: 'Altro',
   },
   obiettivo: {
-    trovare: 'Farsi trovare online', contatti: 'Ricevere contatti e richieste', portfolio: 'Mostrare i lavori (portfolio)',
+    trovare: 'Farsi trovare su Google', contatti: 'Ricevere contatti e richieste', portfolio: 'Mostrare progetti e lavori realizzati',
     prenotazioni: 'Ricevere prenotazioni', vendere: 'Vendere online', altro: 'Altro',
   },
   sezioni: {
@@ -68,7 +68,14 @@ const L = {
   },
   budget: { b1: '200 €', b2: '200 – 300 €', b3: '300 – 500 €', b4: '500 – 700 €', b5: '700 – 1.000 €', b6: '1.000 € o più', nd: 'Preferisce parlarne' },
   dominio: { si: 'Sì', no: 'No', non_so: 'Non sa' },
-  funzionalita: { prenotazioni: 'Prenotazioni', ecommerce: 'Vendita online (e-commerce)', whatsapp: 'Chat WhatsApp', newsletter: 'Newsletter', area_riservata: 'Area riservata' },
+  funzionalita: { prenotazioni: 'Prenotazioni', ecommerce: 'Vendita online (e-commerce)', whatsapp: 'Chat WhatsApp', newsletter: 'Newsletter', download: 'Download di un file', area_riservata: 'Area riservata' },
+  blog_gestione: { autonomo: 'Li pubblica il cliente in autonomia (serve un CMS)', io: 'Li manda il cliente, li pubblica Alessandro a ore', non_so: 'Non sa' },
+  prenotazioni_tipo: { richiesta: 'Richiesta da confermare (form)', calendario: 'Calendario con i posti liberi (servizio esterno)', non_so: 'Non sa, chiede un consiglio' },
+  newsletter_iscritti: { pochi: 'Meno di 500 nel primo anno', tanti: 'Più di 500 nel primo anno', non_so: 'Non sa' },
+  download_tipo: { libero: 'Libero', email: 'In cambio dell\'email' },
+  prezzi_mostra: { si: 'Sì', alcuni: 'Solo alcuni o «a partire da»', no: 'No' },
+  contatti_pubblici: { telefono: 'Telefono indicato nel brief', email: 'Email indicata nel brief', altri: 'Altri contatti' },
+  email_dominio: { si: 'Sì', no: 'No', non_so: 'Non sa' },
 };
 
 // Servizi che pesano su tempi e preventivo: evidenziati nell'email
@@ -183,6 +190,7 @@ function normalize(raw) {
     nome: s('nome', 120), attivita: s('attivita', 120), email: s('email', 160), telefono: s('telefono', 30),
     settore: one('settore', L.settore), settore_altro: s('settore_altro', 80),
     descrizione: s('descrizione', 1500), sito_attuale: s('sito_attuale', 300),
+    instagram: s('instagram', 200), facebook: s('facebook', 200), social_altri: s('social_altri', 300),
     via: s('via', 160), civico: s('civico', 12), cap: s('cap', 5), citta: s('citta', 80),
 
     obiettivo: one('obiettivo', L.obiettivo), obiettivo_altro: s('obiettivo_altro', 200),
@@ -192,6 +200,19 @@ function normalize(raw) {
     sezioni_facoltative: s('sezioni_facoltative', 800),
     lingue: many('lingue', L.lingue), lingue_altro: s('lingue_altro', 120),
     ha_testi: one('ha_testi', L.possesso), ha_foto: one('ha_foto', L.possesso), ha_logo: one('ha_logo', L.logo),
+
+    // Dettagli di sezioni e funzionalità (azzerati sotto se non servono)
+    blog_gestione: one('blog_gestione', L.blog_gestione), blog_frequenza: s('blog_frequenza', 200),
+    prenotazioni_tipo: one('prenotazioni_tipo', L.prenotazioni_tipo), prenotazioni_cosa: s('prenotazioni_cosa', 200),
+    newsletter_iscritti: one('newsletter_iscritti', L.newsletter_iscritti), newsletter_note: s('newsletter_note', 200),
+    whatsapp_numero: s('whatsapp_numero', 30),
+    download_tipo: one('download_tipo', L.download_tipo), download_cosa: s('download_cosa', 200),
+    ecommerce_note: s('ecommerce_note', 200), area_note: s('area_note', 200),
+
+    // Info per il sito
+    servizi_principali: s('servizi_principali', 2000), orari: s('orari', 600), staff: s('staff', 1000),
+    prezzi_mostra: one('prezzi_mostra', L.prezzi_mostra), prezzi_note: s('prezzi_note', 1000),
+    contatti_pubblici: many('contatti_pubblici', L.contatti_pubblici), contatti_altri: s('contatti_altri', 300),
 
     ispirazioni: (Array.isArray(r.ispirazioni) ? r.ispirazioni : [])
       .slice(0, MAX_INSPO)
@@ -209,6 +230,7 @@ function normalize(raw) {
     tempistiche: one('tempistiche', L.tempistiche), scadenza_data: s('scadenza_data', 10),
     budget: one('budget', L.budget),
     dominio: one('dominio', L.dominio), dominio_nome: s('dominio_nome', 120),
+    email_dominio: one('email_dominio', L.email_dominio),
     funzionalita: many('funzionalita', L.funzionalita), funzionalita_altro: s('funzionalita_altro', 200),
     note: s('note', 3000),
     privacy: r.privacy === true,
@@ -233,6 +255,16 @@ function normalize(raw) {
   if (!b.lingue.includes('altro')) b.lingue_altro = '';
   if (b.tempistiche !== 'data') b.scadenza_data = '';
   if (b.dominio !== 'si') b.dominio_nome = '';
+  if (!b.sezioni.includes('blog')) { b.blog_gestione = ''; b.blog_frequenza = ''; }
+  const has = f => b.funzionalita.includes(f);
+  if (!has('prenotazioni')) { b.prenotazioni_tipo = ''; b.prenotazioni_cosa = ''; }
+  if (!has('newsletter')) { b.newsletter_iscritti = ''; b.newsletter_note = ''; }
+  if (!has('whatsapp')) b.whatsapp_numero = '';
+  if (!has('download')) { b.download_tipo = ''; b.download_cosa = ''; }
+  if (!has('ecommerce')) b.ecommerce_note = '';
+  if (!has('area_riservata')) b.area_note = '';
+  if (!['si', 'alcuni'].includes(b.prezzi_mostra)) b.prezzi_note = '';
+  if (!b.contatti_pubblici.includes('altri')) b.contatti_altri = '';
   b.sito_attuale_url = normalizeUrl(b.sito_attuale);
   b.fotoSulPosto = b.extra.includes('foto');
 
@@ -255,6 +287,8 @@ function normalize(raw) {
     req('via', msg); req('civico', msg); req('cap', msg);
   }
   if (b.cap && !CAP_RE.test(b.cap)) errors.cap = 'Il CAP è formato da 5 cifre.';
+  if (b.whatsapp_numero && !PHONE_RE.test(b.whatsapp_numero)) errors.whatsapp_numero = 'Inserisci un numero di telefono valido.';
+  if (b.extra.includes('logo') && !b.logo_tipo) errors.logo_tipo = 'Seleziona un\'opzione.';
 
   req('obiettivo', 'Seleziona un\'opzione.');
   if (b.obiettivo === 'altro') req('obiettivo_altro');
@@ -290,6 +324,31 @@ function derived(b) {
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(indirizzo)}`;
   const impact = b.extra.filter(id => IMPACT.includes(id));
 
+  // Profili online, con la piattaforma
+  const online = [
+    ['Sito web', b.sito_attuale],
+    ['Instagram', b.instagram],
+    ['Facebook', b.facebook],
+    ['Altri profili', b.social_altri],
+  ].filter(([, v]) => v);
+
+  // Dettagli di blog e funzionalità: [[titolo, [[etichetta, valore], ...]], ...]
+  const featureDetails = [];
+  const fd = (title, rows) => { rows = rows.filter(([, v]) => v); if (rows.length) featureDetails.push([title, rows]); };
+  if (b.sezioni.includes('blog')) fd('Blog / news', [['Chi pubblica', lab(L.blog_gestione, b.blog_gestione)], ['Frequenza e autori', b.blog_frequenza]]);
+  fd('Prenotazioni', [['Tipo', lab(L.prenotazioni_tipo, b.prenotazioni_tipo)], ['Cosa si prenota', b.prenotazioni_cosa]]);
+  fd('Newsletter', [['Iscritti previsti', lab(L.newsletter_iscritti, b.newsletter_iscritti)], ['Frequenza e contenuti', b.newsletter_note]]);
+  fd('WhatsApp', [['Numero', b.whatsapp_numero || (b.funzionalita.includes('whatsapp') ? (b.telefono ? `lo stesso del telefono (${b.telefono})` : 'non indicato') : '')]]);
+  fd('File da scaricare', [['Cosa', b.download_cosa], ['Accesso', lab(L.download_tipo, b.download_tipo)]]);
+  fd('Vendita online', [['Prodotti', b.ecommerce_note]]);
+  fd('Area riservata', [['A cosa serve', b.area_note]]);
+
+  // Contatti che il cliente vuole sul sito
+  const contattiPubblici = b.contatti_pubblici.map(v => (
+    v === 'telefono' ? `Telefono: ${b.telefono || 'non indicato'}` :
+    v === 'email' ? `Email: ${b.email}` :
+    `Altri: ${b.contatti_altri || 'non specificati'}`));
+
   // Dettagli per ogni servizio extra: [[etichetta, valore], ...]
   const extraDetails = b.extra.map(id => {
     const rows = [];
@@ -305,7 +364,7 @@ function derived(b) {
     return { id, label: L.extra[id], rows };
   });
 
-  return { settore, obiettivo, sezioni, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails, quote: suggest(b) };
+  return { settore, obiettivo, sezioni, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails, online, featureDetails, contattiPubblici, quote: suggest(b) };
 }
 
 // Righe del preventivo suggerito, già in testo: [voce, forbice lancio, listino, suggerito, perché]
@@ -321,7 +380,6 @@ function quoteRows(q) {
   return rows;
 }
 
-const costText = c => (c.max === null ? (c.min ? `da ${euro(c.min)}` : 'da valutare') : c.max === 0 ? 'gratis' : range(c.min, c.max));
 
 // ═════════════════════════════════════════════════════════════════
 //  brief.md
@@ -357,18 +415,21 @@ function buildMarkdown(b, d, ctx) {
   out.push('');
 
   out.push('## Cliente');
-  out.push(item('Nome', b.nome));
-  out.push(item('Attività / brand', b.attivita));
-  out.push(item('Settore', d.settore));
+  out.push(item('Nome e cognome', b.nome));
+  out.push(item('Nome dell\'attività', b.attivita));
+  out.push(item('Tipo di attività', d.settore));
   out.push(item('Email', b.email));
   out.push(item('Telefono', b.telefono));
-  out.push(item('Sito o social attuali', b.sito_attuale));
   out.push(item('Città', b.citta));
   if (b.via || b.cap) out.push(item('Indirizzo', d.indirizzo));
   out.push('');
   out.push('**Descrizione dell\'attività**');
   out.push('');
   out.push(para(b.descrizione));
+  out.push('');
+  out.push('**Online oggi**');
+  out.push('');
+  out.push(d.online.length ? d.online.map(([k, v]) => item(k, v)).join('\n') : NA);
   out.push('');
 
   out.push('## Obiettivo');
@@ -390,10 +451,34 @@ function buildMarkdown(b, d, ctx) {
   out.push('## Funzionalità');
   out.push(d.funzionalita.length ? d.funzionalita.map(f => `- ${oneLine(f)}`).join('\n') : NA);
   out.push('');
+  d.featureDetails.forEach(([title, rows]) => {
+    out.push(`### ${title}`);
+    rows.forEach(([k, v]) => out.push(item(k, v)));
+    out.push('');
+  });
   out.push(item('Lingue del sito', d.lingue.join(', ')));
   out.push(item('Testi già pronti', lab(L.possesso, b.ha_testi)));
   out.push(item('Foto già pronte', lab(L.possesso, b.ha_foto)));
   out.push(item('Logo esistente', lab(L.logo, b.ha_logo)));
+  out.push('');
+
+  out.push('## Info per il sito');
+  out.push('');
+  out.push('**Servizi o prodotti principali**');
+  out.push('');
+  out.push(para(b.servizi_principali));
+  out.push('');
+  out.push('**Orari di apertura**');
+  out.push('');
+  out.push(para(b.orari));
+  out.push('');
+  out.push('**Persone da presentare**');
+  out.push('');
+  out.push(para(b.staff));
+  out.push('');
+  out.push(item('Prezzi sul sito', lab(L.prezzi_mostra, b.prezzi_mostra)));
+  if (b.prezzi_note) out.push(item('Prezzi indicati', b.prezzi_note));
+  out.push(item('Contatti da pubblicare', d.contattiPubblici.join('; ') || 'Non indicati: chiedere prima di pubblicare telefono ed email'));
   out.push('');
 
   out.push('## Stile e ispirazioni');
@@ -409,7 +494,7 @@ function buildMarkdown(b, d, ctx) {
 
   out.push('## Reference visive');
   if (ctx.files.length) {
-    ctx.files.forEach(f => out.push(`- [${f.name}](${f.url}) — ${f.type}, ${fmtSize(f.size)} (originale: ${oneLine(f.original)})`));
+    ctx.files.forEach(f => out.push(`- [${f.name}](${f.url}) — ${f.type}, ${fmtSize(f.size)} (originale: ${oneLine(f.original)})${f.nota ? `. Nota del cliente: ${oneLine(f.nota)}` : ''}`));
     out.push('');
     out.push('_I link sono firmati e restano validi finché non cambia il secret BRIEF_FILE_SECRET._');
   } else {
@@ -419,6 +504,7 @@ function buildMarkdown(b, d, ctx) {
 
   out.push('## Dominio');
   out.push(item('Dominio già posseduto', b.dominio ? `${lab(L.dominio, b.dominio)}${b.dominio_nome ? ` (${b.dominio_nome})` : ''}` : ''));
+  out.push(item('Email con il dominio', lab(L.email_dominio, b.email_dominio)));
   out.push('');
 
   out.push('## Servizi extra richiesti');
@@ -472,7 +558,8 @@ function buildMarkdown(b, d, ctx) {
   out.push('');
   c.yearly.forEach(x => out.push(`- Ogni anno · ${x.label}: ${costText(x)}${x.note ? ` (${x.note})` : ''}`));
   c.once.forEach(x => out.push(`- Una tantum · ${x.label}: ${costText(x)}${x.note ? ` (${x.note})` : ''}`));
-  out.push(`- **Totale:** ${costText(c.yearlyTotal)} all'anno${c.once.length ? ` + ${costText(c.onceTotal)} una tantum` : ''}`);
+  c.optional.forEach(x => out.push(`- Facoltativo (${x.per}) · ${x.label}: ${costText(x)}${x.note ? ` (${x.note})` : ''}`));
+  out.push(`- **Totale:** ${costSummary(c)}`);
   out.push('');
 
   // ─── Istruzioni per Claude Code ────────────────────────────────
@@ -486,21 +573,23 @@ function buildMarkdown(b, d, ctx) {
   out.push('');
   out.push('1. **Tecnologia:** HTML, CSS e JavaScript puri, senza framework né build step. File di partenza: `index.html`, `style.css`, `script.js`. Se le sezioni sono poche, preferisci una one-page con ancore; altrimenti una pagina per sezione.');
   out.push('2. **Struttura:** includi tutte le sezioni must-have in un ordine logico per l\'obiettivo principale. Aggiungi le sezioni facoltative solo se non appesantiscono il sito.');
-  out.push('3. **Obiettivo e CTA:** ogni scelta (gerarchia, posizione dei pulsanti, contenuti in evidenza) deve servire l\'obiettivo principale e la call to action indicata.');
+  out.push('3. **Obiettivo e CTA:** ogni scelta (gerarchia, posizione dei pulsanti, contenuti in evidenza) deve servire l\'obiettivo principale e la call to action indicata. Se i due non coincidono, dai la priorità alla call to action e segnalalo nelle note.');
   out.push('4. **Stile:** segui aggettivi e colori indicati ed evita i colori da escludere. Usa i siti di ispirazione e le reference visive per capire il gusto del cliente, senza copiarli.');
   out.push('5. **Qualità:** mobile-first e responsive, HTML semantico, accessibile (contrasti AA, testi alternativi, navigazione da tastiera), SEO di base (`title`, meta description, `lang`), immagini leggere.');
   out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsanti per prenotazioni o WhatsApp, carrello e-commerce come segnaposto). Niente backend.');
   out.push(`7. **Lingue:** crea la bozza in ${mainLang}. Se sono richieste altre lingue, predisponi solo il selettore e la struttura, senza tradurre.`);
-  out.push('8. **Non inventare informazioni.** Dove manca un dato (orari, prezzi, indirizzo, numeri, nomi, recensioni, servizi specifici…) inserisci un segnaposto evidente come `[DA FORNIRE: orari di apertura]` invece di inventarlo.');
+  out.push('8. **Non inventare informazioni.** Usa i dati di "Info per il sito" (servizi, orari, persone, prezzi). Dove manca un dato (orari, prezzi, indirizzo, numeri, nomi, recensioni, servizi specifici…) inserisci un segnaposto evidente come `[DA FORNIRE: orari di apertura]` invece di inventarlo. Pubblica solo i contatti elencati in "Contatti da pubblicare"; se non ce ne sono, usa segnaposto. Mostra i prezzi solo se il cliente lo ha chiesto.');
   if (copy) {
     out.push('9. **Testi:** il cliente ha richiesto il copywriting. Scrivi testi segnaposto realistici, coerenti con attività, pubblico e obiettivo, e marca ogni blocco di testo con `[DA REVISIONARE]`.');
   } else {
     out.push(`9. **Testi:** il cliente non ha richiesto il copywriting (testi già pronti: ${lab(L.possesso, b.ha_testi) || 'non indicato'}). Usa le informazioni del brief dove possibile; per il resto inserisci segnaposto brevi come \`[TESTO DEL CLIENTE: presentazione]\`.`);
   }
   out.push('10. **Immagini e logo:** usa segnaposto con proporzioni corrette e `alt` descrittivi. Non usare foto stock. Se il logo va creato o rifatto, metti il nome dell\'attività in testo come segnaposto.');
-  out.push('11. **Servizi extra:** i servizi extra elencati sopra (logo, brand identity, foto, stampati, kit social, Google Business, QR code, firma email, traduzioni, supporto) **non fanno parte della bozza del sito**: non realizzarli. Unica eccezione sono i testi del sito, se è richiesto il copywriting (punto 9).');
-  out.push('12. **Alla fine** crea `NOTE_BOZZA.md` con: le scelte fatte, l\'elenco di tutte le informazioni mancanti o segnaposto da completare, e le domande da fare al cliente.');
-  out.push('13. **Preventivo:** la sezione "Preventivo suggerito" non riguarda la bozza e non va mai mostrata nel sito. In `NOTE_BOZZA.md` aggiungi una breve sezione "Note sul preventivo": se la bozza ti fa pensare che il lavoro sia più grande o più piccolo del previsto (sezioni in più, contenuti mancanti, funzionalità complesse), proponi un aggiustamento motivato delle cifre suggerite, restando nelle forbici.');
+  out.push(`11. **Nome dell'attività:** è "${oneLine(b.attivita)}". Se sembra un tipo di attività (es. "Palestra") più che un nome, cerca il nome vero nei profili online e nelle reference visive, usalo e segnalalo nelle note.`);
+  out.push('12. **Funzionalità:** segui i dettagli indicati sotto "Funzionalità" (es. richiesta di prenotazione = form; calendario = segnaposto per l\'embed del servizio esterno; download in cambio dell\'email = form prima del link). Usa le note del cliente sulle reference per capire cosa gli piace di ciascuna.');
+  out.push('13. **Servizi extra:** i servizi extra elencati sopra (logo, brand identity, foto, stampati, kit social, Google Business, QR code, firma email, traduzioni, supporto) **non fanno parte della bozza del sito**: non realizzarli. Unica eccezione sono i testi del sito, se è richiesto il copywriting (punto 9).');
+  out.push('14. **Alla fine** crea `NOTE_BOZZA.md` con: le scelte fatte, l\'elenco di tutte le informazioni mancanti o segnaposto da completare, e le domande da fare al cliente.');
+  out.push('15. **Preventivo:** la sezione "Preventivo suggerito" non riguarda la bozza e non va mai mostrata nel sito. In `NOTE_BOZZA.md` aggiungi una breve sezione "Note sul preventivo": se la bozza ti fa pensare che il lavoro sia più grande o più piccolo del previsto (sezioni in più, contenuti mancanti, funzionalità complesse), proponi un aggiustamento motivato delle cifre suggerite, restando nelle forbici.');
   out.push('');
 
   return out.join('\n');
@@ -595,7 +684,7 @@ function buildOwnerEmail(b, d, ctx) {
     b.telefono ? kv('Telefono', link(`tel:${b.telefono.replace(/[^\d+]/g, '')}`, b.telefono), { html: true }) : '',
     kv('Settore', d.settore),
     kv('Città', b.citta),
-    b.sito_attuale ? kv('Sito o social', b.sito_attuale_url ? link(b.sito_attuale_url, b.sito_attuale) : esc(b.sito_attuale), { html: true }) : '',
+    ...d.online.map(([k, v]) => (k === 'Sito web' && b.sito_attuale_url ? kv(k, link(b.sito_attuale_url, v), { html: true }) : kv(k, v))),
     kv('Descrizione', b.descrizione),
   ].join('');
 
@@ -603,6 +692,7 @@ function buildOwnerEmail(b, d, ctx) {
     `<div style="font-family:${DISPLAY};font-size:24px;line-height:28px;font-weight:700;color:${C.ink};margin:0 0 14px;">${esc(d.scadenza)}</div>`,
     kv('Budget indicativo', lab(L.budget, b.budget) || 'Non indicato'),
     kv('Dominio', b.dominio ? `${lab(L.dominio, b.dominio)}${b.dominio_nome ? ` · ${b.dominio_nome}` : ''}` : 'Non indicato'),
+    kv('Email con il dominio', lab(L.email_dominio, b.email_dominio) || 'Non indicato'),
   ].join('');
   parts.push(row(card('Cliente', contatti), card('Tempistiche e budget', tempi)));
 
@@ -647,7 +737,7 @@ function buildOwnerEmail(b, d, ctx) {
     </table>
     <div style="margin:4px 0 14px;font-family:${FONT};font-size:12px;line-height:18px;color:${C.muted};">Listino ${esc(euro(q.totalListino))} · acconto ${Math.round(DEPOSIT * 100)}% = ${esc(euro(q.deposit))}${q.estimate.site.tbd.length ? ` · da valutare a parte: ${esc(q.estimate.site.tbd.join(', '))}` : ''}</div>
     ${q.budgetNote ? `<div style="margin:0 0 14px;padding:10px 12px;border-radius:10px;background:${C.bg};font-family:${FONT};font-size:13px;line-height:19px;color:${C.ink};"><strong>Budget ${esc(lab(L.budget, b.budget))}.</strong> ${esc(q.budgetNote)}</div>` : ''}
-    ${kv('Costi vivi del cliente', `${costText(cst.yearlyTotal)} all'anno${cst.once.length ? ` + ${costText(cst.onceTotal)} una tantum` : ''}`)}`;
+    ${kv('Costi vivi del cliente', costSummary(cst))}`;
   parts.push(full('Preventivo suggerito', quoteBody));
 
   // Obiettivo | Sezioni
@@ -664,6 +754,17 @@ function buildOwnerEmail(b, d, ctx) {
     kv('Materiali pronti', `Testi: ${lab(L.possesso, b.ha_testi) || '–'} · Foto: ${lab(L.possesso, b.ha_foto) || '–'} · Logo: ${lab(L.logo, b.ha_logo) || '–'}`),
   ].join('');
   parts.push(row(card('Obiettivo', obiettivo), card('Sezioni', sezioni)));
+
+  // Info per il sito + dettagli delle funzionalità
+  const info = [
+    kv('Servizi o prodotti', b.servizi_principali),
+    kv('Orari', b.orari),
+    kv('Persone', b.staff),
+    kv('Prezzi sul sito', [lab(L.prezzi_mostra, b.prezzi_mostra), b.prezzi_note].filter(Boolean).join(': ')),
+    kv('Contatti da pubblicare', d.contattiPubblici.join('\n') || 'Non indicati'),
+    ...d.featureDetails.map(([title, rows]) => kv(title, rows.map(([k, v]) => `${k}: ${v}`).join('\n'))),
+  ].join('');
+  parts.push(full('Info per il sito', info));
 
   // Stile
   const stile = [
@@ -684,7 +785,8 @@ function buildOwnerEmail(b, d, ctx) {
         : `<div style="width:138px;height:138px;line-height:138px;text-align:center;border-radius:10px;border:1px solid ${C.line};background:${C.bg};font-family:${FONT};font-size:13px;font-weight:600;letter-spacing:1px;color:${C.muted};">${f.ext.toUpperCase()}</div>`;
       return `<td valign="top" width="25%" style="padding:0 6px 10px 0;">
         <a href="${esc(f.url)}" style="text-decoration:none;">${thumb}</a>
-        <div style="width:138px;margin-top:4px;font-family:${FONT};font-size:11px;line-height:15px;color:${C.muted};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(f.original)}</div></td>`;
+        <div style="width:138px;margin-top:4px;font-family:${FONT};font-size:11px;line-height:15px;color:${C.muted};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(f.original)}</div>${f.nota ? `
+        <div style="width:138px;margin-top:2px;font-family:${FONT};font-size:12px;line-height:16px;color:${C.ink};">${esc(f.nota)}</div>` : ''}</td>`;
     });
     let grid = '';
     for (let i = 0; i < cells.length; i += 4) {
@@ -730,7 +832,7 @@ function buildClientEmail(b, d) {
     est.site.tbd.length ? `più ${est.site.tbd.join(' e ')} da valutare` : '',
     est.onDemand.length ? 'supporto a ore escluso' : '',
   ].filter(Boolean).join(', ');
-  const costi = `${costText(cst.yearlyTotal)} all'anno${cst.once.length ? ` + ${costText(cst.onceTotal)} una tantum` : ''}`;
+  const costi = costSummary(cst);
   const rows = [
     ['Attività', b.attivita],
     ['Obiettivo', d.obiettivo],
@@ -878,14 +980,16 @@ export async function onRequestPost({ request, env }) {
     const fileProblems = [];
     if (uploads.length > MAX_FILES) fileProblems.push(`puoi caricare al massimo ${MAX_FILES} file`);
     const prepared = [];
-    for (const f of uploads.slice(0, MAX_FILES)) {
+    const fileNotes = Array.isArray(raw?.file_note) ? raw.file_note : [];
+    for (const [idx, f] of uploads.slice(0, MAX_FILES).entries()) {
       const name = String(f.name || 'file');
       const ext = (name.split('.').pop() || '').toLowerCase();
       if (!FILE_TYPES[ext]) { fileProblems.push(`${name}: formato non supportato`); continue; }
       if (f.size > MAX_FILE_SIZE) { fileProblems.push(`${name}: supera 5 MB`); continue; }
       const buf = new Uint8Array(await f.arrayBuffer());
       if (!sniff(buf, ext)) { fileProblems.push(`${name}: il contenuto non corrisponde a un file ${ext.toUpperCase()}`); continue; }
-      prepared.push({ original: name.slice(0, 120), ext: ext === 'jpeg' ? 'jpg' : ext, type: FILE_TYPES[ext], size: f.size, buf });
+      const nota = typeof fileNotes[idx] === 'string' ? fileNotes[idx].trim().slice(0, 200) : '';
+      prepared.push({ original: name.slice(0, 120), ext: ext === 'jpeg' ? 'jpg' : ext, type: FILE_TYPES[ext], size: f.size, buf, nota });
     }
     if (fileProblems.length) errors.files = `Controlla i file: ${fileProblems.join('; ')}.`;
 
@@ -916,7 +1020,7 @@ export async function onRequestPost({ request, env }) {
         httpMetadata: { contentType: p.type, contentDisposition: `inline; filename="${name}"` },
         customMetadata: { original: encodeURIComponent(p.original) },
       });
-      files.push({ name, key, original: p.original, ext: p.ext, type: p.type, size: p.size, url: await signUrl(origin, key) });
+      files.push({ name, key, original: p.original, ext: p.ext, type: p.type, size: p.size, nota: p.nota, url: await signUrl(origin, key) });
     }
 
     // Nome univoco: brief-AAAA-MM-GG-slug-attivita.md
@@ -939,7 +1043,7 @@ export async function onRequestPost({ request, env }) {
         settore: d.settore, obiettivo: d.obiettivo, sezioni: d.sezioni, lingue: d.lingue,
         scadenza: d.scadenza, budget: lab(L.budget, b.budget), extra: d.extraDetails,
       },
-      files: files.map(({ name, key, original, type, size, url }) => ({ name, key, original, type, size, url })),
+      files: files.map(({ name, key, original, type, size, nota, url }) => ({ name, key, original, type, size, nota, url })),
       quote: d.quote,
     };
 

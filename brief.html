@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=63c426c1">
-  <link rel="stylesheet" href="brief.css?v=3">
+  <link rel="stylesheet" href="brief.css?v=4">
 </head>
 <body class="brief-page">
 
@@ -36,7 +36,7 @@
   </nav>
 
   <!-- Barra di avanzamento sotto la nav -->
-  <div class="brief-progress" role="progressbar" aria-label="Avanzamento del brief" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1" aria-valuetext="Step 1 di 7: Il cliente">
+  <div class="brief-progress" role="progressbar" aria-label="Avanzamento del brief" aria-valuemin="1" aria-valuemax="8" aria-valuenow="1" aria-valuetext="Step 1 di 8: Il cliente">
     <span class="brief-progress-fill" id="progressFill"></span>
   </div>
 
@@ -59,10 +59,11 @@
           <li><button type="button" data-goto="1"><span class="step-num">01</span>Il cliente</button></li>
           <li><button type="button" data-goto="2"><span class="step-num">02</span>Obiettivo</button></li>
           <li><button type="button" data-goto="3"><span class="step-num">03</span>Contenuti</button></li>
-          <li><button type="button" data-goto="4"><span class="step-num">04</span>Stile</button></li>
-          <li><button type="button" data-goto="5"><span class="step-num">05</span>Servizi extra</button></li>
-          <li><button type="button" data-goto="6"><span class="step-num">06</span>Pratica</button></li>
-          <li><button type="button" data-goto="7"><span class="step-num">07</span>Riepilogo</button></li>
+          <li><button type="button" data-goto="4"><span class="step-num">04</span>Info per il sito</button></li>
+          <li><button type="button" data-goto="5"><span class="step-num">05</span>Stile</button></li>
+          <li><button type="button" data-goto="6"><span class="step-num">06</span>Servizi extra</button></li>
+          <li><button type="button" data-goto="7"><span class="step-num">07</span>Pratica</button></li>
+          <li><button type="button" data-goto="8"><span class="step-num">08</span>Riepilogo</button></li>
         </ol>
       </aside>
 
@@ -74,7 +75,7 @@
           <button type="button" class="link-btn" id="resetDraft">Ricomincia da zero</button>
         </div>
 
-        <p class="step-counter" id="stepCounter" aria-hidden="true">Step 1 di 7 · Il cliente</p>
+        <p class="step-counter" id="stepCounter" aria-hidden="true">Step 1 di 8 · Il cliente</p>
 
         <form id="briefForm" novalidate>
 
@@ -87,27 +88,15 @@
           <!-- ─── STEP 1 · CLIENTE ─────────────────────────────── -->
           <section class="step" data-step="1" data-title="Il cliente" aria-labelledby="s1-title">
             <h2 class="step-title" id="s1-title" tabindex="-1">Il cliente</h2>
-            <p class="step-lead">Chi sei e di cosa si occupa la tua attività.</p>
+            <p class="step-lead">La tua attività e come contattarti.</p>
 
             <div class="grid-2">
-              <div class="field" data-label="Nome e cognome">
-                <label for="f-nome">Nome e cognome <span class="req" aria-hidden="true">*</span></label>
-                <input id="f-nome" name="nome" type="text" autocomplete="name" maxlength="120" required>
+              <div class="field" data-label="Nome dell'attività">
+                <label for="f-attivita">Nome dell'attività <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-attivita" name="attivita" type="text" autocomplete="organization" maxlength="120" required placeholder="es. Trattoria da Mario, Studio Rossi">
               </div>
-              <div class="field" data-label="Attività / brand">
-                <label for="f-attivita">Attività / brand <span class="req" aria-hidden="true">*</span></label>
-                <input id="f-attivita" name="attivita" type="text" autocomplete="organization" maxlength="120" required>
-              </div>
-              <div class="field" data-label="Email">
-                <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
-                <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="160" required>
-              </div>
-              <div class="field" data-label="Telefono">
-                <label for="f-telefono">Telefono</label>
-                <input id="f-telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" data-pattern="phone">
-              </div>
-              <div class="field" data-label="Settore">
-                <label for="f-settore">Settore <span class="req" aria-hidden="true">*</span></label>
+              <div class="field" data-label="Tipo di attività">
+                <label for="f-settore">Tipo di attività <span class="req" aria-hidden="true">*</span></label>
                 <div class="select-wrap">
                   <select id="f-settore" name="settore" required>
                     <option value="">Seleziona…</option>
@@ -127,16 +116,47 @@
                 </div>
                 <div class="reveal" data-show-when="settore=altro">
                   <div class="reveal-inner">
-                    <label for="f-settore-altro" class="sub-label">Quale settore? <span class="req" aria-hidden="true">*</span></label>
+                    <label for="f-settore-altro" class="sub-label">Quale? <span class="req" aria-hidden="true">*</span></label>
                     <input id="f-settore-altro" name="settore_altro" type="text" maxlength="80" data-required-when="settore=altro">
                   </div>
                 </div>
               </div>
-              <div class="field" data-label="Sito o social attuali">
-                <label for="f-sito">Sito o social attuali</label>
-                <input id="f-sito" name="sito_attuale" type="text" inputmode="url" maxlength="300" placeholder="es. instagram.com/tuaattivita">
+              <div class="field" data-label="Nome e cognome">
+                <label for="f-nome">Il tuo nome e cognome <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-nome" name="nome" type="text" autocomplete="name" maxlength="120" required>
+              </div>
+              <div class="field" data-label="Email">
+                <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="160" required>
+              </div>
+              <div class="field" data-label="Telefono">
+                <label for="f-telefono">Telefono</label>
+                <input id="f-telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" data-pattern="phone">
               </div>
             </div>
+
+            <fieldset class="field field-group-plain" data-label="Dove sei online oggi">
+              <legend>Dove sei online oggi</legend>
+              <p class="hint">Basta il nome del profilo o il link. Lascia vuoto quello che non hai.</p>
+              <div class="grid-2">
+                <div class="field field-nested" data-label="Sito attuale">
+                  <label for="f-sito">Sito web</label>
+                  <input id="f-sito" name="sito_attuale" type="text" inputmode="url" maxlength="300" placeholder="es. tuaattivita.it">
+                </div>
+                <div class="field field-nested" data-label="Instagram">
+                  <label for="f-instagram">Instagram</label>
+                  <input id="f-instagram" name="instagram" type="text" maxlength="200" placeholder="es. @tuaattivita">
+                </div>
+                <div class="field field-nested" data-label="Facebook">
+                  <label for="f-facebook">Facebook</label>
+                  <input id="f-facebook" name="facebook" type="text" maxlength="200" placeholder="es. facebook.com/tuaattivita">
+                </div>
+                <div class="field field-nested" data-label="Altri profili">
+                  <label for="f-social-altri">Altri profili</label>
+                  <input id="f-social-altri" name="social_altri" type="text" maxlength="300" placeholder="es. TikTok @tuaattivita, LinkedIn">
+                </div>
+              </div>
+            </fieldset>
 
             <div class="field" data-label="Descrizione dell'attività">
               <label for="f-descrizione">Descrivi brevemente la tua attività <span class="req" aria-hidden="true">*</span></label>
@@ -150,7 +170,7 @@
                 <div class="reveal-inner">
                   <p class="callout" id="addressCallout">
                     <strong>Serve l'indirizzo completo.</strong>
-                    Hai chiesto il servizio fotografico sul posto (step 5): mi serve sapere dove venire a scattare.
+                    Hai chiesto il servizio fotografico sul posto (step 6): mi serve sapere dove venire a scattare.
                   </p>
                 </div>
               </div>
@@ -183,11 +203,12 @@
 
             <fieldset class="field" data-label="Obiettivo principale" data-required>
               <legend>Obiettivo principale del sito <span class="req" aria-hidden="true">*</span></legend>
-              <div class="choices">
-                <label class="choice"><input type="radio" name="obiettivo" value="trovare"><span>Farsi trovare online</span></label>
+              <p class="hint" id="obiettivo-hint">Se sono più di uno, scegli il più importante: il sito sarà costruito attorno a quello.</p>
+              <div class="choices" aria-describedby="obiettivo-hint">
+                <label class="choice"><input type="radio" name="obiettivo" value="trovare"><span>Farsi trovare su Google</span></label>
                 <label class="choice"><input type="radio" name="obiettivo" value="contatti"><span>Ricevere contatti e richieste</span></label>
-                <label class="choice"><input type="radio" name="obiettivo" value="portfolio"><span>Mostrare i miei lavori</span></label>
-                <label class="choice"><input type="radio" name="obiettivo" value="prenotazioni"><span>Ricevere prenotazioni</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="prenotazioni"><span>Ricevere prenotazioni (appuntamenti, prove, tavoli…)</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="portfolio"><span>Mostrare progetti e lavori realizzati</span></label>
                 <label class="choice"><input type="radio" name="obiettivo" value="vendere"><span>Vendere online</span></label>
                 <label class="choice"><input type="radio" name="obiettivo" value="altro"><span>Altro</span></label>
               </div>
@@ -251,11 +272,102 @@
                 <label class="choice"><input type="checkbox" name="funzionalita" value="ecommerce"><span>Acquistare online</span></label>
                 <label class="choice"><input type="checkbox" name="funzionalita" value="whatsapp"><span>Scrivere su WhatsApp</span></label>
                 <label class="choice"><input type="checkbox" name="funzionalita" value="newsletter"><span>Iscriversi alla newsletter</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="download"><span>Scaricare un file (PDF, catalogo…)</span></label>
                 <label class="choice"><input type="checkbox" name="funzionalita" value="area_riservata"><span>Accedere a un'area riservata</span></label>
               </div>
               <label for="f-funz-altro" class="sub-label">Altro?</label>
-              <input id="f-funz-altro" name="funzionalita_altro" type="text" maxlength="200" placeholder="es. configurare un prodotto, scaricare un catalogo">
+              <input id="f-funz-altro" name="funzionalita_altro" type="text" maxlength="200" placeholder="es. configurare un prodotto, fare un preventivo">
             </fieldset>
+
+            <!-- Dettagli per sezioni e funzionalità scelte: cambiano stima e costi vivi -->
+            <div class="extra-details">
+              <div class="reveal" data-show-when="sezioni=blog"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Blog / news</h3>
+                <fieldset class="field field-nested" data-label="Chi pubblica gli articoli">
+                  <legend class="sub-label">Chi pubblica gli articoli?</legend>
+                  <div class="choices choices-tight">
+                    <label class="choice"><input type="radio" name="blog_gestione" value="autonomo"><span>Io, in autonomia</span></label>
+                    <label class="choice"><input type="radio" name="blog_gestione" value="io"><span>Te li mando e li pubblichi tu</span></label>
+                    <label class="choice"><input type="radio" name="blog_gestione" value="non_so"><span>Non so</span></label>
+                  </div>
+                </fieldset>
+                <div class="field field-nested" data-label="Frequenza degli articoli">
+                  <label for="f-blog-freq" class="sub-label">Ogni quanto pensi di pubblicare? E chi scrive?</label>
+                  <input id="f-blog-freq" name="blog_frequenza" type="text" maxlength="200" placeholder="es. un articolo al mese, li scrive la nutrizionista">
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="funzionalita=prenotazioni"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Prenotazioni</h3>
+                <fieldset class="field field-nested" data-label="Tipo di prenotazione">
+                  <legend class="sub-label">Come vuoi riceverle?</legend>
+                  <div class="choices choices-tight">
+                    <label class="choice"><input type="radio" name="prenotazioni_tipo" value="richiesta"><span>Una richiesta, poi confermo io</span></label>
+                    <label class="choice"><input type="radio" name="prenotazioni_tipo" value="calendario"><span>Un calendario con i posti liberi</span></label>
+                    <label class="choice"><input type="radio" name="prenotazioni_tipo" value="non_so"><span>Non so, consigliami</span></label>
+                  </div>
+                </fieldset>
+                <div class="field field-nested" data-label="Cosa si prenota">
+                  <label for="f-pren-cosa" class="sub-label">Cosa si prenota?</label>
+                  <input id="f-pren-cosa" name="prenotazioni_cosa" type="text" maxlength="200" placeholder="es. lezione di prova, visita, tavolo">
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="funzionalita=newsletter"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Newsletter</h3>
+                <fieldset class="field field-nested" data-label="Iscritti alla newsletter">
+                  <legend class="sub-label">Quanti iscritti pensi di avere nel primo anno?</legend>
+                  <div class="choices choices-tight">
+                    <label class="choice"><input type="radio" name="newsletter_iscritti" value="pochi"><span>Meno di 500</span></label>
+                    <label class="choice"><input type="radio" name="newsletter_iscritti" value="tanti"><span>Più di 500</span></label>
+                    <label class="choice"><input type="radio" name="newsletter_iscritti" value="non_so"><span>Non so</span></label>
+                  </div>
+                </fieldset>
+                <div class="field field-nested" data-label="Note sulla newsletter">
+                  <label for="f-nl-note" class="sub-label">Ogni quanto la mandi e cosa racconti?</label>
+                  <input id="f-nl-note" name="newsletter_note" type="text" maxlength="200" placeholder="es. una al mese, con novità e consigli">
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="funzionalita=whatsapp"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">WhatsApp</h3>
+                <div class="field field-nested" data-label="Numero WhatsApp">
+                  <label for="f-wa" class="sub-label">Numero WhatsApp</label>
+                  <input id="f-wa" name="whatsapp_numero" type="tel" inputmode="tel" maxlength="30" data-pattern="phone" placeholder="Lascia vuoto se è il telefono dello step 1">
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="funzionalita=download"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">File da scaricare</h3>
+                <div class="field field-nested" data-label="File da scaricare">
+                  <label for="f-dl-cosa" class="sub-label">Cosa si scarica?</label>
+                  <input id="f-dl-cosa" name="download_cosa" type="text" maxlength="200" placeholder="es. listino in PDF, esercizi da fare a casa">
+                </div>
+                <fieldset class="field field-nested" data-label="Accesso al file">
+                  <legend class="sub-label">Chi può scaricarlo?</legend>
+                  <div class="choices choices-tight">
+                    <label class="choice"><input type="radio" name="download_tipo" value="libero"><span>Chiunque, liberamente</span></label>
+                    <label class="choice"><input type="radio" name="download_tipo" value="email"><span>Chi lascia la sua email</span></label>
+                  </div>
+                </fieldset>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="funzionalita=ecommerce"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Vendita online</h3>
+                <div class="field field-nested" data-label="Cosa vendi online">
+                  <label for="f-ecom" class="sub-label">Cosa vendi e quanti prodotti, più o meno?</label>
+                  <input id="f-ecom" name="ecommerce_note" type="text" maxlength="200" placeholder="es. 30 vini, con spedizione in Italia">
+                </div>
+              </div></div></div>
+
+              <div class="reveal" data-show-when="funzionalita=area_riservata"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Area riservata</h3>
+                <div class="field field-nested" data-label="Area riservata">
+                  <label for="f-area" class="sub-label">A cosa serve e chi può entrare?</label>
+                  <input id="f-area" name="area_note" type="text" maxlength="200" placeholder="es. i clienti scaricano le schede di allenamento">
+                </div>
+              </div></div></div>
+            </div>
 
             <fieldset class="field" data-label="Lingue del sito">
               <legend>In che lingue dev'essere il sito?</legend>
@@ -303,9 +415,63 @@
             </div>
           </section>
 
-          <!-- ─── STEP 4 · STILE ───────────────────────────────── -->
-          <section class="step" data-step="4" data-title="Stile" aria-labelledby="s4-title" hidden>
-            <h2 class="step-title" id="s4-title" tabindex="-1">Stile</h2>
+          <!-- ─── STEP 4 · INFO PER IL SITO ────────────────────── -->
+          <section class="step" data-step="4" data-title="Info per il sito" aria-labelledby="s4-title" hidden>
+            <h2 class="step-title" id="s4-title" tabindex="-1">Info per il sito</h2>
+            <p class="step-lead">Le informazioni pratiche che i clienti cercano. È tutto facoltativo: quello che non hai sottomano me lo mandi dopo.</p>
+
+            <div class="field" data-label="Servizi o prodotti principali">
+              <label for="f-servizi-princ">Servizi o prodotti principali</label>
+              <p class="hint" id="servizi-princ-hint">Uno per riga, con una breve descrizione.</p>
+              <textarea id="f-servizi-princ" name="servizi_principali" rows="5" maxlength="2000" aria-describedby="servizi-princ-hint" placeholder="es. Pilates – lezioni in piccoli gruppi, massimo 6 persone"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="field" data-label="Orari">
+                <label for="f-orari">Orari di apertura</label>
+                <textarea id="f-orari" name="orari" rows="3" maxlength="600" placeholder="es. lun–ven 8–20, sabato 9–13"></textarea>
+              </div>
+              <div class="field" data-label="Persone da presentare">
+                <label for="f-staff">Persone da presentare</label>
+                <textarea id="f-staff" name="staff" rows="3" maxlength="1000" placeholder="Nome e ruolo, una per riga. es. Laura Bianchi – nutrizionista"></textarea>
+              </div>
+            </div>
+
+            <fieldset class="field" data-label="Prezzi sul sito">
+              <legend>Vuoi mostrare i prezzi sul sito?</legend>
+              <div class="choices choices-tight">
+                <label class="choice"><input type="radio" name="prezzi_mostra" value="si"><span>Sì</span></label>
+                <label class="choice"><input type="radio" name="prezzi_mostra" value="alcuni"><span>Solo alcuni o «a partire da»</span></label>
+                <label class="choice"><input type="radio" name="prezzi_mostra" value="no"><span>No</span></label>
+              </div>
+              <div class="reveal" data-show-when="prezzi_mostra=si|alcuni">
+                <div class="reveal-inner">
+                  <label for="f-prezzi" class="sub-label">Quali prezzi?</label>
+                  <textarea id="f-prezzi" name="prezzi_note" rows="3" maxlength="1000" placeholder="Scrivili qui, oppure carica il listino tra le reference allo step 5."></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="field" data-label="Contatti da pubblicare">
+              <legend>Quali contatti posso mettere sul sito?</legend>
+              <p class="hint" id="contatti-pub-hint">Se il telefono o l'email dello step 1 sono personali, indica quelli da pubblicare.</p>
+              <div class="choices" aria-describedby="contatti-pub-hint">
+                <label class="choice"><input type="checkbox" name="contatti_pubblici" value="telefono"><span>Il telefono dello step 1</span></label>
+                <label class="choice"><input type="checkbox" name="contatti_pubblici" value="email"><span>L'email dello step 1</span></label>
+                <label class="choice"><input type="checkbox" name="contatti_pubblici" value="altri"><span>Altri contatti</span></label>
+              </div>
+              <div class="reveal" data-show-when="contatti_pubblici=altri">
+                <div class="reveal-inner">
+                  <label for="f-contatti-altri" class="sub-label">Quali?</label>
+                  <input id="f-contatti-altri" name="contatti_altri" type="text" maxlength="300" placeholder="es. info@tuaattivita.it, 0541 123456">
+                </div>
+              </div>
+            </fieldset>
+          </section>
+
+          <!-- ─── STEP 5 · STILE ───────────────────────────────── -->
+          <section class="step" data-step="5" data-title="Stile" aria-labelledby="s5-title" hidden>
+            <h2 class="step-title" id="s5-title" tabindex="-1">Stile</h2>
             <p class="step-lead">Cosa ti piace, cosa no. Anche pochi esempi aiutano tantissimo.</p>
 
             <fieldset class="field" data-label="Siti di ispirazione" id="inspoField">
@@ -361,9 +527,9 @@
             </div>
           </section>
 
-          <!-- ─── STEP 5 · SERVIZI EXTRA ───────────────────────── -->
-          <section class="step" data-step="5" data-title="Servizi extra" aria-labelledby="s5-title" hidden>
-            <h2 class="step-title" id="s5-title" tabindex="-1">Servizi extra</h2>
+          <!-- ─── STEP 6 · SERVIZI EXTRA ───────────────────────── -->
+          <section class="step" data-step="6" data-title="Servizi extra" aria-labelledby="s6-title" hidden>
+            <h2 class="step-title" id="s6-title" tabindex="-1">Servizi extra</h2>
             <p class="step-lead">Oltre al sito, ti serve qualcos'altro? È tutto facoltativo: seleziona quello che ti interessa e ne parliamo.</p>
 
             <dl class="terms" aria-label="Condizioni">
@@ -455,11 +621,11 @@
             <div class="extra-details">
               <div class="reveal" data-show-when="extra=logo"><div class="reveal-inner"><div class="extra-panel">
                 <h3 class="extra-title">Logo</h3>
-                <fieldset class="field field-nested" data-label="Logo">
-                  <legend class="sub-label">Cosa ti serve?</legend>
+                <fieldset class="field field-nested" data-label="Logo" data-required-when="extra=logo">
+                  <legend class="sub-label">Cosa ti serve? <span class="req" aria-hidden="true">*</span></legend>
                   <div class="choices choices-tight">
-                    <label class="choice"><input type="radio" name="logo_tipo" value="nuovo"><span>Un logo nuovo</span></label>
-                    <label class="choice"><input type="radio" name="logo_tipo" value="restyling"><span>Restyling di quello esistente</span></label>
+                    <label class="choice"><input type="radio" name="logo_tipo" value="nuovo"><span>Un logo nuovo, da zero</span></label>
+                    <label class="choice"><input type="radio" name="logo_tipo" value="restyling"><span>Un ritocco di quello attuale, che resti riconoscibile</span></label>
                   </div>
                 </fieldset>
                 <div class="field field-nested" data-label="Note sul logo">
@@ -592,15 +758,15 @@
             </div>
 
             <!-- Stima indicativa: la compila brief.js con i prezzi di pricing.js -->
-            <section class="estimate" data-estimate aria-labelledby="est5-title">
-              <h3 class="estimate-title" id="est5-title">La tua stima indicativa</h3>
+            <section class="estimate" data-estimate aria-labelledby="est6-title">
+              <h3 class="estimate-title" id="est6-title">La tua stima indicativa</h3>
               <div class="estimate-body" aria-live="polite"></div>
             </section>
           </section>
 
-          <!-- ─── STEP 6 · PRATICA ─────────────────────────────── -->
-          <section class="step" data-step="6" data-title="Pratica" aria-labelledby="s6-title" hidden>
-            <h2 class="step-title" id="s6-title" tabindex="-1">Pratica</h2>
+          <!-- ─── STEP 7 · PRATICA ─────────────────────────────── -->
+          <section class="step" data-step="7" data-title="Pratica" aria-labelledby="s7-title" hidden>
+            <h2 class="step-title" id="s7-title" tabindex="-1">Pratica</h2>
             <p class="step-lead">Tempi, budget e dominio.</p>
 
             <fieldset class="field" data-label="Tempistiche" data-required>
@@ -648,21 +814,30 @@
               </div>
             </fieldset>
 
+            <fieldset class="field" data-label="Email con il dominio">
+              <legend>Vuoi un'email con il nome del sito (es. info@tuaattivita.it)?</legend>
+              <div class="choices choices-tight">
+                <label class="choice"><input type="radio" name="email_dominio" value="si"><span>Sì</span></label>
+                <label class="choice"><input type="radio" name="email_dominio" value="no"><span>No, mi basta la mia</span></label>
+                <label class="choice"><input type="radio" name="email_dominio" value="non_so"><span>Non so</span></label>
+              </div>
+            </fieldset>
+
             <div class="field" data-label="Note">
               <label for="f-note">Note libere</label>
               <textarea id="f-note" name="note" rows="4" maxlength="3000" placeholder="Qualsiasi cosa non abbia trovato posto nelle domande."></textarea>
             </div>
           </section>
 
-          <!-- ─── STEP 7 · RIEPILOGO ───────────────────────────── -->
-          <section class="step" data-step="7" data-title="Riepilogo" aria-labelledby="s7-title" hidden>
-            <h2 class="step-title" id="s7-title" tabindex="-1">Riepilogo</h2>
+          <!-- ─── STEP 8 · RIEPILOGO ───────────────────────────── -->
+          <section class="step" data-step="8" data-title="Riepilogo" aria-labelledby="s8-title" hidden>
+            <h2 class="step-title" id="s8-title" tabindex="-1">Riepilogo</h2>
             <p class="step-lead">Controlla che sia tutto giusto. Puoi tornare a modificare qualsiasi step.</p>
 
             <div class="review" id="review"></div>
 
-            <section class="estimate estimate-review" data-estimate aria-labelledby="est7-title">
-              <h3 class="estimate-title" id="est7-title">Stima indicativa</h3>
+            <section class="estimate estimate-review" data-estimate aria-labelledby="est8-title">
+              <h3 class="estimate-title" id="est8-title">Stima indicativa</h3>
               <div class="estimate-body"></div>
             </section>
 
@@ -724,6 +899,6 @@
   </template>
 
   <script src="script.js?v=63c426c1"></script>
-  <script type="module" src="brief.js?v=3"></script>
+  <script type="module" src="brief.js?v=4"></script>
 </body>
 </html>
