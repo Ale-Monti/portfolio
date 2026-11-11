@@ -15,6 +15,8 @@
 //    SITE_URL              (facoltativa) es. https://tuodominio.it
 // ═══════════════════════════════════════════════════════════════════
 
+import { RATE, DEPOSIT, REVISIONS, suggest, range, euro, listino } from '../../pricing.js';
+
 const MAX_FILES = 8;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_BODY = 45 * 1024 * 1024;
@@ -303,8 +305,23 @@ function derived(b) {
     return { id, label: L.extra[id], rows };
   });
 
-  return { settore, obiettivo, sezioni, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails };
+  return { settore, obiettivo, sezioni, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails, quote: suggest(b) };
 }
+
+// Righe del preventivo suggerito, già in testo: [voce, forbice lancio, listino, suggerito, perché]
+function quoteRows(q) {
+  const est = q.estimate;
+  const rows = [['Sito vetrina', range(est.site.min, est.site.max), range(listino(est.site.min), listino(est.site.max)), euro(q.site.price), q.site.why]];
+  q.lines.forEach(l => {
+    const name = l.bundle ? `${l.label} (${l.items.map(id => L.extra[id]).join(' + ')})` : L.extra[l.id];
+    rows.push([name + (l.qty > 1 ? ` × ${l.qty}` : ''), range(l.min, l.max), range(listino(l.min), listino(l.max)), euro(l.price), l.why]);
+  });
+  est.included.forEach(id => rows.push([L.extra[id], 'incluso', '', '', 'compreso nella brand identity']));
+  est.onDemand.forEach(id => rows.push([L.extra[id], `${RATE.hour} €/h`, '', 'a richiesta', 'non entra nel totale']));
+  return rows;
+}
+
+const costText = c => (c.max === null ? (c.min ? `da ${euro(c.min)}` : 'da valutare') : c.max === 0 ? 'gratis' : range(c.min, c.max));
 
 // ═════════════════════════════════════════════════════════════════
 //  brief.md
@@ -433,6 +450,31 @@ function buildMarkdown(b, d, ctx) {
   out.push(para(b.note));
   out.push('');
 
+  // ─── Preventivo suggerito (solo per il titolare) ───────────────
+  const q = d.quote;
+  const cell = v => oneLine(v).replace(/\|/g, '/');
+  out.push('## Preventivo suggerito');
+  out.push('');
+  out.push('_Solo per Alessandro: è un punto di partenza calcolato dalle risposte, da rivedere prima di mandarlo al cliente. Prezzi di lancio, con il listino accanto._');
+  out.push('');
+  out.push('| Voce | Forbice (lancio) | Listino | Suggerito | Perché |');
+  out.push('|---|---|---|---|---|');
+  quoteRows(q).forEach(r => out.push(`| ${r.map(cell).join(' | ')} |`));
+  out.push(`| **Totale** | ${range(q.estimate.total.min, q.estimate.total.max)} | ${range(listino(q.estimate.total.min), listino(q.estimate.total.max))} | **${euro(q.total)}** | listino ${euro(q.totalListino)} |`);
+  out.push('');
+  out.push(item('Acconto suggerito', `${euro(q.deposit)} (${Math.round(DEPOSIT * 100)}% alla conferma), saldo alla consegna`));
+  if (q.estimate.site.tbd.length) out.push(item('Da valutare a parte', q.estimate.site.tbd.join(', ')));
+  out.push(item('Budget del cliente', b.budget ? `${lab(L.budget, b.budget)}. ${q.budgetNote}` : 'Non indicato'));
+  out.push(item('Condizioni', `${REVISIONS} revisioni incluse su logo e grafica; ore extra e manutenzione a ${RATE.hour} €/h (${RATE.bulk} €/h da ${RATE.bulkFrom} ore)`));
+  out.push('');
+  const c = q.estimate.costs;
+  out.push('**Costi vivi a carico del cliente (stima)**');
+  out.push('');
+  c.yearly.forEach(x => out.push(`- Ogni anno · ${x.label}: ${costText(x)}${x.note ? ` (${x.note})` : ''}`));
+  c.once.forEach(x => out.push(`- Una tantum · ${x.label}: ${costText(x)}${x.note ? ` (${x.note})` : ''}`));
+  out.push(`- **Totale:** ${costText(c.yearlyTotal)} all'anno${c.once.length ? ` + ${costText(c.onceTotal)} una tantum` : ''}`);
+  out.push('');
+
   // ─── Istruzioni per Claude Code ────────────────────────────────
   const copy = b.extra.includes('copy');
   const mainLang = d.lingue[0] || 'Italiano';
@@ -458,6 +500,7 @@ function buildMarkdown(b, d, ctx) {
   out.push('10. **Immagini e logo:** usa segnaposto con proporzioni corrette e `alt` descrittivi. Non usare foto stock. Se il logo va creato o rifatto, metti il nome dell\'attività in testo come segnaposto.');
   out.push('11. **Servizi extra:** i servizi extra elencati sopra (logo, brand identity, foto, stampati, kit social, Google Business, QR code, firma email, traduzioni, supporto) **non fanno parte della bozza del sito**: non realizzarli. Unica eccezione sono i testi del sito, se è richiesto il copywriting (punto 9).');
   out.push('12. **Alla fine** crea `NOTE_BOZZA.md` con: le scelte fatte, l\'elenco di tutte le informazioni mancanti o segnaposto da completare, e le domande da fare al cliente.');
+  out.push('13. **Preventivo:** la sezione "Preventivo suggerito" non riguarda la bozza e non va mai mostrata nel sito. In `NOTE_BOZZA.md` aggiungi una breve sezione "Note sul preventivo": se la bozza ti fa pensare che il lavoro sia più grande o più piccolo del previsto (sezioni in più, contenuti mancanti, funzionalità complesse), proponi un aggiustamento motivato delle cifre suggerite, restando nelle forbici.');
   out.push('');
 
   return out.join('\n');
@@ -587,6 +630,26 @@ function buildOwnerEmail(b, d, ctx) {
   if (b.altro_bisogno) extraBody += kv('Altro di cui ha bisogno', b.altro_bisogno, { dark: hot });
   parts.push(full(`Servizi extra${d.extraDetails.length ? ` (${d.extraDetails.length})` : ''}`, extraBody, { dark: hot }));
 
+  // Preventivo suggerito
+  const q = d.quote;
+  const qRows = quoteRows(q).map(([voce, forbice, , sugg, why]) => `<tr>
+      <td valign="top" style="padding:9px 12px 9px 0;border-top:1px solid ${C.line};font-family:${FONT};font-size:14px;line-height:20px;color:${C.ink};">${esc(voce)}<br><span style="font-size:12px;line-height:17px;color:${C.muted};">${esc(why)}</span></td>
+      <td valign="top" align="right" style="padding:9px 12px 9px 0;border-top:1px solid ${C.line};font-family:${FONT};font-size:12px;line-height:20px;color:${C.muted};white-space:nowrap;">${esc(forbice)}</td>
+      <td valign="top" align="right" style="padding:9px 0;border-top:1px solid ${C.line};font-family:${DISPLAY};font-size:15px;line-height:20px;font-weight:600;color:${C.ink};white-space:nowrap;">${esc(sugg)}</td></tr>`).join('');
+  const cst = q.estimate.costs;
+  const quoteBody = `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${qRows}
+      <tr>
+        <td style="padding:14px 12px 4px 0;border-top:1px solid ${C.ink};font-family:${DISPLAY};font-size:17px;font-weight:600;color:${C.ink};">Totale suggerito</td>
+        <td align="right" style="padding:14px 12px 4px 0;border-top:1px solid ${C.ink};font-family:${FONT};font-size:12px;color:${C.muted};white-space:nowrap;">${esc(range(q.estimate.total.min, q.estimate.total.max))}</td>
+        <td align="right" style="padding:14px 0 4px;border-top:1px solid ${C.ink};font-family:${DISPLAY};font-size:26px;line-height:30px;font-weight:700;color:${C.ink};white-space:nowrap;">${esc(euro(q.total))}</td>
+      </tr>
+    </table>
+    <div style="margin:4px 0 14px;font-family:${FONT};font-size:12px;line-height:18px;color:${C.muted};">Listino ${esc(euro(q.totalListino))} · acconto ${Math.round(DEPOSIT * 100)}% = ${esc(euro(q.deposit))}${q.estimate.site.tbd.length ? ` · da valutare a parte: ${esc(q.estimate.site.tbd.join(', '))}` : ''}</div>
+    ${q.budgetNote ? `<div style="margin:0 0 14px;padding:10px 12px;border-radius:10px;background:${C.bg};font-family:${FONT};font-size:13px;line-height:19px;color:${C.ink};"><strong>Budget ${esc(lab(L.budget, b.budget))}.</strong> ${esc(q.budgetNote)}</div>` : ''}
+    ${kv('Costi vivi del cliente', `${costText(cst.yearlyTotal)} all'anno${cst.once.length ? ` + ${costText(cst.onceTotal)} una tantum` : ''}`)}`;
+  parts.push(full('Preventivo suggerito', quoteBody));
+
   // Obiettivo | Sezioni
   const obiettivo = [
     `<div style="font-family:${DISPLAY};font-size:19px;line-height:24px;font-weight:600;color:${C.ink};margin:0 0 12px;">${esc(d.obiettivo)}</div>`,
@@ -659,6 +722,15 @@ function buildOwnerEmail(b, d, ctx) {
 
 function buildClientEmail(b, d) {
   const first = b.nome.split(/\s+/)[0];
+  const est = d.quote.estimate;
+  const cst = est.costs;
+  const stima = range(est.total.min, est.total.max);
+  const stimaNote = [
+    'prezzi di lancio',
+    est.site.tbd.length ? `più ${est.site.tbd.join(' e ')} da valutare` : '',
+    est.onDemand.length ? 'supporto a ore escluso' : '',
+  ].filter(Boolean).join(', ');
+  const costi = `${costText(cst.yearlyTotal)} all'anno${cst.once.length ? ` + ${costText(cst.onceTotal)} una tantum` : ''}`;
   const rows = [
     ['Attività', b.attivita],
     ['Obiettivo', d.obiettivo],
@@ -672,9 +744,19 @@ function buildClientEmail(b, d) {
         ${label('Brief ricevuto')}
         <div style="font-family:${DISPLAY};font-size:30px;line-height:34px;font-weight:700;letter-spacing:-0.5px;color:${C.ink};margin:0 0 18px;">Grazie ${esc(first)}, ho ricevuto il tuo brief.</div>
         <div style="font-family:${FONT};font-size:15px;line-height:24px;color:${C.soft};margin:0 0 24px;">
-          Lo leggo con calma e ti ricontatto nei prossimi giorni lavorativi con domande o una prima proposta.
+          Lo leggo con calma e a breve ti invio un preventivo definitivo, insieme alle eventuali domande.
           Se nel frattempo ti viene in mente qualcos'altro, rispondi pure a questa email.
         </div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;background:${C.bg};border-radius:12px;">
+          <tr><td style="padding:18px 20px 16px;">
+            ${label('Stima indicativa')}
+            <div style="font-family:${DISPLAY};font-size:26px;line-height:30px;font-weight:700;letter-spacing:-0.3px;color:${C.ink};margin:0 0 6px;">${esc(stima)}</div>
+            <div style="font-family:${FONT};font-size:13px;line-height:20px;color:${C.muted};">
+              ${esc(stimaNote.charAt(0).toUpperCase() + stimaNote.slice(1))}. Costi vivi a parte, pagati direttamente ai fornitori: ${esc(costi)}.<br>
+              La cifra precisa sarà nel preventivo. Acconto del ${Math.round(DEPOSIT * 100)}% alla conferma, saldo alla consegna.
+            </div>
+          </td></tr>
+        </table>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid ${C.line};">
           ${rows.map(([k, v]) => `<tr>
             <td width="34%" valign="top" style="padding:10px 12px 10px 0;border-bottom:1px solid ${C.line};font-family:${FONT};font-size:12px;line-height:18px;letter-spacing:1px;text-transform:uppercase;color:${C.muted};">${esc(k)}</td>
@@ -690,8 +772,12 @@ function buildClientEmail(b, d) {
   const text = [
     `Grazie ${first}, ho ricevuto il tuo brief.`,
     '',
-    'Lo leggo con calma e ti ricontatto nei prossimi giorni lavorativi con domande o una prima proposta.',
+    'Lo leggo con calma e a breve ti invio un preventivo definitivo, insieme alle eventuali domande.',
     'Se nel frattempo ti viene in mente qualcos\'altro, rispondi pure a questa email.',
+    '',
+    `Stima indicativa: ${stima} (${stimaNote}).`,
+    `Costi vivi a parte, pagati direttamente ai fornitori: ${costi}.`,
+    `La cifra precisa sarà nel preventivo. Acconto del ${Math.round(DEPOSIT * 100)}% alla conferma, saldo alla consegna.`,
     '',
     ...rows.map(([k, v]) => `${k}: ${v}`),
     '',
@@ -854,6 +940,7 @@ export async function onRequestPost({ request, env }) {
         scadenza: d.scadenza, budget: lab(L.budget, b.budget), extra: d.extraDetails,
       },
       files: files.map(({ name, key, original, type, size, url }) => ({ name, key, original, type, size, url })),
+      quote: d.quote,
     };
 
     await bucket.put(mdKey, markdown, { httpMetadata: { contentType: 'text/markdown; charset=utf-8' } });

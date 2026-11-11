@@ -1,8 +1,10 @@
 // ═══════════════════════════════════════════════════════════════════
 //  BRIEF FORM – multi-step, validazione inline, bozza in localStorage,
 //  upload con anteprime, Turnstile, invio a /api/brief
-//  (tema, cursore e nav arrivano da script.js)
+//  (tema, cursore e nav arrivano da script.js; i prezzi da pricing.js)
 // ═══════════════════════════════════════════════════════════════════
+import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro } from './pricing.js?v=2';
+
 (() => {
   'use strict';
 
@@ -263,6 +265,7 @@
     nextBtn.textContent = n === TOTAL_STEPS ? 'Invia il brief' : n === TOTAL_STEPS - 1 ? 'Vai al riepilogo →' : 'Avanti →';
 
     if (n === TOTAL_STEPS) { buildReview(); renderTurnstile(); }
+    if (n >= 5) renderEstimate();
     formError.hidden = true;
 
     if (focus) {
@@ -528,6 +531,7 @@
     $('#draftNotice').hidden = true;
     maxVisited = 1;
     updateConditions();
+    updateBundle();
     showStep(1);
     announce('Bozza cancellata.');
   });
@@ -797,6 +801,176 @@
   }
 
   // ═════════════════════════════════════════════════════════════════
+  //  Prezzi: cartellini, pacchetto, stima indicativa
+  // ═════════════════════════════════════════════════════════════════
+  const make = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+
+  // Listino barrato + prezzo di lancio (con testo per gli screen reader)
+  function priceNode(min, max, { cls = 'price' } = {}) {
+    const p = make('span', cls);
+    const s = make('s');
+    s.append(make('span', 'sr-only', 'Listino '), range(listino(min), listino(max)));
+    const b = make('b');
+    b.append(make('span', 'sr-only', ', prezzo di lancio '), range(min, max));
+    p.append(s, ' ', b);
+    return p;
+  }
+
+  const serviceInputs = $$('.service input[name="extra"]', form);
+  const serviceName = id => {
+    const input = serviceInputs.find(i => i.value === id);
+    return input ? choiceText(input) : id;
+  };
+
+  function renderServicePrices() {
+    serviceInputs.forEach(input => {
+      const s = SERVICES[input.value];
+      const body = input.nextElementSibling;
+      if (!s || !body || $('.service-price', body)) return;
+      const wrap = make('span', 'service-price');
+      if (s.onDemand) {
+        const p = make('span', 'price');
+        p.append(make('b', '', `${RATE.hour} €/h`));
+        wrap.append(p);
+      } else {
+        wrap.append(priceNode(s.min, s.max));
+      }
+      wrap.append(make('span', 'service-unit', s.unit));
+      body.appendChild(wrap);
+    });
+  }
+
+  // ─── Pacchetto ───────────────────────────────────────────────────
+  const bundle = BUNDLES[0];
+  const bundleBtn = $('#bundleBtn');
+  const bundleCard = $('#bundleCard');
+  const bundleSeparate = () => bundle.items.reduce((t, id) => [t[0] + SERVICES[id].min, t[1] + SERVICES[id].max], [0, 0]);
+
+  function setupBundle() {
+    if (!bundle || !bundleCard) return;
+    $('#bundlePrice').append(priceNode(bundle.min, bundle.max));
+    bundleBtn.addEventListener('click', () => {
+      const on = bundleBtn.getAttribute('aria-pressed') !== 'true';
+      bundle.items.forEach(id => {
+        const input = serviceInputs.find(i => i.value === id);
+        if (input && input.checked !== on) {
+          input.checked = on;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      });
+      announce(on ? 'Pacchetto aggiunto: logo, biglietti da visita e firma email.' : 'Pacchetto rimosso.');
+    });
+  }
+
+  function updateBundle() {
+    if (!bundle || !bundleCard) return;
+    const extra = values('extra');
+    const all = bundle.items.every(id => extra.includes(id));
+    const blocked = all && extra.includes('brand');
+    bundleBtn.setAttribute('aria-pressed', String(all));
+    bundleBtn.textContent = all ? 'Pacchetto aggiunto ✓' : 'Aggiungi il pacchetto';
+    bundleCard.classList.toggle('is-active', all && !blocked);
+    const sep = bundleSeparate();
+    $('#bundleNote').textContent = blocked
+      ? 'Hai scelto anche la brand identity, che comprende già il logo: conto quella più biglietti e firma.'
+      : `Presi separatamente costerebbero ${range(sep[0], sep[1])}.`;
+  }
+
+  // ─── Stima indicativa ────────────────────────────────────────────
+  const costRange = (min, max) => (max === null ? (min ? `da ${euro(min)}` : 'da valutare') : max === 0 ? 'gratis' : range(min, max));
+
+  function estRow(label, note, priceEl, cls = '') {
+    const row = make('div', `est-row ${cls}`.trim());
+    const left = make('span', 'est-label');
+    left.append(make('span', '', label));
+    if (note) left.append(make('small', '', note));
+    row.append(left, priceEl);
+    return row;
+  }
+
+  function costList(title, list, total, per) {
+    const box = make('div', 'est-cost');
+    box.append(make('h4', '', title));
+    const ul = make('ul');
+    list.forEach(c => {
+      const li = make('li');
+      const left = make('span');
+      left.append(make('span', '', c.label));
+      if (c.note) left.append(make('small', '', c.note));
+      li.append(left, make('span', 'est-cost-val', costRange(c.min, c.max)));
+      ul.appendChild(li);
+    });
+    box.append(ul, make('p', 'est-cost-total', `Totale: ${costRange(total.min, total.max)}${per}`));
+    return box;
+  }
+
+  function buildEstimate() {
+    const data = collect();
+    const est = estimate(data);
+    const frag = document.createDocumentFragment();
+    const rows = make('div', 'est-rows');
+
+    const sez = (data.sezioni || []).length;
+    const siteNote = est.site.notes.length
+      ? est.site.notes.join(' · ')
+      : `${sez || 'nessuna'} ${sez === 1 ? 'sezione' : 'sezioni'}, fino a ${SITE.sections} comprese`;
+    rows.append(estRow('Sito vetrina', siteNote, priceNode(est.site.min, est.site.max)));
+
+    est.items.forEach(i => {
+      if (i.bundle) {
+        rows.append(estRow(i.label, `${i.items.map(serviceName).join(' + ')} · invece di ${range(i.separate[0], i.separate[1])}`, priceNode(i.min, i.max), 'is-bundle'));
+        return;
+      }
+      const note = [SERVICES[i.id].unit, i.qty > 1 ? `× ${i.qty}` : ''].filter(Boolean).join(' ');
+      rows.append(estRow(serviceName(i.id), note, priceNode(i.min, i.max)));
+    });
+    est.included.forEach(id => rows.append(estRow(serviceName(id), 'compreso nella brand identity', make('span', 'price', 'incluso'), 'is-muted')));
+    if (!est.items.length && !est.included.length) rows.append(make('p', 'est-empty', 'Nessun servizio extra selezionato.'));
+
+    const tbd = est.site.tbd.length ? `più ${est.site.tbd.join(' e ')}, da valutare a parte` : '';
+    rows.append(estRow('Totale indicativo', tbd, priceNode(est.total.min, est.total.max, { cls: 'price price-lg' }), 'est-total'));
+    frag.appendChild(rows);
+
+    if (est.onDemand.length) {
+      frag.appendChild(make('p', 'est-note', `${est.onDemand.map(serviceName).join(', ')}: a richiesta, ${RATE.hour} €/h solo quando ti serve.`));
+    }
+
+    const c = est.costs;
+    const costs = make('div', 'est-costs');
+    costs.append(costList('Ogni anno', c.yearly, c.yearlyTotal, ' all\'anno'));
+    if (c.once.length) costs.append(costList('Una tantum', c.once, c.onceTotal, ''));
+    const wrap = make('div', 'est-costs-wrap');
+    wrap.append(
+      make('h4', 'est-costs-title', 'Costi vivi a carico tuo'),
+      make('p', 'est-costs-lead', 'Li paghi direttamente ai fornitori e non fanno parte del mio compenso. Sono stime.'),
+      costs,
+    );
+    frag.appendChild(wrap);
+
+    frag.appendChild(make('p', 'est-foot', `È una stima per orientarti, con i prezzi di lancio. Dopo aver letto il brief ti mando un preventivo definitivo. Acconto del ${Math.round(DEPOSIT * 100)}% alla conferma, saldo alla consegna.`));
+    return frag;
+  }
+
+  // Raggruppa più modifiche ravvicinate in un solo aggiornamento
+  let estimateTimer = 0;
+  function renderEstimate() {
+    clearTimeout(estimateTimer);
+    estimateTimer = setTimeout(() => {
+      updateBundle();
+      $$('[data-estimate] .estimate-body', form).forEach(body => {
+        if (body.closest('.step').hidden) return;
+        body.textContent = '';
+        body.appendChild(buildEstimate());
+      });
+    });
+  }
+
+  // ═════════════════════════════════════════════════════════════════
   //  Eventi dei campi
   // ═════════════════════════════════════════════════════════════════
   form.addEventListener('change', e => {
@@ -809,6 +983,7 @@
         : 'Servizio fotografico rimosso: l\'indirizzo completo non è più obbligatorio.');
       if (before && !cond('extra=foto')) $$('#addressGroup [aria-invalid="true"]').forEach(clearError);
     }
+    renderEstimate();
     if (el.type === 'radio' || el.type === 'checkbox') {
       const fs = el.closest('fieldset[data-required]');
       if (fs && fs.classList.contains('has-error')) validateTarget(fs);
@@ -823,6 +998,7 @@
     const el = e.target;
     if (el.getAttribute('aria-invalid') === 'true' && el.type !== 'file') validateTarget(el);
     if (el.tagName === 'SELECT') updateConditions();
+    if (['stampati_cosa', 'traduzioni_lingue'].includes(el.name)) renderEstimate();
     saveDraft();
   });
 
@@ -856,6 +1032,9 @@
   const restored = loadDraft();
   if (!restored) { inspoList.textContent = ''; addInspo(); }
   renderFiles();
+  renderServicePrices();
+  setupBundle();
+  updateBundle();
   // Le reveal partono già nello stato giusto, senza animazione
   form.classList.add('no-anim');
   updateConditions();

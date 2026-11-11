@@ -14,6 +14,7 @@ La pagina non è linkata da nessuna parte del sito e ha `noindex, nofollow`, sia
 | File | Cosa fa |
 |---|---|
 | `brief.html`, `brief.css`, `brief.js` | Il modulo a step |
+| `pricing.js` | Listino, stima per il cliente e prezzo suggerito per te |
 | `privacy.html` | Informativa privacy (**da completare**: sostituisci tutti i `[SEGNAPOSTO]`) |
 | `functions/api/brief.js` | `POST /api/brief`: validazione, R2, email |
 | `functions/api/file/[[path]].js` | `GET /api/file/...?sig=...`: serve i file del bucket privato solo con link firmato |
@@ -145,4 +146,5 @@ Se qualcosa non va: **Workers & Pages** → progetto → **Deployments** → ult
 
 - I file statici del repository sono tutti pubblici, compreso questo README. Il codice non contiene segreti: sono tutti nelle variabili d'ambiente.
 - Per limitare gli abusi puoi aggiungere una regola di **Rate limiting** (Dashboard → dominio → Security → WAF), ad esempio 5 richieste al minuto per IP su `/api/brief`.
-- I prezzi dei servizi extra non sono mostrati da nessuna parte. Le fasce di budget si modificano in `brief.html`, e le etichette corrispondenti nell'oggetto `L.budget` di `functions/api/brief.js`.
+- **Prezzi:** stanno tutti in `pricing.js`, che usano sia il modulo sia la Function. Le cifre sono prezzi di lancio; il listino barrato si calcola con `LAUNCH_FACTOR` (1,5). Lì trovi anche tariffa oraria, acconto, pacchetto, costi vivi, fasce di budget (`BUDGET`) e la logica del prezzo suggerito (`suggest`). Se cambi le fasce di budget, aggiorna anche `brief.html` e `L.budget` in `functions/api/brief.js`.
+- Dopo aver modificato `pricing.js`, `brief.js` o `brief.css`, aumenta il numero `?v=` nei link di `brief.html` e nell'import in cima a `brief.js`, così i browser non usano la versione vecchia.

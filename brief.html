@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=63c426c1">
-  <link rel="stylesheet" href="brief.css?v=1">
+  <link rel="stylesheet" href="brief.css?v=2">
 </head>
 <body class="brief-page">
 
@@ -366,6 +366,25 @@
             <h2 class="step-title" id="s5-title" tabindex="-1">Servizi extra</h2>
             <p class="step-lead">Oltre al sito, ti serve qualcos'altro? È tutto facoltativo: seleziona quello che ti interessa e ne parliamo.</p>
 
+            <dl class="terms" aria-label="Condizioni">
+              <div><dt>Prezzi di lancio</dt><dd>Il listino è barrato: lo sconto vale per i primi progetti.</dd></div>
+              <div><dt>2 revisioni incluse</dt><dd>Sul logo e sulla grafica. Quelle in più si pagano a ore.</dd></div>
+              <div><dt>30 €/h</dt><dd>Per il lavoro a ore. 25 €/h da 4 ore in su (100 €).</dd></div>
+              <div><dt>Acconto 40%</dt><dd>Alla conferma del preventivo, il saldo alla consegna.</dd></div>
+            </dl>
+
+            <div class="bundle" id="bundleCard">
+              <div class="bundle-text">
+                <p class="bundle-kicker">Pacchetto identità</p>
+                <p class="bundle-title">Logo + biglietti da visita + firma email</p>
+                <p class="bundle-note" id="bundleNote"></p>
+              </div>
+              <div class="bundle-side">
+                <p class="price price-lg" id="bundlePrice"></p>
+                <button type="button" class="btn btn-ghost btn-small" id="bundleBtn" aria-pressed="false">Aggiungi il pacchetto</button>
+              </div>
+            </div>
+
             <fieldset class="field" data-label="Servizi selezionati">
               <legend class="sr-only">Servizi extra</legend>
               <div class="services">
@@ -377,7 +396,7 @@
                 <label class="service"><input type="checkbox" name="extra" value="brand">
                   <span class="service-body">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M4 17h16M4 20.5h10"/></svg>
-                    <strong>Mini brand identity</strong><span>Palette, font e linee guida essenziali.</span>
+                    <strong>Mini brand identity</strong><span>Logo, palette, font e una mini guida per usarli.</span>
                   </span></label>
                 <label class="service"><input type="checkbox" name="extra" value="foto">
                   <span class="service-body">
@@ -571,6 +590,12 @@
               <label for="f-altro-bisogno">Altro di cui avresti bisogno?</label>
               <textarea id="f-altro-bisogno" name="altro_bisogno" rows="3" maxlength="1500"></textarea>
             </div>
+
+            <!-- Stima indicativa: la compila brief.js con i prezzi di pricing.js -->
+            <section class="estimate" data-estimate aria-labelledby="est5-title">
+              <h3 class="estimate-title" id="est5-title">La tua stima indicativa</h3>
+              <div class="estimate-body" aria-live="polite"></div>
+            </section>
           </section>
 
           <!-- ─── STEP 6 · PRATICA ─────────────────────────────── -->
@@ -636,6 +661,11 @@
 
             <div class="review" id="review"></div>
 
+            <section class="estimate estimate-review" data-estimate aria-labelledby="est7-title">
+              <h3 class="estimate-title" id="est7-title">Stima indicativa</h3>
+              <div class="estimate-body"></div>
+            </section>
+
             <fieldset class="field field-privacy" data-label="Privacy">
               <legend class="sr-only">Privacy</legend>
               <label class="check">
@@ -694,6 +724,6 @@
   </template>
 
   <script src="script.js?v=63c426c1"></script>
-  <script src="brief.js?v=1"></script>
+  <script type="module" src="brief.js?v=2"></script>
 </body>
 </html>
