@@ -25,9 +25,11 @@ export const SITE = {
   perSection: [30, 50],          // ogni sezione in più
   perLanguage: [30, 50],         // ogni lingua oltre la prima (struttura, non traduzione)
   features: {                    // funzionalità scelte allo step 3
-    prenotazioni: [50, 100],
+    // Con più varianti la scelta arriva dal campo <id>_tipo; senza risposta vale l'ultima
+    prenotazioni: { richiesta: [30, 60], calendario: [50, 100] },
     newsletter: [30, 60],
     whatsapp: [0, 0],
+    download: { libero: [0, 0], email: [20, 40] },
     ecommerce: null,             // null = da valutare a parte
     area_riservata: null,
   },
@@ -69,8 +71,21 @@ export const BUDGET = {
 // ═════════════════════════════════════════════════════════════════
 export const FEATURE_LABEL = {
   prenotazioni: 'prenotazioni online', newsletter: 'newsletter', whatsapp: 'WhatsApp',
-  ecommerce: 'e-commerce', area_riservata: 'area riservata',
+  download: 'download di un file', ecommerce: 'e-commerce', area_riservata: 'area riservata',
 };
+const VARIANT_LABEL = {
+  prenotazioni: { richiesta: 'richieste di prenotazione', calendario: 'calendario prenotazioni' },
+  download: { libero: 'download di un file', email: 'download in cambio dell\'email' },
+};
+
+// Prezzo di una funzionalità: [min, max], null (da valutare) o undefined (sconosciuta)
+function featurePrice(f, b) {
+  const p = SITE.features[f];
+  if (p === undefined || p === null || Array.isArray(p)) return { price: p, label: FEATURE_LABEL[f] };
+  const keys = Object.keys(p);
+  const v = keys.includes(b[`${f}_tipo`]) ? b[`${f}_tipo`] : keys[keys.length - 1];
+  return { price: p[v], label: VARIANT_LABEL[f]?.[v] || FEATURE_LABEL[f] };
+}
 
 const round = n => (n < 100 ? Math.round(n / 5) * 5 : Math.round(n / 10) * 10);
 export const listino = n => round(n * LAUNCH_FACTOR);
@@ -123,14 +138,19 @@ export function estimate(b) {
     site.notes.push(`${lingue} ${lingue === 1 ? 'lingua' : 'lingue'} in più`);
   }
   arr(b.funzionalita).forEach(f => {
-    const p = SITE.features[f];
+    const { price: p, label } = featurePrice(f, b);
     if (p === undefined) return;
-    if (p === null) { site.tbd.push(FEATURE_LABEL[f]); return; }
+    if (p === null) { site.tbd.push(label); return; }
     if (!p[1]) return;
     site.min += p[0];
     site.max += p[1];
-    site.notes.push(FEATURE_LABEL[f]);
+    site.notes.push(label);
   });
+  // Blog: se il cliente vuole pubblicare da solo serve un pannello (CMS), da valutare
+  if (arr(b.sezioni).includes('blog')) {
+    if (b.blog_gestione === 'autonomo') site.tbd.push('blog aggiornabile da te');
+    else if (b.blog_gestione === 'io') site.notes.push(`articoli caricati da me a ${RATE.hour} €/h`);
+  }
 
   // Extra
   const { picked, included, active, bundle } = resolveExtras(b);
@@ -158,11 +178,15 @@ export function estimate(b) {
 }
 
 // ─── Costi vivi a carico del cliente ─────────────────────────────
+//  yearly / once   costi sicuri, dati dalle risposte
+//  optional        solo se il cliente sceglie un piano a pagamento o
+//                  un'opzione non ancora decisa (per: 'anno' | 'una tantum')
 export function liveCosts(b) {
   const extra = arr(b.extra);
   const funz = arr(b.funzionalita);
   const yearly = [];
   const once = [];
+  const optional = [];
 
   yearly.push(b.dominio === 'si'
     ? { id: 'dominio', label: 'Rinnovo del dominio', min: 10, max: 20, note: 'lo paghi già oggi' }
@@ -172,21 +196,48 @@ export function liveCosts(b) {
   } else {
     yearly.push({ id: 'hosting', label: 'Hosting', min: 0, max: 0, note: 'gratuito per un sito vetrina' });
   }
-  yearly.push({ id: 'email', label: 'Email con il tuo dominio', min: 0, max: 75, note: 'facoltativa' });
-  if (funz.includes('newsletter')) yearly.push({ id: 'newsletter', label: 'Servizio newsletter', min: 0, max: 120, note: 'gratis fino a qualche centinaio di iscritti' });
-  if (funz.includes('prenotazioni')) yearly.push({ id: 'prenotazioni', label: 'Servizio prenotazioni', min: 0, max: 240, note: 'molti hanno un piano gratuito' });
+
+  const mail = { id: 'email', label: 'Email con il tuo dominio', min: 0, max: 75, note: 'gratis se inoltri alla tua casella attuale, circa 70 € per una casella a parte' };
+  if (b.email_dominio === 'si') yearly.push(mail);
+  else if (b.email_dominio !== 'no') optional.push({ ...mail, per: 'anno' });
+
+  if (funz.includes('newsletter')) {
+    const nl = { id: 'newsletter', label: 'Servizio newsletter' };
+    if (b.newsletter_iscritti === 'pochi') yearly.push({ ...nl, min: 0, max: 0, note: 'gratis sotto i 500 iscritti' });
+    else if (b.newsletter_iscritti === 'tanti') yearly.push({ ...nl, min: 60, max: 150, note: 'con più di 500 iscritti' });
+    else optional.push({ ...nl, min: 0, max: 120, note: 'gratis sotto i 500 iscritti', per: 'anno' });
+  }
+  if (funz.includes('prenotazioni') && b.prenotazioni_tipo !== 'richiesta') {
+    optional.push({ id: 'prenotazioni', label: 'Calendario prenotazioni', min: 0, max: 240, note: 'molti hanno un piano gratuito', per: 'anno' });
+  }
   if (funz.includes('ecommerce')) yearly.push({ id: 'ecommerce', label: 'Piattaforma e-commerce', min: 0, max: null, note: 'più le commissioni sulle vendite' });
 
   if (extra.includes('biglietti')) once.push({ id: 'stampa_biglietti', label: 'Stampa biglietti da visita', min: 20, max: 50, note: '250-500 pezzi' });
   if (extra.includes('stampati')) once.push({ id: 'stampa_materiali', label: 'Stampa dei materiali', min: 30, max: 150, note: 'in base a formato e quantità' });
-  if (extra.includes('logo') || extra.includes('brand')) once.push({ id: 'font', label: 'Font a pagamento', min: 0, max: 100, note: 'solo se ne scegliamo uno' });
+  if (extra.includes('logo') || extra.includes('brand')) optional.push({ id: 'font', label: 'Font a pagamento', min: 0, max: 100, note: 'solo se ne scegliamo uno', per: 'una tantum' });
 
   const sum = list => list.reduce((t, c) => ({
     min: t.min + c.min,
     max: t.max === null || c.max === null ? null : t.max + c.max,
   }), { min: 0, max: 0 });
 
-  return { yearly, once, yearlyTotal: sum(yearly), onceTotal: sum(once) };
+  return {
+    yearly, once, optional,
+    yearlyTotal: sum(yearly),
+    onceTotal: sum(once),
+    optionalYearly: sum(optional.filter(c => c.per === 'anno')),
+  };
+}
+
+// Costo in testo: "gratis", "10 – 20 €", "da valutare"
+export const costText = c => (c.max === null ? (c.min ? `da ${euro(c.min)}` : 'da valutare') : c.max === 0 ? 'gratis' : range(c.min, c.max));
+
+// Riassunto dei costi vivi in una frase (email al cliente e al titolare)
+export function costSummary(c) {
+  let t = `${costText(c.yearlyTotal)} all'anno`;
+  if (c.once.length) t += ` + ${costText(c.onceTotal)} una tantum`;
+  if (c.optionalYearly.max) t += `; i servizi facoltativi (${c.optional.filter(x => x.per === 'anno').map(x => x.label.toLowerCase()).join(', ')}) sono gratis col piano base, a pagamento fino a ${euro(c.optionalYearly.max)} all'anno in tutto`;
+  return t;
 }
 
 // ─── Prezzo suggerito (solo per il titolare, nel brief e nell'email) ─

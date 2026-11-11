@@ -118,7 +118,7 @@ Serve Node.js 18 o superiore ([nodejs.org](https://nodejs.org)).
    - che i link alle reference nell'email si aprano. In locale funzionano solo mentre `wrangler pages dev` è attivo;
    - i file salvati nel bucket simulato, dentro `.wrangler/state/` (anche questa cartella è in `.gitignore`).
 5. Casi da provare:
-   - Seleziona **Servizio fotografico sul posto** allo step 5, poi vai al riepilogo: il modulo ti riporta allo step 1 con l'indirizzo obbligatorio.
+   - Seleziona **Servizio fotografico sul posto** allo step 6, poi vai al riepilogo: il modulo ti riporta allo step 1 con l'indirizzo obbligatorio.
    - Ricarica la pagina a metà compilazione: la bozza viene ripristinata. I file vanno ricaricati, e il modulo lo segnala.
    - Prova a caricare un file `.gif` o più grande di 5 MB: viene rifiutato con un messaggio.
 
@@ -146,5 +146,6 @@ Se qualcosa non va: **Workers & Pages** → progetto → **Deployments** → ult
 
 - I file statici del repository sono tutti pubblici, compreso questo README. Il codice non contiene segreti: sono tutti nelle variabili d'ambiente.
 - Per limitare gli abusi puoi aggiungere una regola di **Rate limiting** (Dashboard → dominio → Security → WAF), ad esempio 5 richieste al minuto per IP su `/api/brief`.
-- **Prezzi:** stanno tutti in `pricing.js`, che usano sia il modulo sia la Function. Le cifre sono prezzi di lancio; il listino barrato si calcola con `LAUNCH_FACTOR` (1,5). Lì trovi anche tariffa oraria, acconto, pacchetto, costi vivi, fasce di budget (`BUDGET`) e la logica del prezzo suggerito (`suggest`). Se cambi le fasce di budget, aggiorna anche `brief.html` e `L.budget` in `functions/api/brief.js`.
+- **Prezzi:** stanno tutti in `pricing.js`, che usano sia il modulo sia la Function. Le cifre sono prezzi di lancio; il listino barrato si calcola con `LAUNCH_FACTOR` (1,5). Lì trovi anche tariffa oraria, acconto, pacchetto, fasce di budget (`BUDGET`) e la logica del prezzo suggerito (`suggest`). Alcune funzionalità hanno più varianti (es. prenotazioni: richiesta o calendario), scelte dalle domande di dettaglio allo step 3.
+- **Costi vivi** (`liveCosts`): divisi in costi sicuri (dominio, stampa…) e facoltativi (email col dominio, newsletter, calendario prenotazioni, font), che partono da zero e si pagano solo con un piano superiore. Le risposte di dettaglio spostano una voce da facoltativa a sicura o la tolgono. Se cambi le fasce di budget, aggiorna anche `brief.html` e `L.budget` in `functions/api/brief.js`.
 - Dopo aver modificato `pricing.js`, `brief.js` o `brief.css`, aumenta il numero `?v=` nei link di `brief.html` e nell'import in cima a `brief.js`, così i browser non usano la versione vecchia.
