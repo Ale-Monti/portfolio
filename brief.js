@@ -3,7 +3,7 @@
 //  upload con anteprime, Turnstile, invio a /api/brief
 //  (tema, cursore e nav arrivano da script.js; i prezzi da pricing.js)
 // ═══════════════════════════════════════════════════════════════════
-import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro } from './pricing.js?v=2';
+import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro } from './pricing.js?v=3';
 
 (() => {
   'use strict';

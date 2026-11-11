@@ -23,7 +23,7 @@ export const SITE = {
   min: 200, max: 300,            // fino a SITE.sections sezioni
   sections: 4,
   perSection: [30, 50],          // ogni sezione in più
-  perLanguage: [50, 100],        // ogni lingua oltre la prima (struttura, non traduzione)
+  perLanguage: [30, 50],         // ogni lingua oltre la prima (struttura, non traduzione)
   features: {                    // funzionalità scelte allo step 3
     prenotazioni: [50, 100],
     newsletter: [30, 60],
