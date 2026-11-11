@@ -1,0 +1,11 @@
+# Copia questo file in .dev.vars (ignorato da git) per i test in locale con wrangler.
+# Chiave segreta di TEST di Turnstile: accetta sempre il token di test.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Una stringa casuale qualsiasi (es. output di: openssl rand -base64 32)
+BRIEF_FILE_SECRET=cambia-questa-stringa-in-locale
+# La tua API key di Resend
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
+# Dove ricevi i brief
+BRIEF_TO_EMAIL=tuo@indirizzo.it
+# Mittente: dominio verificato in Resend (oppure onboarding@resend.dev solo per test verso la tua email)
+BRIEF_FROM_EMAIL="Alessandro Monticelli <brief@tuodominio.it>"

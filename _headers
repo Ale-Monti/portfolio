@@ -1,0 +1,13 @@
+# Pagine raggiungibili solo via link diretto: fuori dai motori di ricerca
+/brief
+  X-Robots-Tag: noindex, nofollow
+/brief.html
+  X-Robots-Tag: noindex, nofollow
+/privacy
+  X-Robots-Tag: noindex, nofollow
+/privacy.html
+  X-Robots-Tag: noindex, nofollow
+/README_BRIEF.md
+  X-Robots-Tag: noindex, nofollow
+/.dev.vars.example
+  X-Robots-Tag: noindex, nofollow
