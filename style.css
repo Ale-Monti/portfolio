@@ -1016,3 +1016,20 @@ body.is-loaded .work-header {
   }
 
 }
+
+/* ─── Tasti magnetici: riflesso di luce sotto al cursore (vedi script.js) ── */
+.has-glow { position: relative; isolation: isolate; }
+.has-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle 46px at var(--gx, 50%) var(--gy, 50%), var(--glow, rgba(255,255,255,0.2)), transparent 100%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.has-glow.is-lit::before { opacity: 1; }
+/* Su tasti trasparenti o chiari la luce bianca non si vedrebbe: uso il colore del testo, molto tenue */
+.btn-ghost.has-glow, .icon-btn.has-glow { --glow: color-mix(in srgb, currentColor 7%, transparent); }

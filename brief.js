@@ -259,15 +259,16 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
     progress.setAttribute('aria-valuetext', `Step ${n} di ${TOTAL_STEPS}: ${title}`);
     counter.textContent = `Step ${n} di ${TOTAL_STEPS} · ${title}`;
 
+    // Tutti gli step sono raggiungibili: i campi obbligatori si controllano all'invio
     stepBtns.forEach((b, i) => {
       const s = i + 1;
-      b.disabled = s > maxVisited;
+      b.disabled = false;
       b.classList.toggle('is-visited', s <= maxVisited);
       if (s === n) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
     });
 
     prevBtn.hidden = n === 1;
-    reviewBtn.hidden = !(maxVisited === TOTAL_STEPS && n < TOTAL_STEPS);
+    reviewBtn.hidden = n >= TOTAL_STEPS - 1;
     nextBtn.textContent = n === TOTAL_STEPS ? 'Invia il brief' : n === TOTAL_STEPS - 1 ? 'Vai al riepilogo →' : 'Avanti →';
 
     if (n === TOTAL_STEPS) { buildReview(); renderTurnstile(); }
@@ -282,24 +283,45 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
     saveDraft();
   }
 
-  // Avanzare richiede gli step intermedi validi; tornare indietro è sempre libero
+  // Ci si sposta liberamente tra gli step, anche se incompleti.
+  // Dopo un tentativo di invio fallito, lo step che si lascia viene ricontrollato
+  // così la lista a sinistra mostra in rosso solo quelli ancora da completare.
+  let attempted = false;
   function goTo(target) {
-    if (target <= current) { showStep(target); return; }
-    // Prima di arrivare al riepilogo ricontrolla tutto (es. indirizzo diventato obbligatorio)
-    const from = target === TOTAL_STEPS ? 1 : current;
-    for (let s = from; s < target; s++) {
-      if (s > maxVisited) break;
-      const { first, count } = validateStep(s);
-      if (first) {
-        if (s !== current) showStep(s, { focus: false });
-        focusTarget(first);
-        announce(s === 1 && cond('extra=foto') && first.closest?.('#addressGroup')
-          ? 'Hai scelto il servizio fotografico sul posto: completa l\'indirizzo dell\'attività.'
-          : `Controlla ${count === 1 ? 'il campo evidenziato' : `i ${count} campi evidenziati`}.`);
-        return;
+    if (attempted && current < TOTAL_STEPS) validateStep(current);
+    showStep(Math.max(1, Math.min(TOTAL_STEPS, target)));
+  }
+
+  // Nome leggibile del campo mancante, per il riepilogo degli errori
+  function targetLabel(t) {
+    if (t.name === 'privacy') return 'Consenso alla privacy';
+    const field = t.closest('.field[data-label]');
+    return field?.dataset.label || t.getAttribute('aria-label') || t.name;
+  }
+
+  // Elenco cliccabile delle sezioni da completare, mostrato nel riquadro errori
+  function showMissing(missing) {
+    formError.textContent = '';
+    formError.append(make('p', 'form-error-title', missing.length === 1
+      ? 'Per inviare il brief manca ancora una sezione obbligatoria:'
+      : `Per inviare il brief mancano ancora ${missing.length} sezioni obbligatorie:`));
+    const ul = make('ul', 'missing-list');
+    missing.forEach(({ n, title, labels, first }) => {
+      const li = make('li');
+      if (n === TOTAL_STEPS) {
+        li.append(make('span', 'missing-step', title), make('span', 'missing-fields', labels.join(', ')));
+      } else {
+        const btn = make('button', 'missing-step');
+        btn.type = 'button';
+        btn.textContent = `${String(n).padStart(2, '0')} · ${title}`;
+        btn.addEventListener('click', () => { showStep(n, { focus: false }); focusTarget(first); });
+        li.append(btn, make('span', 'missing-fields', labels.join(', ')));
       }
-    }
-    showStep(Math.min(target, maxVisited + 1));
+      ul.appendChild(li);
+    });
+    formError.append(ul);
+    formError.dataset.kind = 'missing';
+    formError.hidden = false;
   }
 
   prevBtn.addEventListener('click', () => showStep(current - 1));
@@ -690,7 +712,8 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
         sitekey,
         theme: turnstileTheme(),
         language: 'it',
-        callback: token => { turnstileToken = token; formError.hidden = true; },
+        // La verifica completata toglie solo l'errore anti-spam, non l'elenco dei campi mancanti
+        callback: token => { turnstileToken = token; if (formError.dataset.kind !== 'missing') formError.hidden = true; },
         'expired-callback': () => { turnstileToken = ''; },
         'error-callback': () => { turnstileToken = ''; },
       });
@@ -709,6 +732,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   // ═════════════════════════════════════════════════════════════════
   function showFormError(msg) {
     formError.textContent = msg;
+    formError.dataset.kind = '';
     formError.hidden = false;
   }
 
@@ -753,14 +777,22 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
     if (sending) return;
     formError.hidden = true;
 
+    // Controlla tutti gli step e, se manca qualcosa, resta qui con l'elenco delle sezioni
+    attempted = true;
+    const missing = [];
     for (let s = 1; s <= TOTAL_STEPS; s++) {
       const { first } = validateStep(s);
-      if (first) {
-        if (s !== current) showStep(s, { focus: false });
-        focusTarget(first);
-        announce('Alcuni campi vanno completati prima dell\'invio.');
-        return;
-      }
+      if (!first) continue;
+      const labels = [...new Set(targetsOf(steps[s - 1])
+        .filter(t => (t.tagName === 'FIELDSET' ? t.classList.contains('has-error') : t.getAttribute('aria-invalid') === 'true'))
+        .map(targetLabel))];
+      missing.push({ n: s, title: steps[s - 1].dataset.title, labels, first });
+    }
+    if (missing.length) {
+      showMissing(missing);
+      formError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      announce(`Mancano campi obbligatori in: ${missing.map(m => m.title).join(', ')}.`);
+      return;
     }
     if (!turnstileToken) {
       showFormError('Completa la verifica anti-spam qui sopra, poi premi di nuovo “Invia il brief”.');
