@@ -803,6 +803,7 @@ body.is-loaded .about-headline {
   display: flex;
   flex-direction: column;
   gap: 22px;
+  max-width: 600px;   /* righe più corte: il testo resta a sinistra senza occupare mezza pagina */
 }
 
 .about-bio p {
@@ -855,19 +856,25 @@ body.is-loaded .about-headline {
 .sidebar-block a:hover { color: var(--ink); transform: scale(1.08); }
 
 /* Language dots */
+/* Stesse colonne di Discipline/Strumenti: i pallini partono sotto "Strumenti" */
 .lang-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
   align-items: center;
   line-height: 2;
+}
+
+.lang-level {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .lang-dots {
   display: flex;
   gap: 5px;
   align-items: center;
-  flex-shrink: 0;
-  margin-left: 12px;
 }
 
 .ldot {
