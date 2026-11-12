@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Brief progetto – Alessandro Monticelli</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
+  <!-- Favicon lime col tema scuro: cambia file invece di affidarsi al media query dentro l'SVG, che il browser tiene in cache -->
+  <script>(function(){var l=document.querySelector('link[rel="icon"]'),m=matchMedia('(prefers-color-scheme: dark)');function u(){l.href=m.matches?'favicon-dark.svg?v=3':'favicon.svg?v=3'}u();m.addEventListener('change',u)})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=63c426c1">
-  <link rel="stylesheet" href="brief.css?v=4">
+  <link rel="stylesheet" href="brief.css?v=5">
 </head>
 <body class="brief-page">
 
@@ -899,6 +901,6 @@
   </template>
 
   <script src="script.js?v=63c426c1"></script>
-  <script type="module" src="brief.js?v=4"></script>
+  <script type="module" src="brief.js?v=5"></script>
 </body>
 </html>

@@ -778,6 +778,32 @@ fieldset[aria-invalid="true"] .choice span,
   background: var(--error-soft);
   border-radius: 10px;
 }
+.form-error-title { font-weight: 500; }
+.missing-list { list-style: none; margin: 8px 0 2px; padding: 0; }
+.missing-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
+  padding: 8px 0;
+  border-top: 1px solid color-mix(in srgb, var(--error) 25%, transparent);
+}
+.missing-step {
+  font: inherit;
+  font-weight: 500;
+  color: var(--error);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+button.missing-step {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+button.missing-step:hover { text-decoration-thickness: 2px; }
+button.missing-step:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 4px; }
+.missing-fields { font-size: 13px; color: var(--ink-soft); }
 
 /* ─── Draft notice ───────────────────────────────────────────────── */
 .brief-notice {
