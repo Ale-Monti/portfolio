@@ -941,3 +941,82 @@ document.addEventListener('DOMContentLoaded', () => {
   const yearEl = document.getElementById('footerYear');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
+
+// ═══════════════════════════════════════════════════════════════════
+//  TASTI MAGNETICI – il tasto si sposta appena verso il cursore e,
+//  sotto al cursore, prende un leggero riflesso di luce sfumato.
+//  Solo con mouse/trackpad; niente spostamento con "riduci movimento".
+// ═══════════════════════════════════════════════════════════════════
+(function () {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // [selettore, forza dello spostamento, massimo in px, riflesso di luce]
+  const KINDS = [
+    ['.btn, .modal-link',                          0.14, 5, true],
+    ['.icon-btn',                                  0.18, 3, true],
+    ['.lightbox-btn',                              0.18, 4, false],
+    ['.nav-link, .nav-control, .logo-link',        0.20, 3, false],
+  ];
+  const RANGE = 28;    // px intorno al tasto in cui inizia ad "attirare"
+  const EASE = 0.16;   // morbidezza dell'inseguimento (più basso = più lento)
+
+  const state = new WeakMap();   // elemento -> {x, y, tx, ty}
+  const active = new Set();
+  let px = -1e4, py = -1e4, frame = 0;
+
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    px = e.clientX; py = e.clientY;
+    if (!frame) frame = requestAnimationFrame(tick);
+  }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => {
+    px = py = -1e4;
+    if (!frame) frame = requestAnimationFrame(tick);
+  });
+
+  function tick() {
+    frame = 0;
+    let moving = false;
+    for (const [sel, force, max, glow] of KINDS) {
+      document.querySelectorAll(sel).forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (!r.width || el.disabled) { release(el); return; }
+        const s = state.get(el) || { x: 0, y: 0, tx: 0, ty: 0 };
+        // Rettangolo "a riposo": tolgo lo spostamento attuale per non inseguire me stesso
+        const left = r.left - s.x, top = r.top - s.y;
+        const near = px > left - RANGE && px < left + r.width + RANGE &&
+                     py > top - RANGE && py < top + r.height + RANGE;
+        const cx = left + r.width / 2, cy = top + r.height / 2;
+        const clamp = v => Math.max(-max, Math.min(max, v));
+        s.tx = near && !reduce.matches ? clamp((px - cx) * force) : 0;
+        s.ty = near && !reduce.matches ? clamp((py - cy) * force) : 0;
+        s.x += (s.tx - s.x) * EASE;
+        s.y += (s.ty - s.y) * EASE;
+        if (Math.abs(s.tx - s.x) < 0.05 && Math.abs(s.ty - s.y) < 0.05) { s.x = s.tx; s.y = s.ty; }
+        else moving = true;
+        state.set(el, s);
+        el.style.translate = s.x || s.y ? `${s.x.toFixed(2)}px ${s.y.toFixed(2)}px` : '';
+        if (glow) {
+          const inside = px >= left && px <= left + r.width && py >= top && py <= top + r.height;
+          el.classList.add('has-glow');
+          el.classList.toggle('is-lit', inside);
+          if (inside) {
+            el.style.setProperty('--gx', `${(px - left).toFixed(1)}px`);
+            el.style.setProperty('--gy', `${(py - top).toFixed(1)}px`);
+          }
+        }
+        if (near || s.x || s.y) active.add(el); else active.delete(el);
+      });
+    }
+    if (moving) frame = requestAnimationFrame(tick);
+  }
+
+  function release(el) {
+    if (!active.has(el)) return;
+    el.style.translate = '';
+    el.classList.remove('is-lit');
+    state.delete(el);
+    active.delete(el);
+  }
+})();
