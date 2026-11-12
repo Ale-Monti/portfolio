@@ -865,6 +865,12 @@ body.is-loaded .about-headline {
   line-height: 2;
 }
 
+.lang-level {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .lang-dots {
   display: flex;
   gap: 5px;
