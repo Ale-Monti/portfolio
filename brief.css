@@ -1121,3 +1121,195 @@ button.missing-step:focus-visible { outline: 2px solid var(--focus-ring); outlin
   .step, .inspo-row, .file-item, .brief-done { animation: none; }
   .reveal, .brief-progress-fill, .btn, .service-body { transition: none; }
 }
+
+/* ─── Caselle secondarie («Te lo mando dopo», nome diverso) ─────── */
+.check.check-small {
+  margin-top: 10px;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.check.check-small input { width: 16px; height: 16px; margin-top: 2px; }
+.check.check-small + .check.check-small { margin-top: 4px; }
+
+/* ─── Galleria stili ─────────────────────────────────────────────── */
+.stili-count {
+  margin-left: 6px;
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 14px;
+  margin-top: 4px;
+}
+.style-item { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.style-card { position: relative; display: block; cursor: pointer; }
+.style-card input {
+  position: absolute;
+  opacity: 0;
+  width: 1px; height: 1px;
+}
+.style-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 8px 8px 12px;
+  border: 1px solid var(--field-line);
+  border-radius: var(--radius);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.3s var(--ease-out), opacity 0.2s ease;
+}
+.style-body strong {
+  margin-top: 6px;
+  padding: 0 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.style-words {
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+.style-card:hover .style-body { border-color: var(--ink); }
+.style-card input:checked + .style-body {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.style-card input:checked + .style-body strong::before {
+  content: '';
+  display: inline-block;
+  width: 8px; height: 4px;
+  margin: 0 8px 3px 1px;
+  border-left: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+}
+.style-card input:focus-visible + .style-body {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+.style-card input:active + .style-body { transform: scale(0.98); }
+.style-card.is-disabled { cursor: not-allowed; }
+.style-card.is-disabled .style-body { opacity: 0.45; }
+.style-card.is-disabled:hover .style-body { border-color: var(--field-line); }
+.has-error .style-body { border-color: var(--error); }
+.style-example {
+  align-self: flex-start;
+  padding: 2px 4px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.style-example:hover { color: var(--ink); }
+
+/* Anteprime schematiche: mini-pagine disegnate in CSS. I colori sono
+   fissi (rappresentano il sito, non il tema del modulo). */
+.sp {
+  --bg: #fafaf8; --ink: #1d1d1b; --soft: #cfcfca; --img: #e6e6e1; --acc: #1d1d1b;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-areas: "nav nav" "h img" "h2 img" "p img" "btn img";
+  gap: 5px 9%;
+  aspect-ratio: 16 / 10;
+  padding: 9% 9% 10%;
+  border-radius: calc(var(--radius) - 6px);
+  background: var(--bg);
+  overflow: hidden;
+}
+.sp i { display: block; font-style: normal; }
+.sp-nav { grid-area: nav; height: 3px; margin-bottom: 7%; background: linear-gradient(90deg, var(--ink) 0 14%, transparent 14% 62%, var(--soft) 62% 100%); }
+.sp-h   { grid-area: h;   height: 7px; width: 92%; background: var(--ink); }
+.sp-h2  { grid-area: h2;  height: 7px; width: 60%; background: var(--ink); }
+.sp-p   { grid-area: p;   align-self: start; height: 12px; margin-top: 3px; background: repeating-linear-gradient(var(--soft) 0 2px, transparent 2px 5px); }
+.sp-img { grid-area: img; background: var(--img); }
+.sp-btn { grid-area: btn; width: 46%; height: 9px; background: var(--acc); }
+
+/* Minimal e luminoso */
+.sp--minimal { --bg: #fbfbf9; --ink: #2a2a28; --soft: #deded9; --img: #ecebe7; }
+.sp--minimal .sp-h, .sp--minimal .sp-h2 { height: 4px; }
+.sp--minimal .sp-btn { background: none; border: 1px solid var(--ink); height: 8px; width: 38%; }
+.sp--minimal .sp-img { margin: 10% 0; }
+
+/* Editoriale e fotografico */
+.sp--editoriale { --bg: #f2eee7; --ink: #23201c; --soft: #b9b2a6; --img: linear-gradient(160deg, #9fb0b8 0%, #c8baa3 55%, #7d6f5e 100%); --acc: #23201c;
+  grid-template-columns: 1.3fr 1fr;
+  grid-template-rows: auto 1fr auto auto;
+  grid-template-areas: "nav nav" "img img" "h p" "h2 btn";
+  gap: 5px 8%;
+}
+.sp--editoriale .sp-nav { margin-bottom: 4%; }
+.sp--editoriale .sp-h { margin-top: 5px; }
+.sp--editoriale .sp-p { margin-top: 5px; height: 8px; }
+.sp--editoriale .sp-btn { height: 2px; width: 40%; align-self: center; }
+
+/* Caldo e naturale */
+.sp--naturale { --bg: #efe5d6; --ink: #5a4634; --soft: #c9b59b; --img: linear-gradient(170deg, #e4c39b 0%, #c88a5c 100%); --acc: #7b8a57; }
+.sp--naturale .sp-img { border-radius: 999px 999px 10px 10px; }
+.sp--naturale .sp-btn { border-radius: 99px; }
+.sp--naturale .sp-h, .sp--naturale .sp-h2 { border-radius: 4px; }
+
+/* Colorato e giocoso */
+.sp--giocoso { --bg: #fff1b8; --ink: #3a2bd8; --soft: #f39bc1; --img: #ff5c9e; --acc: #00b884; }
+.sp--giocoso .sp-img { border-radius: 50%; aspect-ratio: 1; align-self: center; transform: rotate(-8deg); box-shadow: 6px 6px 0 #3a2bd8; }
+.sp--giocoso .sp-h { height: 9px; transform: rotate(-2deg); }
+.sp--giocoso .sp-btn { border-radius: 99px; transform: rotate(3deg); }
+
+/* Audace e grafico */
+.sp--audace { --bg: #ff4a1c; --ink: #111; --soft: #1118; --img: #111; --acc: #111;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto 1fr;
+  grid-template-areas: "nav nav" "h h" "h2 h2" "p btn";
+  gap: 6px 10%;
+}
+.sp--audace .sp-h { height: 18px; width: 100%; }
+.sp--audace .sp-h2 { height: 18px; width: 72%; }
+.sp--audace .sp-img { display: none; }
+.sp--audace .sp-btn { align-self: end; width: 70%; height: 12px; justify-self: end; }
+.sp--audace .sp-p { align-self: end; }
+
+/* Scuro ed elegante */
+.sp--scuro { --bg: #0f0e0d; --ink: #ece4d2; --soft: #4a4640; --img: radial-gradient(circle at 70% 30%, #c9a45c 0%, #3b2f1e 35%, #151311 70%); --acc: #c9a45c; }
+.sp--scuro .sp-h, .sp--scuro .sp-h2 { height: 5px; }
+.sp--scuro .sp-btn { height: 2px; width: 34%; align-self: center; }
+
+/* Classico e raffinato */
+.sp--classico { --bg: #5b1622; --ink: #f2e5c6; --soft: #b48a6a; --img: #4a101b; --acc: #d4b06a;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-areas: "nav" "h" "h2" "btn" "img";
+  justify-items: center;
+  gap: 5px;
+}
+.sp--classico .sp-nav { width: 100%; background: linear-gradient(90deg, var(--soft) 0 30%, transparent 30% 42%, var(--acc) 42% 58%, transparent 58% 70%, var(--soft) 70% 100%); margin-bottom: 4%; }
+.sp--classico .sp-h { width: 64%; height: 6px; }
+.sp--classico .sp-h2 { width: 40%; height: 4px; }
+.sp--classico .sp-p { display: none; }
+.sp--classico .sp-btn { width: 26%; height: 7px; margin: 3px 0; }
+.sp--classico .sp-img { width: 70%; height: 100%; border: 1px solid var(--acc); outline: 1px solid var(--acc); outline-offset: 2px; }
+
+/* Tecnico e preciso */
+.sp--tecnico { --bg: #f3f4f5; --ink: #111; --soft: #9aa0a6; --img: #fff; --acc: #2f5bff;
+  background:
+    repeating-linear-gradient(90deg, #d9dce0 0 1px, transparent 1px 12.5%),
+    var(--bg);
+}
+.sp--tecnico .sp-h, .sp--tecnico .sp-h2 { height: 6px; }
+.sp--tecnico .sp-p { background: repeating-linear-gradient(90deg, var(--soft) 0 3px, transparent 3px 5px) top / 100% 2px no-repeat, repeating-linear-gradient(90deg, var(--soft) 0 3px, transparent 3px 5px) 0 5px / 70% 2px no-repeat, repeating-linear-gradient(90deg, var(--soft) 0 3px, transparent 3px 5px) 0 10px / 85% 2px no-repeat; }
+.sp--tecnico .sp-img { border: 1px solid var(--ink); background: linear-gradient(transparent calc(50% - 0.5px), var(--soft) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px)), linear-gradient(90deg, transparent calc(50% - 0.5px), var(--soft) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px)), var(--img); }
+.sp--tecnico .sp-btn { border-radius: 2px; }
+
+@media (max-width: 420px) {
+  .style-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .style-words { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .style-body { transition: none; }
+}

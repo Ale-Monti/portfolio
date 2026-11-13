@@ -98,7 +98,10 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
 
   const isShown = el => !el.closest('.reveal:not(.is-open)');
 
+  // data-required-unless="nome=valore": obbligatorio salvo che il cliente scelga
+  // un'alternativa (es. «Te lo mando dopo»)
   function isRequired(el) {
+    if (el.dataset.requiredUnless) return !cond(el.dataset.requiredUnless);
     return el.required || cond(el.dataset.requiredWhen);
   }
 
@@ -1035,6 +1038,19 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   // ═════════════════════════════════════════════════════════════════
   //  Eventi dei campi
   // ═════════════════════════════════════════════════════════════════
+  // Galleria stili: al massimo MAX_STILI scelti, gli altri si disattivano
+  const MAX_STILI = 3;
+  function limitStili() {
+    const boxes = $$('input[name="stili"]', form);
+    const chosen = boxes.filter(b => b.checked).length;
+    boxes.forEach(b => {
+      b.disabled = chosen >= MAX_STILI && !b.checked;
+      b.closest('.style-card')?.classList.toggle('is-disabled', b.disabled);
+    });
+    const count = $('#stili-count');
+    if (count) count.textContent = `${chosen} di ${MAX_STILI}`;
+  }
+
   form.addEventListener('change', e => {
     const el = e.target;
     const before = cond('extra=foto');
@@ -1046,6 +1062,12 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
       if (before && !cond('extra=foto')) $$('#addressGroup [aria-invalid="true"]').forEach(clearError);
     }
     renderEstimate();
+    if (el.name === 'stili') limitStili();
+    // «Te lo mando dopo» rende facoltativo il campo collegato: tolgo l'errore
+    if (el.dataset.unlocks) {
+      const t = document.getElementById(el.dataset.unlocks);
+      if (t && t.getAttribute('aria-invalid')) validateTarget(t);
+    }
     if (el.type === 'radio' || el.type === 'checkbox') {
       const fs = el.closest('fieldset[data-required], fieldset[data-required-when]');
       if (fs && fs.classList.contains('has-error')) validateTarget(fs);
@@ -1100,6 +1122,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   // Le reveal partono già nello stato giusto, senza animazione
   form.classList.add('no-anim');
   updateConditions();
+  limitStili();
   showStep(current, { focus: false });
   requestAnimationFrame(() => requestAnimationFrame(() => form.classList.remove('no-anim')));
 

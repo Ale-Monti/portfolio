@@ -74,9 +74,51 @@ const L = {
   newsletter_iscritti: { pochi: 'Meno di 500 nel primo anno', tanti: 'Più di 500 nel primo anno', non_so: 'Non sa' },
   download_tipo: { libero: 'Libero', email: 'In cambio dell\'email' },
   prezzi_mostra: { si: 'Sì', alcuni: 'Solo alcuni o «a partire da»', no: 'No' },
-  contatti_pubblici: { telefono: 'Telefono indicato nel brief', email: 'Email indicata nel brief', altri: 'Altri contatti' },
+  contatti_pubblici: { telefono: 'Telefono indicato nel brief', email: 'Email indicata nel brief', altri: 'Altri contatti', dopo: 'Decide più avanti' },
+  logo_colori: { si: 'Sì, il sito riprende i colori del logo', no: 'No, i colori si possono cambiare', non_so: 'Non sa, chiede un consiglio' },
+  traduzioni_chi: { cliente: 'Le fornisce il cliente', extra: 'Gli serve chi le traduca', non_so: 'Non lo sa ancora' },
+  privacy_sito: { si: 'Sì, ce l\'ha già', no: 'No', non_so: 'Non sa' },
+  orari_alt: { appuntamento: 'Solo su appuntamento / nessun orario fisso', dopo: 'Li manda dopo' },
   email_dominio: { si: 'Sì', no: 'No', non_so: 'Non sa' },
 };
+
+// Galleria stili del modulo: nome, esempio e descrizione per Claude
+const STILI = {
+  minimal: {
+    nome: 'Minimal e luminoso', esempio: 'https://www.francescanoemimarconi.it/',
+    desc: 'fondo bianco o quasi, una sola tinta d\'accento, molto spazio vuoto, tipografia sans leggera, poche foto ma grandi, animazioni minime',
+  },
+  editoriale: {
+    nome: 'Editoriale e fotografico', esempio: 'https://estudioniksen.com/',
+    desc: 'foto grandi a tutta larghezza come protagoniste, impaginazione da rivista con colonne e didascalie, titoli raffinati (serif o grotesk), palette neutra presa dalle foto',
+  },
+  naturale: {
+    nome: 'Caldo e naturale', esempio: 'https://verasfawaz.com/',
+    desc: 'palette calda (sabbia, crema, terracotta, verde oliva), forme e angoli morbidi, foto con luce naturale, serif morbido per i titoli, atmosfera accogliente e rilassata',
+  },
+  giocoso: {
+    nome: 'Colorato e giocoso', esempio: 'https://krackerz.com/',
+    desc: 'colori saturi accostati con coraggio, forme, illustrazioni o "adesivi" leggermente ruotati, caratteri espressivi, micro-animazioni, tono leggero e ironico',
+  },
+  audace: {
+    nome: 'Audace e grafico', esempio: 'https://aestudio.studio/hozon',
+    desc: 'tipografia enorme e protagonista, contrasti netti, uno o due colori pieni, layout a blocchi, impatto da manifesto',
+  },
+  scuro: {
+    nome: 'Scuro ed elegante', esempio: 'https://grail-app.com/',
+    desc: 'fondo nero o molto scuro, testi chiari, un accento caldo o metallico, foto drammatiche con luce di taglio, serif elegante, ritmo lento',
+  },
+  classico: {
+    nome: 'Classico e raffinato', esempio: 'https://the-family-rice-tray.vercel.app/',
+    desc: 'caratteri con grazie e personalità, colori profondi (bordeaux, verde bosco, blu notte) con oro o crema, cornici e piccoli ornamenti, impaginazione centrata, senso di tradizione e cura',
+  },
+  tecnico: {
+    nome: 'Tecnico e preciso', esempio: 'https://levo-studio.com/',
+    desc: 'griglia visibile, linee sottili, caratteri monospaziati o grotesk tecnici, numeri e dettagli in evidenza, palette sobria con un solo accento acceso',
+  },
+};
+const STILI_LAB = Object.fromEntries(Object.entries(STILI).map(([k, v]) => [k, v.nome]));
+const MAX_STILI = 3;
 
 // Servizi che pesano su tempi e preventivo: evidenziati nell'email
 const IMPACT = ['logo', 'foto', 'copy'];
@@ -185,9 +227,11 @@ function normalize(raw) {
   const s = (k, max = 300) => (typeof r[k] === 'string' ? r[k].trim().slice(0, max) : '');
   const one = (k, map) => (typeof r[k] === 'string' && Object.hasOwn(map, r[k]) ? r[k] : '');
   const many = (k, map) => (Array.isArray(r[k]) ? [...new Set(r[k].filter(v => typeof v === 'string' && Object.hasOwn(map, v)))] : []);
+  const flag = k => (Array.isArray(r[k]) ? r[k].includes('si') : r[k] === 'si' || r[k] === true);
 
   const b = {
     nome: s('nome', 120), attivita: s('attivita', 120), email: s('email', 160), telefono: s('telefono', 30),
+    marchio: flag('marchio_diverso') ? s('marchio', 120) : '',
     settore: one('settore', L.settore), settore_altro: s('settore_altro', 80),
     descrizione: s('descrizione', 1500), sito_attuale: s('sito_attuale', 300),
     instagram: s('instagram', 200), facebook: s('facebook', 200), social_altri: s('social_altri', 300),
@@ -200,6 +244,7 @@ function normalize(raw) {
     sezioni_facoltative: s('sezioni_facoltative', 800),
     lingue: many('lingue', L.lingue), lingue_altro: s('lingue_altro', 120),
     ha_testi: one('ha_testi', L.possesso), ha_foto: one('ha_foto', L.possesso), ha_logo: one('ha_logo', L.logo),
+    logo_colori: one('logo_colori', L.logo_colori), traduzioni_chi: one('traduzioni_chi', L.traduzioni_chi),
 
     // Dettagli di sezioni e funzionalità (azzerati sotto se non servono)
     blog_gestione: one('blog_gestione', L.blog_gestione), blog_frequenza: s('blog_frequenza', 200),
@@ -210,7 +255,10 @@ function normalize(raw) {
     ecommerce_note: s('ecommerce_note', 200), area_note: s('area_note', 200),
 
     // Info per il sito
-    servizi_principali: s('servizi_principali', 2000), orari: s('orari', 600), staff: s('staff', 1000),
+    servizi_principali: s('servizi_principali', 2000), servizi_dopo: flag('servizi_dopo'),
+    orari: s('orari', 600), orari_alt: many('orari_alt', L.orari_alt), staff: s('staff', 1000),
+    ragione_sociale: s('ragione_sociale', 160), piva: s('piva', 20), cin: s('cin', 30),
+    privacy_sito: one('privacy_sito', L.privacy_sito),
     prezzi_mostra: one('prezzi_mostra', L.prezzi_mostra), prezzi_note: s('prezzi_note', 1000),
     contatti_pubblici: many('contatti_pubblici', L.contatti_pubblici), contatti_altri: s('contatti_altri', 300),
 
@@ -218,6 +266,7 @@ function normalize(raw) {
       .slice(0, MAX_INSPO)
       .map(i => ({ url: normalizeUrl(i?.url), nota: typeof i?.nota === 'string' ? i.nota.trim().slice(0, 300) : '' }))
       .filter(i => i.url),
+    stili: many('stili', STILI_LAB).slice(0, MAX_STILI), stile_no: one('stile_no', STILI_LAB),
     aggettivi: many('aggettivi', L.aggettivi), aggettivi_altri: s('aggettivi_altri', 200),
     colori_preferiti: s('colori_preferiti', 200), colori_evitare: s('colori_evitare', 200),
 
@@ -265,6 +314,11 @@ function normalize(raw) {
   if (!has('area_riservata')) b.area_note = '';
   if (!['si', 'alcuni'].includes(b.prezzi_mostra)) b.prezzi_note = '';
   if (!b.contatti_pubblici.includes('altri')) b.contatti_altri = '';
+  if (!['si', 'in_parte'].includes(b.ha_logo)) b.logo_colori = '';
+  const lingueEstere = b.lingue.some(l => l !== 'it');
+  if (!lingueEstere) b.traduzioni_chi = '';
+  if (b.settore !== 'ospitalita') b.cin = '';
+  if (b.stili.includes(b.stile_no)) b.stile_no = '';
   b.sito_attuale_url = normalizeUrl(b.sito_attuale);
   b.fotoSulPosto = b.extra.includes('foto');
 
@@ -290,13 +344,27 @@ function normalize(raw) {
   if (b.whatsapp_numero && !PHONE_RE.test(b.whatsapp_numero)) errors.whatsapp_numero = 'Inserisci un numero di telefono valido.';
   if (b.extra.includes('logo') && !b.logo_tipo) errors.logo_tipo = 'Seleziona un\'opzione.';
 
+  if (flag('marchio_diverso')) req('marchio');
+
   req('obiettivo', 'Seleziona un\'opzione.');
   if (b.obiettivo === 'altro') req('obiettivo_altro');
 
   if (!b.sezioni.length) errors.sezioni = 'Seleziona almeno un\'opzione.';
   if (b.sezioni.includes('altro')) req('sezioni_altro');
+  req('pubblico');
+  if (!b.lingue.length) errors.lingue = 'Seleziona almeno un\'opzione.';
+  if (lingueEstere) req('traduzioni_chi', 'Seleziona un\'opzione.');
+  req('ha_testi', 'Seleziona un\'opzione.');
+  req('ha_foto', 'Seleziona un\'opzione.');
+  req('ha_logo', 'Seleziona un\'opzione.');
+  if (['si', 'in_parte'].includes(b.ha_logo)) req('logo_colori', 'Seleziona un\'opzione.');
+  if (!b.servizi_dopo) req('servizi_principali');
+  if (!b.orari_alt.length) req('orari');
+  if (!b.contatti_pubblici.length) errors.contatti_pubblici = 'Seleziona almeno un\'opzione.';
+  if (!b.stili.length) errors.stili = 'Scegli almeno uno stile.';
 
   req('tempistiche', 'Seleziona un\'opzione.');
+  req('budget', 'Seleziona un\'opzione.');
   if (b.tempistiche === 'data') {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(b.scadenza_data) || isNaN(Date.parse(b.scadenza_data))) {
       errors.scadenza_data = 'Inserisci una data valida.';
@@ -347,7 +415,18 @@ function derived(b) {
   const contattiPubblici = b.contatti_pubblici.map(v => (
     v === 'telefono' ? `Telefono: ${b.telefono || 'non indicato'}` :
     v === 'email' ? `Email: ${b.email}` :
+    v === 'dopo' ? 'Decide più avanti: chiedere prima di pubblicare' :
     `Altri: ${b.contatti_altri || 'non specificati'}`));
+
+  // Orari (testo o alternativa scelta) e dati legali
+  const orari = [b.orari, ...labs(L.orari_alt, b.orari_alt)].filter(Boolean).join(' · ');
+  const legali = [
+    ['Ragione sociale o titolare', b.ragione_sociale],
+    ['Partita IVA', b.piva],
+    ['CIN', b.cin || (b.settore === 'ospitalita' ? 'non indicato (obbligatorio per le strutture ricettive)' : '')],
+    ['Privacy e cookie policy', lab(L.privacy_sito, b.privacy_sito)],
+  ].filter(([, v]) => v);
+  const stili = b.stili.map(id => STILI[id]);
 
   // Dettagli per ogni servizio extra: [[etichetta, valore], ...]
   const extraDetails = b.extra.map(id => {
@@ -364,7 +443,7 @@ function derived(b) {
     return { id, label: L.extra[id], rows };
   });
 
-  return { settore, obiettivo, sezioni, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails, online, featureDetails, contattiPubblici, quote: suggest(b) };
+  return { settore, obiettivo, sezioni, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails, online, featureDetails, contattiPubblici, orari, legali, stili, quote: suggest(b) };
 }
 
 // Righe del preventivo suggerito, già in testo: [voce, forbice lancio, listino, suggerito, perché]
@@ -417,6 +496,7 @@ function buildMarkdown(b, d, ctx) {
   out.push('## Cliente');
   out.push(item('Nome e cognome', b.nome));
   out.push(item('Nome dell\'attività', b.attivita));
+  if (b.marchio) out.push(item('Nome da mostrare sul sito', b.marchio));
   out.push(item('Tipo di attività', d.settore));
   out.push(item('Email', b.email));
   out.push(item('Telefono', b.telefono));
@@ -457,20 +537,22 @@ function buildMarkdown(b, d, ctx) {
     out.push('');
   });
   out.push(item('Lingue del sito', d.lingue.join(', ')));
+  if (b.traduzioni_chi) out.push(item('Traduzioni', lab(L.traduzioni_chi, b.traduzioni_chi)));
   out.push(item('Testi già pronti', lab(L.possesso, b.ha_testi)));
   out.push(item('Foto già pronte', lab(L.possesso, b.ha_foto)));
   out.push(item('Logo esistente', lab(L.logo, b.ha_logo)));
+  if (b.logo_colori) out.push(item('Colori del logo sul sito', lab(L.logo_colori, b.logo_colori)));
   out.push('');
 
   out.push('## Info per il sito');
   out.push('');
   out.push('**Servizi o prodotti principali**');
   out.push('');
-  out.push(para(b.servizi_principali));
+  out.push(b.servizi_principali ? para(b.servizi_principali) : (b.servizi_dopo ? '_Li manda dopo._' : NA));
   out.push('');
   out.push('**Orari di apertura**');
   out.push('');
-  out.push(para(b.orari));
+  out.push(para(d.orari));
   out.push('');
   out.push('**Persone da presentare**');
   out.push('');
@@ -480,8 +562,19 @@ function buildMarkdown(b, d, ctx) {
   if (b.prezzi_note) out.push(item('Prezzi indicati', b.prezzi_note));
   out.push(item('Contatti da pubblicare', d.contattiPubblici.join('; ') || 'Non indicati: chiedere prima di pubblicare telefono ed email'));
   out.push('');
+  out.push('**Dati legali per il piè di pagina**');
+  out.push('');
+  out.push(d.legali.length ? d.legali.map(([k, v]) => item(k, v)).join('\n') : NA);
+  out.push('');
 
   out.push('## Stile e ispirazioni');
+  out.push('');
+  out.push('### Stili scelti dalla galleria');
+  out.push(d.stili.length
+    ? d.stili.map((st, n) => `${n + 1}. **${st.nome}**: ${st.desc}. Esempio: <${st.esempio}>`).join('\n')
+    : NA);
+  if (b.stile_no) out.push(`\n**Stile da evitare:** ${STILI[b.stile_no].nome} (${STILI[b.stile_no].desc}).`);
+  out.push('');
   out.push(item('Aggettivi', d.aggettivi.join(', ')));
   out.push(item('Colori preferiti', b.colori_preferiti));
   out.push(item('Colori da evitare', b.colori_evitare));
@@ -574,7 +667,7 @@ function buildMarkdown(b, d, ctx) {
   out.push('1. **Tecnologia:** HTML, CSS e JavaScript puri, senza framework né build step. File di partenza: `index.html`, `style.css`, `script.js`. Se le sezioni sono poche, preferisci una one-page con ancore; altrimenti una pagina per sezione.');
   out.push('2. **Struttura:** includi tutte le sezioni must-have in un ordine logico per l\'obiettivo principale. Aggiungi le sezioni facoltative solo se non appesantiscono il sito.');
   out.push('3. **Obiettivo e CTA:** ogni scelta (gerarchia, posizione dei pulsanti, contenuti in evidenza) deve servire l\'obiettivo principale e la call to action indicata. Se i due non coincidono, dai la priorità alla call to action e segnalalo nelle note.');
-  out.push('4. **Stile:** segui aggettivi e colori indicati ed evita i colori da escludere. Usa i siti di ispirazione e le reference visive per capire il gusto del cliente, senza copiarli.');
+  out.push('4. **Stile:** la guida principale sono gli "Stili scelti dalla galleria": il primo è il più importante, gli altri lo sfumano. Apri gli esempi per capire il tono, senza copiarli, ed evita lo stile da evitare. Poi rifinisci con aggettivi e colori indicati, ed evita i colori da escludere. Se il cliente vuole i colori del logo attuale, la palette parte dal logo (lo trovi tra le reference visive). Se stili, colori e logo si contraddicono, scegli la strada più coerente con l\'attività e spiega il perché nelle note. Usa i siti di ispirazione del cliente e le reference visive per capire il suo gusto.');
   out.push('5. **Qualità:** mobile-first e responsive, HTML semantico, accessibile (contrasti AA, testi alternativi, navigazione da tastiera), SEO di base (`title`, meta description, `lang`), immagini leggere.');
   out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsanti per prenotazioni o WhatsApp, carrello e-commerce come segnaposto). Niente backend.');
   out.push(`7. **Lingue:** crea la bozza in ${mainLang}. Se sono richieste altre lingue, predisponi solo il selettore e la struttura, senza tradurre.`);
@@ -585,11 +678,14 @@ function buildMarkdown(b, d, ctx) {
     out.push(`9. **Testi:** il cliente non ha richiesto il copywriting (testi già pronti: ${lab(L.possesso, b.ha_testi) || 'non indicato'}). Usa le informazioni del brief dove possibile; per il resto inserisci segnaposto brevi come \`[TESTO DEL CLIENTE: presentazione]\`.`);
   }
   out.push('10. **Immagini e logo:** usa segnaposto con proporzioni corrette e `alt` descrittivi. Non usare foto stock. Se il logo va creato o rifatto, metti il nome dell\'attività in testo come segnaposto.');
-  out.push(`11. **Nome dell'attività:** è "${oneLine(b.attivita)}". Se sembra un tipo di attività (es. "Palestra") più che un nome, cerca il nome vero nei profili online e nelle reference visive, usalo e segnalalo nelle note.`);
+  out.push(b.marchio
+    ? `11. **Nome sul sito:** usa "${oneLine(b.marchio)}" (nome scelto dal cliente). "${oneLine(b.attivita)}" è il nome dell'attività: usalo solo dove serve, per esempio nei dati legali.`
+    : `11. **Nome dell'attività:** è "${oneLine(b.attivita)}". Se sembra un tipo di attività (es. "Palestra") più che un nome, cerca il nome vero nei profili online e nelle reference visive, usalo e segnalalo nelle note.`);
   out.push('12. **Funzionalità:** segui i dettagli indicati sotto "Funzionalità" (es. richiesta di prenotazione = form; calendario = segnaposto per l\'embed del servizio esterno; download in cambio dell\'email = form prima del link). Usa le note del cliente sulle reference per capire cosa gli piace di ciascuna.');
   out.push('13. **Servizi extra:** i servizi extra elencati sopra (logo, brand identity, foto, stampati, kit social, Google Business, QR code, firma email, traduzioni, supporto) **non fanno parte della bozza del sito**: non realizzarli. Unica eccezione sono i testi del sito, se è richiesto il copywriting (punto 9).');
   out.push('14. **Alla fine** crea `NOTE_BOZZA.md` con: le scelte fatte, l\'elenco di tutte le informazioni mancanti o segnaposto da completare, e le domande da fare al cliente.');
   out.push('15. **Preventivo:** la sezione "Preventivo suggerito" non riguarda la bozza e non va mai mostrata nel sito. In `NOTE_BOZZA.md` aggiungi una breve sezione "Note sul preventivo": se la bozza ti fa pensare che il lavoro sia più grande o più piccolo del previsto (sezioni in più, contenuti mancanti, funzionalità complesse), proponi un aggiustamento motivato delle cifre suggerite, restando nelle forbici.');
+  out.push('16. **Piè di pagina:** mostra i dati legali indicati (ragione sociale, P.IVA, CIN per le strutture ricettive) e i link a privacy e cookie policy; dove mancano, usa segnaposto.');
   out.push('');
 
   return out.join('\n');
@@ -758,16 +854,20 @@ function buildOwnerEmail(b, d, ctx) {
   // Info per il sito + dettagli delle funzionalità
   const info = [
     kv('Servizi o prodotti', b.servizi_principali),
-    kv('Orari', b.orari),
+    kv('Orari', d.orari),
     kv('Persone', b.staff),
     kv('Prezzi sul sito', [lab(L.prezzi_mostra, b.prezzi_mostra), b.prezzi_note].filter(Boolean).join(': ')),
     kv('Contatti da pubblicare', d.contattiPubblici.join('\n') || 'Non indicati'),
+    d.legali.length ? kv('Dati legali', d.legali.map(([k, v]) => `${k}: ${v}`).join('\n')) : '',
     ...d.featureDetails.map(([title, rows]) => kv(title, rows.map(([k, v]) => `${k}: ${v}`).join('\n'))),
   ].join('');
   parts.push(full('Info per il sito', info));
 
   // Stile
   const stile = [
+    kv('Stili scelti', d.stili.length ? d.stili.map((st, n) => `${n + 1}. ${st.nome}`).join('\n') : 'Non indicati'),
+    b.stile_no ? kv('Stile da evitare', STILI[b.stile_no].nome) : '',
+    b.logo_colori ? kv('Colori del logo', lab(L.logo_colori, b.logo_colori)) : '',
     d.aggettivi.length ? chips(d.aggettivi) : kv('Aggettivi', 'Non indicati'),
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
       <td class="col" width="50%" valign="top" style="padding-right:8px;">${kv('Colori preferiti', b.colori_preferiti || 'Non indicati')}</td>
