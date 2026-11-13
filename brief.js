@@ -3,7 +3,7 @@
 //  upload con anteprime, Turnstile, invio a /api/brief
 //  (tema, cursore e nav arrivano da script.js; i prezzi da pricing.js)
 // ═══════════════════════════════════════════════════════════════════
-import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro, costText } from './pricing.js?v=4';
+import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro, costText } from './pricing.js?v=5';
 
 (() => {
   'use strict';
@@ -88,9 +88,11 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
     return out;
   }
 
-  // "nome=valore": vero se il campo ha quel valore (o la checkbox è selezionata)
+  // "nome=valore": vero se il campo ha quel valore (o la checkbox è selezionata).
+  // Più condizioni separate da || valgono se ne basta una.
   function cond(expr) {
     if (!expr) return false;
+    if (expr.includes('||')) return expr.split('||').some(cond);
     const [name, value] = expr.split('=');
     const v = values(name);
     return value.split('|').some(x => v.includes(x));
@@ -98,7 +100,10 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
 
   const isShown = el => !el.closest('.reveal:not(.is-open)');
 
+  // data-required-unless="nome=valore": obbligatorio salvo che il cliente scelga
+  // un'alternativa (es. «Te lo mando dopo»)
   function isRequired(el) {
+    if (el.dataset.requiredUnless) return !cond(el.dataset.requiredUnless);
     return el.required || cond(el.dataset.requiredWhen);
   }
 
@@ -194,8 +199,11 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   function checkGroup(fs) {
     if (!isShown(fs)) return '';
     if (fs.dataset.requiredWhen && !cond(fs.dataset.requiredWhen)) return '';
-    const inputs = $$('input[type="checkbox"], input[type="radio"]', fs);
+    const inputs = fs.dataset.group
+      ? $$(`input[name="${fs.dataset.group}"]`, fs)
+      : $$('input[type="checkbox"], input[type="radio"]', fs);
     if (inputs.some(i => i.checked)) return '';
+    if (fs.dataset.groupMsg) return fs.dataset.groupMsg;
     return inputs[0]?.type === 'radio' ? 'Seleziona un\'opzione.' : 'Seleziona almeno un\'opzione.';
   }
 
@@ -224,7 +232,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   }
 
   function focusTarget(target) {
-    const el = target.tagName === 'FIELDSET' ? $('input', target) : target;
+    const el = target.tagName === 'FIELDSET' ? ($('.sez-btn', target) || $('input', target)) : target;
     el.focus({ preventScroll: true });
     (target.closest('.field') || target).scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -570,6 +578,8 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
     $('#draftNotice').hidden = true;
     maxVisited = 1;
     updateConditions();
+    placeSezioni();
+    limitStili();
     updateBundle();
     showStep(1);
     announce('Bozza cancellata.');
@@ -639,6 +649,14 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
             .filter(([u]) => u)
             .map(([u, n]) => n ? `${u} — ${n}` : u)
             .join('\n');
+        } else if (field.id === 'sezioniField') {
+          value = [...SEZ_ZONES, ''].map(z => {
+            const names = cardsIn(z).map(c => $('.sez-name', c).textContent);
+            return names.length ? `${SEZ_LABEL[z]}: ${names.join(', ')}` : '';
+          }).filter(Boolean).join('\n');
+          const altro = $('#f-sezioni-altro').value.trim();
+          if (altro && isShown($('#f-sezioni-altro'))) value += `\nAltro: ${altro}`;
+          if (!cardsIn('sezioni').length) value = '';
         } else if (field.id === 'filesField') {
           if (files.length) {
             node = document.createElement('div');
@@ -972,7 +990,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
     const frag = document.createDocumentFragment();
     const rows = make('div', 'est-rows');
 
-    const sez = (data.sezioni || []).length;
+    const sez = est.site.sections;
     const siteNote = est.site.notes.length
       ? est.site.notes.join(' · ')
       : `${sez || 'nessuna'} ${sez === 1 ? 'sezione' : 'sezioni'}, fino a ${SITE.sections} comprese`;
@@ -992,6 +1010,18 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
     const tbd = est.site.tbd.length ? `più ${est.site.tbd.join(' e ')}, da valutare a parte` : '';
     rows.append(estRow('Totale indicativo', tbd, priceNode(est.total.min, est.total.max, { cls: 'price price-lg' }), 'est-total'));
     frag.appendChild(rows);
+
+    // Facoltative: quali entrano, quali restano fuori per il budget
+    const opt = est.site.optional;
+    const sezName = v => $(`.sez-card[data-value="${v}"] .sez-name`, sorter)?.textContent || v;
+    const list = ids => ids.map(sezName).join(', ');
+    const optNotes = [];
+    if (opt.free.length) optNotes.push(`Facoltative comprese nel prezzo: ${list(opt.free)}.`);
+    if (opt.added.length) optNotes.push(`Facoltative aggiunte perché restano nel budget: ${list(opt.added)}.`);
+    if (opt.out.length) optNotes.push(`Facoltative lasciate fuori per restare nel budget: ${list(opt.out)}.`);
+    if (opt.pending.length) optNotes.push(`${list(opt.pending)}: le aggiungo solo se restano nel budget che indichi allo step 7.`);
+    if (opt.overBudget) optNotes.push('Le sezioni indispensabili superano già il budget: le inserisco comunque e ne parliamo nel preventivo.');
+    optNotes.forEach(t => frag.appendChild(make('p', 'est-note', t)));
 
     if (est.onDemand.length) {
       frag.appendChild(make('p', 'est-note', `${est.onDemand.map(serviceName).join(', ')}: a richiesta, ${RATE.hour} €/h solo quando ti serve.`));
@@ -1033,8 +1063,173 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   }
 
   // ═════════════════════════════════════════════════════════════════
+  //  Sezioni: schede da trascinare in due gruppi
+  //  Ogni scheda ha due checkbox nascoste (sezioni, sezioni_opt): il
+  //  gruppo in cui si trova è quella selezionata. Nessuna = non serve.
+  //  Così bozza, condizioni e invio funzionano come le altre checkbox.
+  // ═════════════════════════════════════════════════════════════════
+  const SEZ_ZONES = ['sezioni', 'sezioni_opt'];
+  const SEZ_LABEL = { sezioni: 'Indispensabili', sezioni_opt: 'Facoltative', '': 'Non servono' };
+  const SEZ_ONE = { sezioni: 'indispensabile', sezioni_opt: 'facoltativa', '': 'non serve' };
+  const sorter = $('[data-sorter]', form);
+  const sezMenu = $('.sez-menu', sorter);
+  const zoneEl = name => $(`[data-zone="${name}"]`, sorter);
+  const zoneList = name => $('.zone-list', zoneEl(name));
+  const zoneOf = card => SEZ_ZONES.find(z => $(`input[name="${z}"]`, card).checked) || '';
+  const cardsIn = name => $$('.sez-card', sorter).filter(c => zoneOf(c) === name);
+
+  function labelCard(card) {
+    const name = $('.sez-name', card).textContent;
+    $('.sez-btn', card).setAttribute('aria-label', `${name}: ${SEZ_ONE[zoneOf(card)]}. Premi per spostarla.`);
+  }
+
+  function updateCounts() {
+    SEZ_ZONES.forEach(z => { $('.zone-count', zoneEl(z)).textContent = cardsIn(z).length || ''; });
+    sorter.classList.toggle('pool-empty', !cardsIn('').length);
+  }
+
+  // Ricolloca le schede in base alle checkbox (dopo bozza o reset).
+  // L'ordine segue quello originale delle schede.
+  const sezOrder = $$('.sez-card', sorter).map(c => c.dataset.value);
+  function placeSezioni() {
+    $$('.sez-card', sorter)
+      .sort((a, b) => sezOrder.indexOf(a.dataset.value) - sezOrder.indexOf(b.dataset.value))
+      .forEach(card => { zoneList(zoneOf(card)).appendChild(card); labelCard(card); });
+    updateCounts();
+  }
+
+  function moveCard(card, to, { focus = false } = {}) {
+    if (zoneOf(card) === to) return;
+    SEZ_ZONES.forEach(z => { $(`input[name="${z}"]`, card).checked = z === to; });
+    const list = zoneList(to);
+    // Inserisce rispettando l'ordine originale
+    const idx = sezOrder.indexOf(card.dataset.value);
+    const next = $$('.sez-card', list).find(c => sezOrder.indexOf(c.dataset.value) > idx);
+    list.insertBefore(card, next || null);
+    labelCard(card);
+    updateCounts();
+    card.classList.remove('just-moved');
+    void card.offsetWidth;
+    card.classList.add('just-moved');
+    if (focus) $('.sez-btn', card).focus({ preventScroll: true });
+    announce(`${$('.sez-name', card).textContent}: ${SEZ_ONE[to]}.`);
+    // Notifica il form: condizioni, stima, validazione e bozza
+    $(`input[name="${to || 'sezioni'}"]`, card).dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  // Menu per tocco e tastiera
+  let menuCard = null;
+  function openMenu(card) {
+    closeMenu();
+    menuCard = card;
+    const zone = zoneOf(card);
+    $$('[data-to]', sezMenu).forEach(b => b.setAttribute('aria-checked', String(b.dataset.to === zone)));
+    card.appendChild(sezMenu);
+    sezMenu.hidden = false;
+    $('.sez-btn', card).setAttribute('aria-expanded', 'true');
+    ($(`[data-to="${zone}"]`, sezMenu) || $('[data-to]', sezMenu)).focus();
+  }
+  function closeMenu({ focus = false } = {}) {
+    if (!menuCard) return;
+    sezMenu.hidden = true;
+    const btn = $('.sez-btn', menuCard);
+    btn.setAttribute('aria-expanded', 'false');
+    sorter.appendChild(sezMenu);
+    if (focus) btn.focus();
+    menuCard = null;
+  }
+  sezMenu.addEventListener('click', e => {
+    const b = e.target.closest('[data-to]');
+    if (!b || !menuCard) return;
+    const card = menuCard;
+    closeMenu();
+    moveCard(card, b.dataset.to, { focus: true });
+  });
+  sezMenu.addEventListener('keydown', e => {
+    const items = $$('[data-to]', sezMenu);
+    const i = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      closeMenu({ focus: true });
+    } else if (e.key === 'Tab') {
+      closeMenu();
+    }
+  });
+  document.addEventListener('pointerdown', e => {
+    if (menuCard && !menuCard.contains(e.target)) closeMenu();
+  });
+
+  // Trascinamento con il puntatore (mouse, dito, penna)
+  let drag = null;
+  let suppressClick = false;
+  sorter.addEventListener('pointerdown', e => {
+    const btn = e.target.closest('.sez-btn');
+    if (!btn || e.button !== 0) return;
+    drag = { card: btn.closest('.sez-card'), id: e.pointerId, x: e.clientX, y: e.clientY, active: false, over: null };
+  });
+  sorter.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    const dy = e.clientY - drag.y;
+    if (!drag.active) {
+      if (Math.hypot(dx, dy) < 6) return;
+      drag.active = true;
+      closeMenu();
+      sorter.setPointerCapture(e.pointerId);
+      drag.card.classList.add('is-dragging');
+      sorter.classList.add('is-sorting');
+    }
+    drag.card.style.transform = `translate(${dx}px, ${dy}px)`;
+    const over = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-zone]') || null;
+    if (over !== drag.over) {
+      drag.over?.classList.remove('is-over');
+      over?.classList.add('is-over');
+      drag.over = over;
+    }
+  });
+  function endDrag(e, cancel) {
+    if (!drag || e.pointerId !== drag.id) return;
+    const { card, active, over } = drag;
+    drag = null;
+    if (!active) return;
+    suppressClick = true;
+    setTimeout(() => { suppressClick = false; });
+    over?.classList.remove('is-over');
+    sorter.classList.remove('is-sorting');
+    card.classList.remove('is-dragging');
+    card.style.transform = '';
+    if (!cancel && over) moveCard(card, over.dataset.zone);
+  }
+  sorter.addEventListener('pointerup', e => endDrag(e, false));
+  sorter.addEventListener('pointercancel', e => endDrag(e, true));
+  sorter.addEventListener('click', e => {
+    const btn = e.target.closest('.sez-btn');
+    if (!btn) return;
+    if (suppressClick) { e.preventDefault(); return; }
+    const card = btn.closest('.sez-card');
+    if (menuCard === card) closeMenu({ focus: true }); else openMenu(card);
+  });
+
+  // ═════════════════════════════════════════════════════════════════
   //  Eventi dei campi
   // ═════════════════════════════════════════════════════════════════
+  // Galleria stili: al massimo MAX_STILI scelti, gli altri si disattivano
+  const MAX_STILI = 3;
+  function limitStili() {
+    const boxes = $$('input[name="stili"]', form);
+    const chosen = boxes.filter(b => b.checked).length;
+    boxes.forEach(b => {
+      b.disabled = chosen >= MAX_STILI && !b.checked;
+      b.closest('.style-card')?.classList.toggle('is-disabled', b.disabled);
+    });
+    const count = $('#stili-count');
+    if (count) count.textContent = `${chosen} di ${MAX_STILI}`;
+  }
+
   form.addEventListener('change', e => {
     const el = e.target;
     const before = cond('extra=foto');
@@ -1046,6 +1241,12 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
       if (before && !cond('extra=foto')) $$('#addressGroup [aria-invalid="true"]').forEach(clearError);
     }
     renderEstimate();
+    if (el.name === 'stili') limitStili();
+    // «Te lo mando dopo» rende facoltativo il campo collegato: tolgo l'errore
+    if (el.dataset.unlocks) {
+      const t = document.getElementById(el.dataset.unlocks);
+      if (t && t.getAttribute('aria-invalid')) validateTarget(t);
+    }
     if (el.type === 'radio' || el.type === 'checkbox') {
       const fs = el.closest('fieldset[data-required], fieldset[data-required-when]');
       if (fs && fs.classList.contains('has-error')) validateTarget(fs);
@@ -1100,6 +1301,8 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   // Le reveal partono già nello stato giusto, senza animazione
   form.classList.add('no-anim');
   updateConditions();
+  limitStili();
+  placeSezioni();
   showStep(current, { focus: false });
   requestAnimationFrame(() => requestAnimationFrame(() => form.classList.remove('no-anim')));
 

@@ -20,16 +20,16 @@ export const REVISIONS = 2;      // revisioni incluse (logo e grafica)
 
 // ─── Sito vetrina ────────────────────────────────────────────────
 export const SITE = {
-  min: 200, max: 300,            // fino a SITE.sections sezioni
+  min: 180, max: 270,            // fino a SITE.sections sezioni
   sections: 4,
-  perSection: [30, 50],          // ogni sezione in più
-  perLanguage: [30, 50],         // ogni lingua oltre la prima (struttura, non traduzione)
+  perSection: [25, 40],          // ogni sezione in più
+  perLanguage: [20, 20],         // ogni lingua oltre la prima (struttura, non traduzione)
   features: {                    // funzionalità scelte allo step 3
     // Con più varianti la scelta arriva dal campo <id>_tipo; senza risposta vale l'ultima
-    prenotazioni: { richiesta: [30, 60], calendario: [50, 100] },
-    newsletter: [30, 60],
+    prenotazioni: { richiesta: [25, 50], calendario: [40, 80] },
+    newsletter: [25, 50],
     whatsapp: [0, 0],
-    download: { libero: [0, 0], email: [20, 40] },
+    download: { libero: [0, 0], email: [15, 30] },
     ecommerce: null,             // null = da valutare a parte
     area_riservata: null,
   },
@@ -123,10 +123,19 @@ function resolveExtras(b) {
 
 // ─── Stima per il cliente ────────────────────────────────────────
 //  b: dati del modulo (stessi nomi dei campi: extra, sezioni, ...)
+//
+//  Sezioni: le indispensabili (b.sezioni) entrano sempre, anche oltre
+//  il budget. Le facoltative (b.sezioni_opt) riempiono prima i posti
+//  liberi tra le SITE.sections comprese; le altre entrano una alla
+//  volta solo se il centro della stima resta nel budget del cliente.
 export function estimate(b) {
   // Sito
-  const sezioni = arr(b.sezioni).length;
-  const extraSections = Math.max(0, sezioni - SITE.sections);
+  const must = arr(b.sezioni);
+  const opt = arr(b.sezioni_opt).filter(v => !must.includes(v));
+  const freeSlots = Math.max(0, SITE.sections - must.length);
+  const optional = { free: opt.slice(0, freeSlots), added: [], out: [], pending: [], overBudget: false };
+  const optPaid = opt.slice(freeSlots);
+  const extraSections = Math.max(0, must.length - SITE.sections);
   const lingue = Math.max(0, arr(b.lingue).length - 1);
   const site = { min: SITE.min, max: SITE.max, notes: [], tbd: [] };
   site.min += extraSections * SITE.perSection[0];
@@ -146,12 +155,6 @@ export function estimate(b) {
     site.max += p[1];
     site.notes.push(label);
   });
-  // Blog: se il cliente vuole pubblicare da solo serve un pannello (CMS), da valutare
-  if (arr(b.sezioni).includes('blog')) {
-    if (b.blog_gestione === 'autonomo') site.tbd.push('blog aggiornabile da te');
-    else if (b.blog_gestione === 'io') site.notes.push(`articoli caricati da me a ${RATE.hour} €/h`);
-  }
-
   // Extra
   const { picked, included, active, bundle } = resolveExtras(b);
   const qty = id => (id === 'stampati' ? countItems(b.stampati_cosa)
@@ -172,6 +175,35 @@ export function estimate(b) {
   }
 
   const extras = items.reduce((t, i) => ({ min: t.min + i.min, max: t.max + i.max }), { min: 0, max: 0 });
+
+  // Facoltative oltre le sezioni comprese: solo se restano nel budget
+  const budget = BUDGET[b.budget] || null;
+  if (budget && site.min + extras.min > budget[1]) optional.overBudget = true;
+  optPaid.forEach(v => {
+    if (!budget) { optional.pending.push(v); return; }
+    // Conta il centro della forbice, così la stima non sfora troppo il budget
+    const mid = (site.min + site.max + extras.min + extras.max + SITE.perSection[0] + SITE.perSection[1]) / 2;
+    if (mid <= budget[1]) {
+      site.min += SITE.perSection[0];
+      site.max += SITE.perSection[1];
+      optional.added.push(v);
+    } else optional.out.push(v);
+  });
+  if (optional.added.length) {
+    const n = optional.added.length;
+    site.notes.push(`${n} ${n === 1 ? 'facoltativa' : 'facoltative'} oltre le ${SITE.sections} incluse`);
+  }
+  const inSite = [...must, ...optional.free, ...optional.added];
+  site.sections = inSite.length;
+  site.included = inSite;
+  site.optional = optional;
+
+  // Blog: se il cliente vuole pubblicare da solo serve un pannello (CMS), da valutare
+  if (inSite.includes('blog')) {
+    if (b.blog_gestione === 'autonomo') site.tbd.push('blog aggiornabile da te');
+    else if (b.blog_gestione === 'io') site.notes.push(`articoli caricati da me a ${RATE.hour} €/h`);
+  }
+
   const total = { min: site.min + extras.min, max: site.max + extras.max };
 
   return { site, items, included, onDemand, picked, extras, total, costs: liveCosts(b) };
@@ -246,7 +278,7 @@ export function costSummary(c) {
 export function suggest(b) {
   const est = estimate(b);
   const at = (min, max, t) => round(min + (max - min) * Math.min(1, Math.max(0, t)));
-  const sezioni = arr(b.sezioni).length;
+  const sezioni = est.site.sections;
 
   const site = {
     price: at(est.site.min, est.site.max, sezioni >= 6 ? 0.7 : sezioni <= 3 ? 0.3 : 0.5),
@@ -295,6 +327,9 @@ export function suggest(b) {
     if (est.total.min > budget[1]) budgetNote = 'La stima minima supera il budget indicato: valuta cosa togliere o proporre in un secondo momento.';
     else if (total > budget[1]) budgetNote = 'Il prezzo suggerito supera il budget indicato, ma la stima minima ci sta dentro.';
     else budgetNote = 'Il prezzo suggerito rientra nel budget indicato.';
+    const o = est.site.optional;
+    if (o.added.length) budgetNote += ` Facoltative aggiunte perché ci stanno: ${o.added.length}.`;
+    if (o.out.length) budgetNote += ` Facoltative escluse per restare nel budget: ${o.out.length}.`;
   }
 
   return {
