@@ -11,8 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,500&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital@1&family=Shrikhand&text=%20%21%26%2C./012345789ABCDEFGILMNOPRSTUVYabcdefghiklmnoprstuvxz%C2%B1%C2%B7%C3%A0%E2%80%94%E2%80%99%E2%86%92%E2%9C%A6&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=66">
-  <link rel="stylesheet" href="brief.css?v=6">
+  <link rel="stylesheet" href="brief.css?v=7">
 </head>
 <body class="brief-page">
 
@@ -246,33 +247,86 @@
             <h2 class="step-title" id="s3-title" tabindex="-1">Contenuti</h2>
             <p class="step-lead">Quali pagine o sezioni servono, e cosa hai già pronto.</p>
 
-            <fieldset class="field" data-label="Sezioni must-have" data-required>
-              <legend>Sezioni indispensabili <span class="req" aria-hidden="true">*</span></legend>
-              <p class="hint" id="sezioni-hint">Seleziona tutte quelle che servono.</p>
-              <div class="choices" aria-describedby="sezioni-hint">
-                <label class="choice"><input type="checkbox" name="sezioni" value="home"><span>Home</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="chi_siamo"><span>Chi siamo</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="servizi"><span>Servizi</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="portfolio"><span>Portfolio / gallery</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="menu"><span>Menu / listino</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="recensioni"><span>Recensioni</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="faq"><span>FAQ</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="contatti"><span>Contatti</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="blog"><span>Blog / news</span></label>
-                <label class="choice"><input type="checkbox" name="sezioni" value="altro"><span>Altro</span></label>
+            <fieldset class="field" id="sezioniField" data-label="Sezioni del sito" data-required data-group="sezioni" data-group-msg="Metti almeno una sezione tra le indispensabili.">
+              <legend>Quali sezioni servono? <span class="req" aria-hidden="true">*</span></legend>
+              <p class="hint" id="sezioni-hint">Trascina ogni scheda nel gruppo giusto, oppure toccala e scegli dove metterla. Almeno una deve essere indispensabile.</p>
+              <div class="sorter" data-sorter aria-describedby="sezioni-hint">
+                <div class="sorter-pool" data-zone="">
+                  <p class="zone-hint pool-hint">Da sistemare</p>
+                  <div class="zone-list" role="group" aria-label="Sezioni da sistemare" data-empty="Tutte sistemate.">
+                  <div class="sez-card" data-value="home">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg><span class="sez-name">Home</span></button>
+                    <input type="checkbox" name="sezioni" value="home" hidden checked><input type="checkbox" name="sezioni_opt" value="home" hidden><input type="checkbox" name="sezioni_no" value="home" hidden>
+                  </div>
+                  <div class="sez-card" data-value="chi_siamo">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="9" r="3"/><path d="M3.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/><circle cx="16.5" cy="8" r="2.5"/><path d="M16 13c2.4 0 4 1.7 4.5 4.5"/></svg><span class="sez-name">Chi siamo</span></button>
+                    <input type="checkbox" name="sezioni" value="chi_siamo" hidden><input type="checkbox" name="sezioni_opt" value="chi_siamo" hidden><input type="checkbox" name="sezioni_no" value="chi_siamo" hidden>
+                  </div>
+                  <div class="sez-card" data-value="servizi">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><path d="M16.75 14v5.5M14 16.75h5.5"/></svg><span class="sez-name">Servizi</span></button>
+                    <input type="checkbox" name="sezioni" value="servizi" hidden><input type="checkbox" name="sezioni_opt" value="servizi" hidden><input type="checkbox" name="sezioni_no" value="servizi" hidden>
+                  </div>
+                  <div class="sez-card" data-value="portfolio">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4.5 3.5 3 3-2.5 4.5 4"/></svg><span class="sez-name">Portfolio / gallery</span></button>
+                    <input type="checkbox" name="sezioni" value="portfolio" hidden><input type="checkbox" name="sezioni_opt" value="portfolio" hidden><input type="checkbox" name="sezioni_no" value="portfolio" hidden>
+                  </div>
+                  <div class="sez-card" data-value="menu">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8.5h6M9 12h6M9 15.5h4"/></svg><span class="sez-name">Menu / listino</span></button>
+                    <input type="checkbox" name="sezioni" value="menu" hidden><input type="checkbox" name="sezioni_opt" value="menu" hidden><input type="checkbox" name="sezioni_no" value="menu" hidden>
+                  </div>
+                  <div class="sez-card" data-value="recensioni">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4.5 2.3 4.7 5.2.8-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1L4.5 10l5.2-.8z"/></svg><span class="sez-name">Recensioni</span></button>
+                    <input type="checkbox" name="sezioni" value="recensioni" hidden><input type="checkbox" name="sezioni_opt" value="recensioni" hidden><input type="checkbox" name="sezioni_no" value="recensioni" hidden>
+                  </div>
+                  <div class="sez-card" data-value="faq">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.7-.9 1.3v.4"/><path d="M12 16.6v.1"/></svg><span class="sez-name">FAQ</span></button>
+                    <input type="checkbox" name="sezioni" value="faq" hidden><input type="checkbox" name="sezioni_opt" value="faq" hidden><input type="checkbox" name="sezioni_no" value="faq" hidden>
+                  </div>
+                  <div class="sez-card" data-value="contatti">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="m4 7 8 6 8-6"/></svg><span class="sez-name">Contatti</span></button>
+                    <input type="checkbox" name="sezioni" value="contatti" hidden checked><input type="checkbox" name="sezioni_opt" value="contatti" hidden><input type="checkbox" name="sezioni_no" value="contatti" hidden>
+                  </div>
+                  <div class="sez-card" data-value="blog">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19.5h4L19 9.5l-4-4-10 10z"/><path d="m13.5 7 4 4"/></svg><span class="sez-name">Blog / news</span></button>
+                    <input type="checkbox" name="sezioni" value="blog" hidden><input type="checkbox" name="sezioni_opt" value="blog" hidden><input type="checkbox" name="sezioni_no" value="blog" hidden>
+                  </div>
+                  <div class="sez-card" data-value="altro">
+                    <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg><span class="sez-name">Altro</span></button>
+                    <input type="checkbox" name="sezioni" value="altro" hidden><input type="checkbox" name="sezioni_opt" value="altro" hidden><input type="checkbox" name="sezioni_no" value="altro" hidden>
+                  </div>
+                  </div>
+                </div>
+                <div class="sorter-zones">
+                <div class="sorter-zone" data-zone="sezioni">
+                  <div class="zone-head"><strong class="zone-title" id="zone-sezioni">Indispensabili</strong><span class="zone-count" aria-hidden="true"></span></div>
+                  <p class="zone-hint">Ci saranno sempre, anche se il prezzo sale.</p>
+                  <div class="zone-list" role="group" aria-labelledby="zone-sezioni" data-empty="Trascina qui"></div>
+                </div>
+                <div class="sorter-zone" data-zone="sezioni_opt">
+                  <div class="zone-head"><strong class="zone-title" id="zone-sezioni_opt">Facoltative</strong><span class="zone-count" aria-hidden="true"></span></div>
+                  <p class="zone-hint">Solo se restano nel tuo budget.</p>
+                  <div class="zone-list" role="group" aria-labelledby="zone-sezioni_opt" data-empty="Trascina qui"></div>
+                </div>
+                <div class="sorter-zone" data-zone="sezioni_no">
+                  <div class="zone-head"><strong class="zone-title" id="zone-sezioni_no">Non necessarie</strong><span class="zone-count" aria-hidden="true"></span></div>
+                  <p class="zone-hint">Non le metto nel sito.</p>
+                  <div class="zone-list" role="group" aria-labelledby="zone-sezioni_no" data-empty="Trascina qui"></div>
+                </div>
+                </div>
+                <div class="sez-menu" role="menu" aria-label="Sposta la sezione" hidden>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-to="sezioni">Indispensabile</button>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-to="sezioni_opt">Facoltativa</button>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-to="sezioni_no">Non necessaria</button>
+                </div>
               </div>
-              <div class="reveal" data-show-when="sezioni=altro">
+              <p class="sorter-note">Le <strong>indispensabili</strong> le inserisco comunque, anche a costo di alzare il prezzo. Le <strong>facoltative</strong> le aggiungo solo se il totale resta nel budget che indicherai allo step 7, altrimenti le lascio fuori.</p>
+              <div class="reveal" data-show-when="sezioni=altro||sezioni_opt=altro">
                 <div class="reveal-inner">
                   <label for="f-sezioni-altro" class="sub-label">Quali altre sezioni? <span class="req" aria-hidden="true">*</span></label>
-                  <input id="f-sezioni-altro" name="sezioni_altro" type="text" maxlength="200" data-required-when="sezioni=altro">
+                  <input id="f-sezioni-altro" name="sezioni_altro" type="text" maxlength="200" data-required-when="sezioni=altro||sezioni_opt=altro">
                 </div>
               </div>
             </fieldset>
-
-            <div class="field" data-label="Sezioni facoltative">
-              <label for="f-sezioni-facoltative">Sezioni facoltative</label>
-              <textarea id="f-sezioni-facoltative" name="sezioni_facoltative" rows="2" maxlength="800" placeholder="Sezioni che ti piacerebbe avere, ma solo se c'è spazio."></textarea>
-            </div>
 
             <fieldset class="field" data-label="Funzionalità">
               <legend>Oltre alle sezioni, cosa deve poter fare chi visita il sito?</legend>
@@ -291,7 +345,7 @@
 
             <!-- Dettagli per sezioni e funzionalità scelte: cambiano stima e costi vivi -->
             <div class="extra-details">
-              <div class="reveal" data-show-when="sezioni=blog"><div class="reveal-inner"><div class="extra-panel">
+              <div class="reveal" data-show-when="sezioni=blog||sezioni_opt=blog"><div class="reveal-inner"><div class="extra-panel">
                 <h3 class="extra-title">Blog / news</h3>
                 <fieldset class="field field-nested" data-label="Chi pubblica gli articoli">
                   <legend class="sub-label">Chi pubblica gli articoli?</legend>
@@ -544,13 +598,13 @@
 
             <fieldset class="field" data-label="Stili che ti piacciono" data-required>
               <legend>Quali di questi stili ti piacciono di più? <span class="req" aria-hidden="true">*</span></legend>
-              <p class="hint" id="stili-hint">Scegline da 1 a 3. Le anteprime sono schematiche: apri gli esempi per vedere dei siti veri. <span class="stili-count" id="stili-count" aria-live="polite">0 di 3</span></p>
+              <p class="hint" id="stili-hint">Scegline da 1 a 3. Le anteprime sono solo indicative: apri gli esempi per vedere dei siti veri. <span class="stili-count" id="stili-count" aria-live="polite">0 di 3</span></p>
               <div class="style-grid" aria-describedby="stili-hint">
                 <div class="style-item">
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="minimal">
                     <span class="style-body">
-                      <span class="sp sp--minimal" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--minimal" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">lumen</b><span class="sp-links"><i>Progetti</i><i>Studio</i><i>Contatti</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">Studio di architettura · Rimini</span><span class="sp-title">Spazi semplici,<br>idee chiare.</span><span class="sp-sub">Progettiamo case e negozi su misura, con calma e attenzione ai dettagli.</span><span class="sp-cta">Vedi i progetti →</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>01 Residenziale</i><i>02 Negozi</i><i>03 Interni</i></span></span>
                       <strong>Minimal e luminoso</strong>
                       <span class="style-words">Tanto spazio bianco · pochi elementi · caratteri sottili</span>
                     </span>
@@ -561,29 +615,29 @@
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="editoriale">
                     <span class="style-body">
-                      <span class="sp sp--editoriale" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--editoriale" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">Casa Aurora</b><span class="sp-links"><i>Camere</i><i>Ristorante</i><i>Prenota</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">Bed &amp; breakfast sul fiume</span><span class="sp-title">Dove il fiume<br>incontra la collina</span><span class="sp-sub">Sei camere, un giardino e la colazione servita fino a tardi.</span><span class="sp-cta">Scopri le camere</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>Le camere</i><i>Il giardino</i><i>Come arrivare</i></span></span>
                       <strong>Editoriale e fotografico</strong>
                       <span class="style-words">Foto grandi · impaginazione da rivista · titoli eleganti</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://estudioniksen.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile editoriale e fotografico (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://www.thebendclub.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile editoriale e fotografico (si apre in una nuova scheda)</span> ↗</a>
                 </div>
                 <div class="style-item">
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="naturale">
                     <span class="style-body">
-                      <span class="sp sp--naturale" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--naturale" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">Forno Grano</b><span class="sp-links"><i>Il pane</i><i>Bottega</i><i>Dove siamo</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">Panificio dal 1987</span><span class="sp-title">Pane buono,<br>ogni mattina.</span><span class="sp-sub">Lievito madre, grani antichi e il forno a legna di sempre.</span><span class="sp-cta">Vieni a trovarci</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>Pane</i><i>Dolci</i><i>Colazioni</i></span></span>
                       <strong>Caldo e naturale</strong>
                       <span class="style-words">Toni terra · luce morbida · forme arrotondate</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://verasfawaz.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile caldo e naturale (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://www.masseriamoroseta.it/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile caldo e naturale (si apre in una nuova scheda)</span> ↗</a>
                 </div>
                 <div class="style-item">
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="giocoso">
                     <span class="style-body">
-                      <span class="sp sp--giocoso" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--giocoso" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">Pop!</b><span class="sp-links"><i>Gusti</i><i>Eventi</i><i>Ciao!</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">Gelateria artigianale</span><span class="sp-title">Gusti matti,<br>ogni giorno.</span><span class="sp-sub">32 gusti, coni colorati e tanta allegria.</span><span class="sp-cta">Scopri i gusti</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>Pistacchio</i><i>Fragola</i><i>Puffo</i></span></span>
                       <strong>Colorato e giocoso</strong>
                       <span class="style-words">Colori vivaci · forme e adesivi · tono ironico</span>
                     </span>
@@ -594,7 +648,7 @@
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="audace">
                     <span class="style-body">
-                      <span class="sp sp--audace" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--audace" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">FORTE</b><span class="sp-links"><i>Corsi</i><i>Orari</i><i>Iscriviti</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">Palestra · Rimini</span><span class="sp-title">MUOVITI.<br>ORA.</span><span class="sp-sub">Sala pesi, corsi e personal trainer. Prima lezione gratis.</span><span class="sp-cta">Prova gratis →</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>Functional</i><i>Boxe</i><i>Yoga</i></span></span>
                       <strong>Audace e grafico</strong>
                       <span class="style-words">Titoli enormi · contrasti forti · pochi colori pieni</span>
                     </span>
@@ -605,7 +659,7 @@
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="scuro">
                     <span class="style-body">
-                      <span class="sp sp--scuro" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--scuro" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">Bottega Nera</b><span class="sp-links"><i>Menu</i><i>Eventi</i><i>Prenota</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">Cocktail bar</span><span class="sp-title">Notti lente,<br>drink lenti.</span><span class="sp-sub">Cocktail d’autore e vini naturali, dalle 19 a tarda notte.</span><span class="sp-cta">Prenota un tavolo</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>Signature</i><i>Vini</i><i>Musica</i></span></span>
                       <strong>Scuro ed elegante</strong>
                       <span class="style-words">Fondo scuro · dettagli luminosi · atmosfera</span>
                     </span>
@@ -616,18 +670,18 @@
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="classico">
                     <span class="style-body">
-                      <span class="sp sp--classico" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--classico" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">Villa Ortensia</b><span class="sp-links"><i>Le stanze</i><i>Il parco</i><i>Eventi</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">Dal 1924</span><span class="sp-title">Una dimora sul mare</span><span class="sp-sub">Soggiorni, ricevimenti e cene nel parco della villa.</span><span class="sp-cta">Richiedi disponibilità</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>Le stanze</i><i>Il parco</i><i>Gli eventi</i></span></span>
                       <strong>Classico e raffinato</strong>
                       <span class="style-words">Caratteri con grazie · ornamenti · colori profondi</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://the-family-rice-tray.vercel.app/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile classico e raffinato (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://www.pellicanohotels.com/en/hotels/hotel-il-pellicano/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile classico e raffinato (si apre in una nuova scheda)</span> ↗</a>
                 </div>
                 <div class="style-item">
                   <label class="style-card">
                     <input type="checkbox" name="stili" value="tecnico">
                     <span class="style-body">
-                      <span class="sp sp--tecnico" aria-hidden="true"><i class="sp-nav"></i><i class="sp-h"></i><i class="sp-h2"></i><i class="sp-p"></i><i class="sp-img"></i><i class="sp-btn"></i></span>
+                      <span class="sp sp--tecnico" aria-hidden="true"><span class="sp-nav"><b class="sp-logo">OFFICINA/42</b><span class="sp-links"><i>Servizi</i><i>Lavori</i><i>Contatti</i></span></span><span class="sp-hero"><span class="sp-text"><span class="sp-kicker">01 — Officina meccanica</span><span class="sp-title">Precisione,<br>misurata.</span><span class="sp-sub">Lavorazioni CNC con tolleranze di ±0,01 mm.</span><span class="sp-cta">Chiedi un preventivo</span></span><span class="sp-photo"></span></span><span class="sp-strip"><i>±0,01 mm</i><i>5 giorni</i><i>1.200 pz/mese</i></span></span>
                       <strong>Tecnico e preciso</strong>
                       <span class="style-words">Griglie a vista · numeri e dettagli · linee sottili</span>
                     </span>
@@ -657,26 +711,6 @@
               <p class="hint">Facoltativo. Fino a 5 siti che ti piacciono, anche di settori diversi dal tuo. Dimmi cosa ti piace di ciascuno.</p>
               <ol class="inspo-list" id="inspoList"></ol>
               <button type="button" class="btn btn-ghost btn-small" id="addInspo">+ Aggiungi un sito</button>
-            </fieldset>
-
-            <fieldset class="field" data-label="Aggettivi per lo stile">
-              <legend>Come dovrebbe sembrare il sito?</legend>
-              <div class="choices">
-                <label class="choice"><input type="checkbox" name="aggettivi" value="minimal"><span>Minimal</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="elegante"><span>Elegante</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="accogliente"><span>Accogliente</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="moderno"><span>Moderno</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="classico"><span>Classico</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="audace"><span>Audace</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="giocoso"><span>Giocoso</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="naturale"><span>Naturale</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="lussuoso"><span>Lussuoso</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="artigianale"><span>Artigianale</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="tecnico"><span>Tecnico</span></label>
-                <label class="choice"><input type="checkbox" name="aggettivi" value="colorato"><span>Colorato</span></label>
-              </div>
-              <label for="f-aggettivi-altri" class="sub-label">Altre parole?</label>
-              <input id="f-aggettivi-altri" name="aggettivi_altri" type="text" maxlength="200" placeholder="es. luminoso, mediterraneo…">
             </fieldset>
 
             <div class="grid-2">
@@ -1077,6 +1111,6 @@
   </template>
 
   <script src="script.js?v=65"></script>
-  <script type="module" src="brief.js?v=6"></script>
+  <script type="module" src="brief.js?v=7"></script>
 </body>
 </html>

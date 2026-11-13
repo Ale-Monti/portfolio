@@ -89,11 +89,11 @@ const STILI = {
     desc: 'fondo bianco o quasi, una sola tinta d\'accento, molto spazio vuoto, tipografia sans leggera, poche foto ma grandi, animazioni minime',
   },
   editoriale: {
-    nome: 'Editoriale e fotografico', esempio: 'https://estudioniksen.com/',
+    nome: 'Editoriale e fotografico', esempio: 'https://www.thebendclub.com/',
     desc: 'foto grandi a tutta larghezza come protagoniste, impaginazione da rivista con colonne e didascalie, titoli raffinati (serif o grotesk), palette neutra presa dalle foto',
   },
   naturale: {
-    nome: 'Caldo e naturale', esempio: 'https://verasfawaz.com/',
+    nome: 'Caldo e naturale', esempio: 'https://www.masseriamoroseta.it/',
     desc: 'palette calda (sabbia, crema, terracotta, verde oliva), forme e angoli morbidi, foto con luce naturale, serif morbido per i titoli, atmosfera accogliente e rilassata',
   },
   giocoso: {
@@ -109,7 +109,7 @@ const STILI = {
     desc: 'fondo nero o molto scuro, testi chiari, un accento caldo o metallico, foto drammatiche con luce di taglio, serif elegante, ritmo lento',
   },
   classico: {
-    nome: 'Classico e raffinato', esempio: 'https://the-family-rice-tray.vercel.app/',
+    nome: 'Classico e raffinato', esempio: 'https://www.pellicanohotels.com/en/hotels/hotel-il-pellicano/',
     desc: 'caratteri con grazie e personalità, colori profondi (bordeaux, verde bosco, blu notte) con oro o crema, cornici e piccoli ornamenti, impaginazione centrata, senso di tradizione e cura',
   },
   tecnico: {
@@ -241,6 +241,7 @@ function normalize(raw) {
     pubblico: s('pubblico', 1000), cta: s('cta', 200),
 
     sezioni: many('sezioni', L.sezioni), sezioni_altro: s('sezioni_altro', 200),
+    sezioni_opt: many('sezioni_opt', L.sezioni), sezioni_no: many('sezioni_no', L.sezioni),
     sezioni_facoltative: s('sezioni_facoltative', 800),
     lingue: many('lingue', L.lingue), lingue_altro: s('lingue_altro', 120),
     ha_testi: one('ha_testi', L.possesso), ha_foto: one('ha_foto', L.possesso), ha_logo: one('ha_logo', L.logo),
@@ -300,11 +301,15 @@ function normalize(raw) {
   if (b.extra.includes('traduzioni')) b.traduzioni_lingue = s('traduzioni_lingue', 200);
   if (b.settore !== 'altro') b.settore_altro = '';
   if (b.obiettivo !== 'altro') b.obiettivo_altro = '';
-  if (!b.sezioni.includes('altro')) b.sezioni_altro = '';
+  // Una sezione sta in un solo gruppo: vince il più importante
+  b.sezioni_opt = b.sezioni_opt.filter(v => !b.sezioni.includes(v));
+  b.sezioni_no = b.sezioni_no.filter(v => !b.sezioni.includes(v) && !b.sezioni_opt.includes(v));
+  const sezAny = v => b.sezioni.includes(v) || b.sezioni_opt.includes(v);
+  if (!sezAny('altro')) b.sezioni_altro = '';
   if (!b.lingue.includes('altro')) b.lingue_altro = '';
   if (b.tempistiche !== 'data') b.scadenza_data = '';
   if (b.dominio !== 'si') b.dominio_nome = '';
-  if (!b.sezioni.includes('blog')) { b.blog_gestione = ''; b.blog_frequenza = ''; }
+  if (!sezAny('blog')) { b.blog_gestione = ''; b.blog_frequenza = ''; }
   const has = f => b.funzionalita.includes(f);
   if (!has('prenotazioni')) { b.prenotazioni_tipo = ''; b.prenotazioni_cosa = ''; }
   if (!has('newsletter')) { b.newsletter_iscritti = ''; b.newsletter_note = ''; }
@@ -349,8 +354,8 @@ function normalize(raw) {
   req('obiettivo', 'Seleziona un\'opzione.');
   if (b.obiettivo === 'altro') req('obiettivo_altro');
 
-  if (!b.sezioni.length) errors.sezioni = 'Seleziona almeno un\'opzione.';
-  if (b.sezioni.includes('altro')) req('sezioni_altro');
+  if (!b.sezioni.length) errors.sezioni = 'Metti almeno una sezione tra le indispensabili.';
+  if (b.sezioni.includes('altro') || b.sezioni_opt.includes('altro')) req('sezioni_altro');
   req('pubblico');
   if (!b.lingue.length) errors.lingue = 'Seleziona almeno un\'opzione.';
   if (lingueEstere) req('traduzioni_chi', 'Seleziona un\'opzione.');
@@ -382,7 +387,18 @@ function normalize(raw) {
 function derived(b) {
   const settore = b.settore === 'altro' ? `Altro: ${b.settore_altro}` : lab(L.settore, b.settore);
   const obiettivo = b.obiettivo === 'altro' ? `Altro: ${b.obiettivo_altro}` : lab(L.obiettivo, b.obiettivo);
-  const sezioni = b.sezioni.map(v => (v === 'altro' ? `Altro: ${b.sezioni_altro}` : lab(L.sezioni, v)));
+  const sezLab = v => (v === 'altro' ? `Altro: ${b.sezioni_altro}` : lab(L.sezioni, v));
+  const sezioni = b.sezioni.map(sezLab);
+  // Facoltative con l'esito rispetto al budget (calcolato nel listino)
+  const optEsito = suggest(b).estimate.site.optional;
+  const sezioniOpt = b.sezioni_opt.map(v => ({
+    nome: sezLab(v),
+    esito: optEsito.free.includes(v) ? 'compresa nel prezzo'
+      : optEsito.added.includes(v) ? 'entra nel budget'
+        : optEsito.out.includes(v) ? 'fuori budget, da lasciare fuori'
+          : 'budget non indicato, da valutare',
+  }));
+  const sezioniNo = b.sezioni_no.map(sezLab);
   const lingue = b.lingue.map(v => (v === 'altro' ? `Altra: ${b.lingue_altro || 'non specificata'}` : lab(L.lingue, v)));
   const scadenza = b.tempistiche === 'data' ? itDate(b.scadenza_data) : lab(L.tempistiche, b.tempistiche);
   const indirizzo = [[b.via, b.civico].filter(Boolean).join(' '), [b.cap, b.citta].filter(Boolean).join(' ')].filter(Boolean).join(', ');
@@ -443,7 +459,7 @@ function derived(b) {
     return { id, label: L.extra[id], rows };
   });
 
-  return { settore, obiettivo, sezioni, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails, online, featureDetails, contattiPubblici, orari, legali, stili, quote: suggest(b) };
+  return { settore, obiettivo, sezioni, sezioniOpt, sezioniNo, lingue, scadenza, indirizzo, aggettivi, funzionalita, fotoSoggetti, mapsUrl, impact, extraDetails, online, featureDetails, contattiPubblici, orari, legali, stili, quote: suggest(b) };
 }
 
 // Righe del preventivo suggerito, già in testo: [voce, forbice lancio, listino, suggerito, perché]
@@ -526,8 +542,16 @@ function buildMarkdown(b, d, ctx) {
   out.push('');
 
   out.push('## Sezioni facoltative');
-  out.push(para(b.sezioni_facoltative));
+  out.push('_Il cliente le vuole solo se restano nel budget. Accanto a ciascuna, l\'esito della stima._');
+  out.push(d.sezioniOpt.length ? d.sezioniOpt.map(o => `- ${oneLine(o.nome)} (${o.esito})`).join('\n') : NA);
+  if (b.sezioni_facoltative) out.push('', para(b.sezioni_facoltative));
   out.push('');
+
+  if (d.sezioniNo.length) {
+    out.push('## Sezioni da non mettere');
+    out.push(d.sezioniNo.map(v => `- ${oneLine(v)}`).join('\n'));
+    out.push('');
+  }
   out.push('## Funzionalità');
   out.push(d.funzionalita.length ? d.funzionalita.map(f => `- ${oneLine(f)}`).join('\n') : NA);
   out.push('');
@@ -575,7 +599,7 @@ function buildMarkdown(b, d, ctx) {
     : NA);
   if (b.stile_no) out.push(`\n**Stile da evitare:** ${STILI[b.stile_no].nome} (${STILI[b.stile_no].desc}).`);
   out.push('');
-  out.push(item('Aggettivi', d.aggettivi.join(', ')));
+  if (d.aggettivi.length) out.push(item('Aggettivi', d.aggettivi.join(', ')));
   out.push(item('Colori preferiti', b.colori_preferiti));
   out.push(item('Colori da evitare', b.colori_evitare));
   out.push('');
@@ -665,9 +689,9 @@ function buildMarkdown(b, d, ctx) {
   out.push(`Usa questo brief per creare una **prima bozza statica** del sito di ${oneLine(b.attivita)}.`);
   out.push('');
   out.push('1. **Tecnologia:** HTML, CSS e JavaScript puri, senza framework né build step. File di partenza: `index.html`, `style.css`, `script.js`. Se le sezioni sono poche, preferisci una one-page con ancore; altrimenti una pagina per sezione.');
-  out.push('2. **Struttura:** includi tutte le sezioni must-have in un ordine logico per l\'obiettivo principale. Aggiungi le sezioni facoltative solo se non appesantiscono il sito.');
+  out.push('2. **Struttura:** includi tutte le sezioni must-have in un ordine logico per l\'obiettivo principale, anche se fanno superare il budget. Delle sezioni facoltative includi solo quelle "compresa nel prezzo" o "entra nel budget"; quelle "fuori budget" lasciale fuori e citale nelle note come possibile aggiunta. Non creare le sezioni da non mettere.');
   out.push('3. **Obiettivo e CTA:** ogni scelta (gerarchia, posizione dei pulsanti, contenuti in evidenza) deve servire l\'obiettivo principale e la call to action indicata. Se i due non coincidono, dai la priorità alla call to action e segnalalo nelle note.');
-  out.push('4. **Stile:** la guida principale sono gli "Stili scelti dalla galleria": il primo è il più importante, gli altri lo sfumano. Apri gli esempi per capire il tono, senza copiarli, ed evita lo stile da evitare. Poi rifinisci con aggettivi e colori indicati, ed evita i colori da escludere. Se il cliente vuole i colori del logo attuale, la palette parte dal logo (lo trovi tra le reference visive). Se stili, colori e logo si contraddicono, scegli la strada più coerente con l\'attività e spiega il perché nelle note. Usa i siti di ispirazione del cliente e le reference visive per capire il suo gusto.');
+  out.push('4. **Stile:** la guida principale sono gli "Stili scelti dalla galleria": il primo è il più importante, gli altri lo sfumano. Apri gli esempi per capire il tono, senza copiarli, ed evita lo stile da evitare. Poi rifinisci con i colori indicati ed evita i colori da escludere. Se il cliente vuole i colori del logo attuale, la palette parte dal logo (lo trovi tra le reference visive). Se stili, colori e logo si contraddicono, scegli la strada più coerente con l\'attività e spiega il perché nelle note. Usa i siti di ispirazione del cliente e le reference visive per capire il suo gusto.');
   out.push('5. **Qualità:** mobile-first e responsive, HTML semantico, accessibile (contrasti AA, testi alternativi, navigazione da tastiera), SEO di base (`title`, meta description, `lang`), immagini leggere.');
   out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsanti per prenotazioni o WhatsApp, carrello e-commerce come segnaposto). Niente backend.');
   out.push(`7. **Lingue:** crea la bozza in ${mainLang}. Se sono richieste altre lingue, predisponi solo il selettore e la struttura, senza tradurre.`);
@@ -844,7 +868,8 @@ function buildOwnerEmail(b, d, ctx) {
   ].join('');
   const sezioni = [
     chips(d.sezioni),
-    kv('Facoltative', b.sezioni_facoltative),
+    kv('Facoltative (solo se nel budget)', [d.sezioniOpt.map(o => `${o.nome}: ${o.esito}`).join('\n'), b.sezioni_facoltative].filter(Boolean).join('\n')),
+    kv('Da non mettere', d.sezioniNo.join(', ')),
     kv('Funzionalità', d.funzionalita.join(', ') || 'Nessuna indicata'),
     kv('Lingue', d.lingue.join(', ') || 'Non indicate'),
     kv('Materiali pronti', `Testi: ${lab(L.possesso, b.ha_testi) || '–'} · Foto: ${lab(L.possesso, b.ha_foto) || '–'} · Logo: ${lab(L.logo, b.ha_logo) || '–'}`),
@@ -868,7 +893,7 @@ function buildOwnerEmail(b, d, ctx) {
     kv('Stili scelti', d.stili.length ? d.stili.map((st, n) => `${n + 1}. ${st.nome}`).join('\n') : 'Non indicati'),
     b.stile_no ? kv('Stile da evitare', STILI[b.stile_no].nome) : '',
     b.logo_colori ? kv('Colori del logo', lab(L.logo_colori, b.logo_colori)) : '',
-    d.aggettivi.length ? chips(d.aggettivi) : kv('Aggettivi', 'Non indicati'),
+    d.aggettivi.length ? chips(d.aggettivi) : '',
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
       <td class="col" width="50%" valign="top" style="padding-right:8px;">${kv('Colori preferiti', b.colori_preferiti || 'Non indicati')}</td>
       <td class="col" width="50%" valign="top">${kv('Colori da evitare', b.colori_evitare || 'Non indicati')}</td>
