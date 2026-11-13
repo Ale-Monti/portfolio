@@ -29,6 +29,13 @@ const T = {
     contactLabel:     'Contact',
     experienceLabel:  'Experience',
     educationLabel:   'Education',
+    pathLabel:        'Experience & Education',
+    tlToday:          'Today',
+    tlNow:            'now',
+    tlHint:           'Drag to explore',
+    tlRegion:         'Experience and education timeline: drag or scroll sideways',
+    tagWork:          'Work',
+    tagStudy:         'Study',
     modalCat:         'Category',
     modalDate:        'Date',
     modalClient:      'Client',
@@ -73,6 +80,13 @@ const T = {
     contactLabel:     'Contatti',
     experienceLabel:  'Esperienza',
     educationLabel:   'Formazione',
+    pathLabel:        'Esperienza e formazione',
+    tlToday:          'Oggi',
+    tlNow:            'oggi',
+    tlHint:           'Trascina per scorrere',
+    tlRegion:         'Timeline di esperienze e formazione: trascina o scorri di lato',
+    tagWork:          'Lavoro',
+    tagStudy:         'Formazione',
     modalCat:         'Categoria',
     modalDate:        'Data',
     modalClient:      'Cliente',
@@ -325,7 +339,7 @@ document.addEventListener('mousemove', e => {
 document.addEventListener('mouseover', e => {
   // Over a project image the dot turns into a "+" (click to zoom)
   zoomMode = !!e.target.closest('.modal-gallery-img:not(.is-placeholder)');
-  const clickable = !zoomMode && e.target.closest('a, button, [role="button"], .project-row');
+  const clickable = !zoomMode && e.target.closest('a, button, [role="button"], .project-row, .tl');
   targetHoverScale = zoomMode ? 3.2 : clickable ? 2.2 : 1;
   if (cursorEl) {
     cursorEl.classList.toggle('is-hover', !!clickable);
@@ -949,6 +963,154 @@ document.addEventListener('DOMContentLoaded', () => {
   const yearEl = document.getElementById('footerYear');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
+
+// ═══════════════════════════════════════════════════════════════════
+//  TIMELINE (About) – schede in fila orizzontale, dalla più recente.
+//  Linea curva che le collega, trascinamento col mouse (con un po' di
+//  inerzia), righello degli anni che mostra il tratto visibile.
+//  Su telefono si scorre col dito; da tastiera con le frecce.
+// ═══════════════════════════════════════════════════════════════════
+(function () {
+  const tl = document.getElementById('timeline');
+  if (!tl) return;
+  const track = tl.querySelector('.tl-track');
+  const svg = document.getElementById('tlLine');
+  const path = svg.querySelector('path');
+  const items = [...tl.querySelectorAll('.tl-item')];
+  const ruler = document.getElementById('tlRuler');
+  const ticks = document.getElementById('tlTicks');
+  const thumb = document.getElementById('tlThumb');
+  const dateEl = document.getElementById('tlDate');
+  const hint = document.querySelector('.tl-hint');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const FIRST_YEAR = 2015;
+
+  items.forEach((it, i) => it.style.setProperty('--i', i));
+
+  // Righello: una tacca per anno, da oggi al primo anno
+  const today = new Date();
+  for (let y = today.getFullYear(); y >= FIRST_YEAR; y--) ticks.appendChild(document.createElement('i'));
+
+  function setDate() {
+    const it = document.documentElement.lang === 'it';
+    dateEl.textContent = today.toLocaleDateString(it ? 'it-IT' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  setDate();
+  new MutationObserver(setDate).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+
+  // Linea: dal punto di ogni scheda, dritta dietro la scheda, poi una
+  // curva morbida nello spazio fino al punto della scheda dopo.
+  // Misuro senza le animazioni in corso (offset* ignora i transform).
+  function draw() {
+    const pts = items.map(it => {
+      const card = it.firstElementChild;
+      const node = card.querySelector('.tl-node');
+      const dy = new DOMMatrixReadOnly(getComputedStyle(it).transform).m42;
+      return {
+        x: it.offsetLeft + node.offsetLeft + node.offsetWidth / 2,
+        r: it.offsetLeft + it.offsetWidth,
+        y: it.offsetTop + dy + card.offsetTop + node.offsetTop + node.offsetHeight / 2,
+      };
+    });
+    const W = track.offsetWidth, H = track.offsetHeight;
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', H);
+    let d = `M0 ${pts[0].y} L${pts[0].x} ${pts[0].y}`;
+    pts.forEach((p, i) => {
+      d += ` L${p.r} ${p.y}`;
+      const n = pts[i + 1];
+      if (n) {
+        const k = (n.x - p.r) * 0.55;
+        d += ` C${p.r + k} ${p.y} ${n.x - k} ${n.y} ${n.x} ${n.y}`;
+      } else d += ` L${W} ${p.y}`;
+    });
+    path.setAttribute('d', d);
+    const len = Math.ceil(path.getTotalLength());
+    path.style.strokeDasharray = len;
+    tl.style.setProperty('--len', len);
+  }
+
+  // Righello, sfumature ai bordi e suggerimento "trascina"
+  function update() {
+    const sw = tl.scrollWidth, cw = tl.clientWidth, x = tl.scrollLeft;
+    const max = sw - cw;
+    const idle = max < 4;
+    ruler.classList.toggle('is-idle', idle);
+    if (hint) hint.classList.toggle('is-idle', idle || x > 40);
+    const tw = ticks.clientWidth;
+    thumb.style.setProperty('--tw', `${Math.max(12, (cw / sw) * tw)}px`);
+    thumb.style.setProperty('--tx', `${(x / sw) * tw}px`);
+    tl.style.setProperty('--fl', x > 2 ? '56px' : '0px');
+    tl.style.setProperty('--fr', x < max - 2 ? '72px' : '0px');
+  }
+
+  tl.addEventListener('scroll', update, { passive: true });
+  new ResizeObserver(() => { draw(); update(); }).observe(tl);
+  if (document.fonts) document.fonts.ready.then(() => { draw(); update(); });
+  draw(); update();
+
+  // Clic sul righello: porta lì la timeline
+  ticks.addEventListener('click', e => {
+    const r = ticks.getBoundingClientRect();
+    const f = (e.clientX - r.left) / r.width;
+    tl.scrollTo({ left: f * tl.scrollWidth - tl.clientWidth / 2, behavior: reduce.matches ? 'auto' : 'smooth' });
+  });
+
+  // Trascinamento col mouse (il dito usa lo scorrimento nativo)
+  let down = null, v = 0, glide = 0;
+  tl.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    cancelAnimationFrame(glide);
+    down = { x: e.clientX, left: tl.scrollLeft, last: e.clientX, t: performance.now(), moved: false, id: e.pointerId };
+    v = 0;
+  });
+  tl.addEventListener('pointermove', e => {
+    if (!down || e.pointerId !== down.id) return;
+    const dx = e.clientX - down.x;
+    if (!down.moved && Math.abs(dx) < 4) return;
+    if (!down.moved) {
+      down.moved = true;
+      tl.setPointerCapture(e.pointerId);
+      tl.classList.add('is-grabbing');
+    }
+    const now = performance.now();
+    v = (e.clientX - down.last) / Math.max(1, now - down.t);   // px/ms
+    down.last = e.clientX; down.t = now;
+    tl.scrollLeft = down.left - dx;
+  });
+  function end(e) {
+    if (!down || (e && e.pointerId !== down.id)) return;
+    const moved = down.moved;
+    down = null;
+    tl.classList.remove('is-grabbing');
+    if (!moved || reduce.matches || Math.abs(v) < 0.05) return;
+    let speed = -v * 16;   // px per fotogramma
+    const step = () => {
+      speed *= 0.93;
+      tl.scrollLeft += speed;
+      if (Math.abs(speed) > 0.4) glide = requestAnimationFrame(step);
+    };
+    glide = requestAnimationFrame(step);
+  }
+  tl.addEventListener('pointerup', end);
+  tl.addEventListener('pointercancel', end);
+  tl.addEventListener('wheel', () => cancelAnimationFrame(glide), { passive: true });
+
+  // Entrata: quando la timeline arriva in vista
+  if (!reduce.matches && 'IntersectionObserver' in window) {
+    tl.classList.add('will-reveal');
+    const io = new IntersectionObserver(entries => {
+      if (!entries.some(en => en.isIntersecting)) return;
+      io.disconnect();
+      draw();
+      requestAnimationFrame(() => {
+        tl.classList.add('is-revealed');
+        setTimeout(() => tl.classList.add('is-settled'), 1800);
+      });
+    }, { threshold: 0.2 });
+    io.observe(tl);
+  }
+})();
 
 // ═══════════════════════════════════════════════════════════════════
 //  TASTI MAGNETICI – il tasto si sposta appena verso il cursore e,
