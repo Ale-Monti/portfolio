@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,500&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital@1&family=Shrikhand&text=%20%21%26%2C./012345789ABCDEFGILMNOPRSTUVYabcdefghiklmnoprstuvxz%C2%B1%C2%B7%C3%A0%E2%80%94%E2%80%99%E2%86%92%E2%9C%A6&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=66">
-  <link rel="stylesheet" href="brief.css?v=7">
+  <link rel="stylesheet" href="brief.css?v=8">
 </head>
 <body class="brief-page">
 
@@ -249,50 +249,50 @@
 
             <fieldset class="field" id="sezioniField" data-label="Sezioni del sito" data-required data-group="sezioni" data-group-msg="Metti almeno una sezione tra le indispensabili.">
               <legend>Quali sezioni servono? <span class="req" aria-hidden="true">*</span></legend>
-              <p class="hint" id="sezioni-hint">Trascina ogni scheda nel gruppo giusto, oppure toccala e scegli dove metterla. Almeno una deve essere indispensabile.</p>
+              <p class="hint" id="sezioni-hint">Trascina nei due gruppi le sezioni che ti servono, oppure toccale e scegli dove metterle. Quelle che lasci fuori non le metto. Almeno una deve essere indispensabile.</p>
               <div class="sorter" data-sorter aria-describedby="sezioni-hint">
                 <div class="sorter-pool" data-zone="">
-                  <p class="zone-hint pool-hint">Da sistemare</p>
-                  <div class="zone-list" role="group" aria-label="Sezioni da sistemare" data-empty="Tutte sistemate.">
+                  <p class="zone-hint pool-hint">Non servono: quelle che lasci qui non le metto nel sito.</p>
+                  <div class="zone-list" role="group" aria-label="Sezioni da sistemare" data-empty="Nessuna: le userai tutte.">
                   <div class="sez-card" data-value="home">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg><span class="sez-name">Home</span></button>
-                    <input type="checkbox" name="sezioni" value="home" hidden checked><input type="checkbox" name="sezioni_opt" value="home" hidden><input type="checkbox" name="sezioni_no" value="home" hidden>
+                    <input type="checkbox" name="sezioni" value="home" hidden checked><input type="checkbox" name="sezioni_opt" value="home" hidden>
                   </div>
                   <div class="sez-card" data-value="chi_siamo">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="9" r="3"/><path d="M3.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/><circle cx="16.5" cy="8" r="2.5"/><path d="M16 13c2.4 0 4 1.7 4.5 4.5"/></svg><span class="sez-name">Chi siamo</span></button>
-                    <input type="checkbox" name="sezioni" value="chi_siamo" hidden><input type="checkbox" name="sezioni_opt" value="chi_siamo" hidden><input type="checkbox" name="sezioni_no" value="chi_siamo" hidden>
+                    <input type="checkbox" name="sezioni" value="chi_siamo" hidden><input type="checkbox" name="sezioni_opt" value="chi_siamo" hidden>
                   </div>
                   <div class="sez-card" data-value="servizi">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><path d="M16.75 14v5.5M14 16.75h5.5"/></svg><span class="sez-name">Servizi</span></button>
-                    <input type="checkbox" name="sezioni" value="servizi" hidden><input type="checkbox" name="sezioni_opt" value="servizi" hidden><input type="checkbox" name="sezioni_no" value="servizi" hidden>
+                    <input type="checkbox" name="sezioni" value="servizi" hidden><input type="checkbox" name="sezioni_opt" value="servizi" hidden>
                   </div>
                   <div class="sez-card" data-value="portfolio">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4.5 3.5 3 3-2.5 4.5 4"/></svg><span class="sez-name">Portfolio / gallery</span></button>
-                    <input type="checkbox" name="sezioni" value="portfolio" hidden><input type="checkbox" name="sezioni_opt" value="portfolio" hidden><input type="checkbox" name="sezioni_no" value="portfolio" hidden>
+                    <input type="checkbox" name="sezioni" value="portfolio" hidden><input type="checkbox" name="sezioni_opt" value="portfolio" hidden>
                   </div>
                   <div class="sez-card" data-value="menu">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8.5h6M9 12h6M9 15.5h4"/></svg><span class="sez-name">Menu / listino</span></button>
-                    <input type="checkbox" name="sezioni" value="menu" hidden><input type="checkbox" name="sezioni_opt" value="menu" hidden><input type="checkbox" name="sezioni_no" value="menu" hidden>
+                    <input type="checkbox" name="sezioni" value="menu" hidden><input type="checkbox" name="sezioni_opt" value="menu" hidden>
                   </div>
                   <div class="sez-card" data-value="recensioni">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4.5 2.3 4.7 5.2.8-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1L4.5 10l5.2-.8z"/></svg><span class="sez-name">Recensioni</span></button>
-                    <input type="checkbox" name="sezioni" value="recensioni" hidden><input type="checkbox" name="sezioni_opt" value="recensioni" hidden><input type="checkbox" name="sezioni_no" value="recensioni" hidden>
+                    <input type="checkbox" name="sezioni" value="recensioni" hidden><input type="checkbox" name="sezioni_opt" value="recensioni" hidden>
                   </div>
                   <div class="sez-card" data-value="faq">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.7-.9 1.3v.4"/><path d="M12 16.6v.1"/></svg><span class="sez-name">FAQ</span></button>
-                    <input type="checkbox" name="sezioni" value="faq" hidden><input type="checkbox" name="sezioni_opt" value="faq" hidden><input type="checkbox" name="sezioni_no" value="faq" hidden>
+                    <input type="checkbox" name="sezioni" value="faq" hidden><input type="checkbox" name="sezioni_opt" value="faq" hidden>
                   </div>
                   <div class="sez-card" data-value="contatti">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="m4 7 8 6 8-6"/></svg><span class="sez-name">Contatti</span></button>
-                    <input type="checkbox" name="sezioni" value="contatti" hidden checked><input type="checkbox" name="sezioni_opt" value="contatti" hidden><input type="checkbox" name="sezioni_no" value="contatti" hidden>
+                    <input type="checkbox" name="sezioni" value="contatti" hidden checked><input type="checkbox" name="sezioni_opt" value="contatti" hidden>
                   </div>
                   <div class="sez-card" data-value="blog">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19.5h4L19 9.5l-4-4-10 10z"/><path d="m13.5 7 4 4"/></svg><span class="sez-name">Blog / news</span></button>
-                    <input type="checkbox" name="sezioni" value="blog" hidden><input type="checkbox" name="sezioni_opt" value="blog" hidden><input type="checkbox" name="sezioni_no" value="blog" hidden>
+                    <input type="checkbox" name="sezioni" value="blog" hidden><input type="checkbox" name="sezioni_opt" value="blog" hidden>
                   </div>
                   <div class="sez-card" data-value="altro">
                     <button type="button" class="sez-btn" aria-haspopup="menu" aria-expanded="false"><svg class="sez-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg><span class="sez-name">Altro</span></button>
-                    <input type="checkbox" name="sezioni" value="altro" hidden><input type="checkbox" name="sezioni_opt" value="altro" hidden><input type="checkbox" name="sezioni_no" value="altro" hidden>
+                    <input type="checkbox" name="sezioni" value="altro" hidden><input type="checkbox" name="sezioni_opt" value="altro" hidden>
                   </div>
                   </div>
                 </div>
@@ -307,16 +307,11 @@
                   <p class="zone-hint">Solo se restano nel tuo budget.</p>
                   <div class="zone-list" role="group" aria-labelledby="zone-sezioni_opt" data-empty="Trascina qui"></div>
                 </div>
-                <div class="sorter-zone" data-zone="sezioni_no">
-                  <div class="zone-head"><strong class="zone-title" id="zone-sezioni_no">Non necessarie</strong><span class="zone-count" aria-hidden="true"></span></div>
-                  <p class="zone-hint">Non le metto nel sito.</p>
-                  <div class="zone-list" role="group" aria-labelledby="zone-sezioni_no" data-empty="Trascina qui"></div>
-                </div>
                 </div>
                 <div class="sez-menu" role="menu" aria-label="Sposta la sezione" hidden>
                   <button type="button" role="menuitemradio" aria-checked="false" data-to="sezioni">Indispensabile</button>
                   <button type="button" role="menuitemradio" aria-checked="false" data-to="sezioni_opt">Facoltativa</button>
-                  <button type="button" role="menuitemradio" aria-checked="false" data-to="sezioni_no">Non necessaria</button>
+                  <button type="button" role="menuitemradio" aria-checked="false" data-to="">Non serve</button>
                 </div>
               </div>
               <p class="sorter-note">Le <strong>indispensabili</strong> le inserisco comunque, anche a costo di alzare il prezzo. Le <strong>facoltative</strong> le aggiungo solo se il totale resta nel budget che indicherai allo step 7, altrimenti le lascio fuori.</p>
@@ -620,7 +615,7 @@
                       <span class="style-words">Foto grandi · impaginazione da rivista · titoli eleganti</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://www.thebendclub.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile editoriale e fotografico (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://madie.es/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile editoriale e fotografico (si apre in una nuova scheda)</span> ↗</a>
                 </div>
                 <div class="style-item">
                   <label class="style-card">
@@ -642,7 +637,7 @@
                       <span class="style-words">Colori vivaci · forme e adesivi · tono ironico</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://krackerz.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile colorato e giocoso (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://kizupi.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile colorato e giocoso (si apre in una nuova scheda)</span> ↗</a>
                 </div>
                 <div class="style-item">
                   <label class="style-card">
@@ -653,7 +648,7 @@
                       <span class="style-words">Titoli enormi · contrasti forti · pochi colori pieni</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://aestudio.studio/hozon" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile audace e grafico (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://plastic.audio/clips/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile audace e grafico (si apre in una nuova scheda)</span> ↗</a>
                 </div>
                 <div class="style-item">
                   <label class="style-card">
@@ -664,7 +659,7 @@
                       <span class="style-words">Fondo scuro · dettagli luminosi · atmosfera</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://grail-app.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile scuro ed elegante (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://secretgardenstresa.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile scuro ed elegante (si apre in una nuova scheda)</span> ↗</a>
                 </div>
                 <div class="style-item">
                   <label class="style-card">
@@ -686,7 +681,7 @@
                       <span class="style-words">Griglie a vista · numeri e dettagli · linee sottili</span>
                     </span>
                   </label>
-                  <a class="style-example" href="https://levo-studio.com/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile tecnico e preciso (si apre in una nuova scheda)</span> ↗</a>
+                  <a class="style-example" href="https://resurf.so/" target="_blank" rel="noopener noreferrer">Vedi un esempio<span class="sr-only"> di stile tecnico e preciso (si apre in una nuova scheda)</span> ↗</a>
                 </div>
               </div>
             </fieldset>
@@ -1111,6 +1106,6 @@
   </template>
 
   <script src="script.js?v=65"></script>
-  <script type="module" src="brief.js?v=7"></script>
+  <script type="module" src="brief.js?v=8"></script>
 </body>
 </html>

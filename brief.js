@@ -650,7 +650,7 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
             .map(([u, n]) => n ? `${u} — ${n}` : u)
             .join('\n');
         } else if (field.id === 'sezioniField') {
-          value = SEZ_ZONES.map(z => {
+          value = [...SEZ_ZONES, ''].map(z => {
             const names = cardsIn(z).map(c => $('.sez-name', c).textContent);
             return names.length ? `${SEZ_LABEL[z]}: ${names.join(', ')}` : '';
           }).filter(Boolean).join('\n');
@@ -1063,14 +1063,14 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
   }
 
   // ═════════════════════════════════════════════════════════════════
-  //  Sezioni: schede da trascinare in tre gruppi
-  //  Ogni scheda ha tre checkbox nascoste (sezioni, sezioni_opt,
-  //  sezioni_no): il gruppo in cui si trova è quella selezionata.
+  //  Sezioni: schede da trascinare in due gruppi
+  //  Ogni scheda ha due checkbox nascoste (sezioni, sezioni_opt): il
+  //  gruppo in cui si trova è quella selezionata. Nessuna = non serve.
   //  Così bozza, condizioni e invio funzionano come le altre checkbox.
   // ═════════════════════════════════════════════════════════════════
-  const SEZ_ZONES = ['sezioni', 'sezioni_opt', 'sezioni_no'];
-  const SEZ_LABEL = { sezioni: 'Indispensabili', sezioni_opt: 'Facoltative', sezioni_no: 'Non necessarie', '': 'Da sistemare' };
-  const SEZ_ONE = { sezioni: 'indispensabile', sezioni_opt: 'facoltativa', sezioni_no: 'non necessaria', '': 'da sistemare' };
+  const SEZ_ZONES = ['sezioni', 'sezioni_opt'];
+  const SEZ_LABEL = { sezioni: 'Indispensabili', sezioni_opt: 'Facoltative', '': 'Non servono' };
+  const SEZ_ONE = { sezioni: 'indispensabile', sezioni_opt: 'facoltativa', '': 'non serve' };
   const sorter = $('[data-sorter]', form);
   const sezMenu = $('.sez-menu', sorter);
   const zoneEl = name => $(`[data-zone="${name}"]`, sorter);

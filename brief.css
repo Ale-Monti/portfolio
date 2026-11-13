@@ -1434,7 +1434,7 @@ button.missing-step:focus-visible { outline: 2px solid var(--focus-ring); outlin
 .pool-hint { margin: 0 0 10px; }
 .sorter.pool-empty .sorter-pool { padding: 10px 14px; }
 .sorter.pool-empty .pool-hint { display: none; }
-.sorter-zones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.sorter-zones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .sorter-zone {
   display: flex;
   flex-direction: column;
@@ -1500,8 +1500,6 @@ button.missing-step:focus-visible { outline: 2px solid var(--focus-ring); outlin
   stroke-linejoin: round;
 }
 .sorter-zone[data-zone="sezioni"] .sez-btn { background: var(--accent); border-color: var(--accent); color: var(--accent-on); }
-.sorter-zone[data-zone="sezioni_no"] .sez-btn { color: var(--ink-muted); }
-.sorter-zone[data-zone="sezioni_no"] .sez-name { text-decoration: line-through; text-decoration-color: var(--ink-dim); }
 
 .sez-card.is-dragging { z-index: 20; pointer-events: none; }
 .sez-card.is-dragging .sez-btn {

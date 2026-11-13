@@ -241,7 +241,7 @@ function normalize(raw) {
     pubblico: s('pubblico', 1000), cta: s('cta', 200),
 
     sezioni: many('sezioni', L.sezioni), sezioni_altro: s('sezioni_altro', 200),
-    sezioni_opt: many('sezioni_opt', L.sezioni), sezioni_no: many('sezioni_no', L.sezioni),
+    sezioni_opt: many('sezioni_opt', L.sezioni),
     sezioni_facoltative: s('sezioni_facoltative', 800),
     lingue: many('lingue', L.lingue), lingue_altro: s('lingue_altro', 120),
     ha_testi: one('ha_testi', L.possesso), ha_foto: one('ha_foto', L.possesso), ha_logo: one('ha_logo', L.logo),
@@ -303,7 +303,8 @@ function normalize(raw) {
   if (b.obiettivo !== 'altro') b.obiettivo_altro = '';
   // Una sezione sta in un solo gruppo: vince il più importante
   b.sezioni_opt = b.sezioni_opt.filter(v => !b.sezioni.includes(v));
-  b.sezioni_no = b.sezioni_no.filter(v => !b.sezioni.includes(v) && !b.sezioni_opt.includes(v));
+  // Le schede lasciate fuori dai due gruppi non servono
+  b.sezioni_no = Object.keys(L.sezioni).filter(v => v !== 'altro' && !b.sezioni.includes(v) && !b.sezioni_opt.includes(v));
   const sezAny = v => b.sezioni.includes(v) || b.sezioni_opt.includes(v);
   if (!sezAny('altro')) b.sezioni_altro = '';
   if (!b.lingue.includes('altro')) b.lingue_altro = '';
@@ -691,7 +692,7 @@ function buildMarkdown(b, d, ctx) {
   out.push('1. **Tecnologia:** HTML, CSS e JavaScript puri, senza framework né build step. File di partenza: `index.html`, `style.css`, `script.js`. Se le sezioni sono poche, preferisci una one-page con ancore; altrimenti una pagina per sezione.');
   out.push('2. **Struttura:** includi tutte le sezioni must-have in un ordine logico per l\'obiettivo principale, anche se fanno superare il budget. Delle sezioni facoltative includi solo quelle "compresa nel prezzo" o "entra nel budget"; quelle "fuori budget" lasciale fuori e citale nelle note come possibile aggiunta. Non creare le sezioni da non mettere.');
   out.push('3. **Obiettivo e CTA:** ogni scelta (gerarchia, posizione dei pulsanti, contenuti in evidenza) deve servire l\'obiettivo principale e la call to action indicata. Se i due non coincidono, dai la priorità alla call to action e segnalalo nelle note.');
-  out.push('4. **Stile:** la guida principale sono gli "Stili scelti dalla galleria": il primo è il più importante, gli altri lo sfumano. Apri gli esempi per capire il tono, senza copiarli, ed evita lo stile da evitare. Poi rifinisci con i colori indicati ed evita i colori da escludere. Se il cliente vuole i colori del logo attuale, la palette parte dal logo (lo trovi tra le reference visive). Se stili, colori e logo si contraddicono, scegli la strada più coerente con l\'attività e spiega il perché nelle note. Usa i siti di ispirazione del cliente e le reference visive per capire il suo gusto.');
+  out.push('4. **Stile:** la guida principale sono gli "Stili scelti dalla galleria": il primo è il più importante, gli altri lo sfumano. Apri gli esempi per capire il tono, senza copiarli, ed evita lo stile da evitare. Tieni il sito semplice da realizzare e mantenere: niente animazioni elaborate o effetti complessi, al massimo transizioni leggere. Poi rifinisci con i colori indicati ed evita i colori da escludere. Se il cliente vuole i colori del logo attuale, la palette parte dal logo (lo trovi tra le reference visive). Se stili, colori e logo si contraddicono, scegli la strada più coerente con l\'attività e spiega il perché nelle note. Usa i siti di ispirazione del cliente e le reference visive per capire il suo gusto.');
   out.push('5. **Qualità:** mobile-first e responsive, HTML semantico, accessibile (contrasti AA, testi alternativi, navigazione da tastiera), SEO di base (`title`, meta description, `lang`), immagini leggere.');
   out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsanti per prenotazioni o WhatsApp, carrello e-commerce come segnaposto). Niente backend.');
   out.push(`7. **Lingue:** crea la bozza in ${mainLang}. Se sono richieste altre lingue, predisponi solo il selettore e la struttura, senza tradurre.`);
