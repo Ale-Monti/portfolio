@@ -3,7 +3,7 @@
 //  upload con anteprime, Turnstile, invio a /api/brief
 //  (tema, cursore e nav arrivano da script.js; i prezzi da pricing.js)
 // ═══════════════════════════════════════════════════════════════════
-import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro, costText } from './pricing.js?v=5';
+import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro, costText } from './pricing.js?v=6';
 
 (() => {
   'use strict';
@@ -903,9 +903,9 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
       const body = input.nextElementSibling;
       if (!s || !body || $('.service-price', body)) return;
       const wrap = make('span', 'service-price');
-      if (s.onDemand) {
+      if (s.onDemand || s.quote) {
         const p = make('span', 'price');
-        p.append(make('b', '', `${RATE.hour} €/h`));
+        p.append(make('b', '', s.quote ? 'Da concordare' : `${RATE.hour} €/h`));
         wrap.append(p);
       } else {
         wrap.append(priceNode(s.min, s.max));
@@ -1025,6 +1025,9 @@ import { SERVICES, BUNDLES, RATE, DEPOSIT, SITE, estimate, listino, range, euro,
 
     if (est.onDemand.length) {
       frag.appendChild(make('p', 'est-note', `${est.onDemand.map(serviceName).join(', ')}: a richiesta, ${RATE.hour} €/h solo quando ti serve.`));
+    }
+    if (est.toQuote.length) {
+      frag.appendChild(make('p', 'est-note', `${est.toQuote.map(serviceName).join(', ')}: non è nel totale, il prezzo lo concordiamo insieme.`));
     }
 
     const c = est.costs;
