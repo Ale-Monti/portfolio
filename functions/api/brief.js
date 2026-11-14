@@ -41,7 +41,7 @@ const L = {
   },
   obiettivo: {
     trovare: 'Farsi trovare su Google', contatti: 'Ricevere contatti e richieste', portfolio: 'Mostrare progetti e lavori realizzati',
-    prenotazioni: 'Ricevere prenotazioni', vendere: 'Vendere online', altro: 'Altro',
+    prenotazioni: 'Ricevere prenotazioni', vendere: 'Far conoscere i prodotti e ricevere ordini', altro: 'Altro',
   },
   sezioni: {
     home: 'Home', chi_siamo: 'Chi siamo', servizi: 'Servizi', portfolio: 'Portfolio / gallery', menu: 'Menu / listino',
@@ -62,13 +62,14 @@ const L = {
     traduzioni: 'Traduzioni', supporto: 'Supporto su richiesta dopo la consegna',
   },
   logo_tipo: { nuovo: 'Nuovo logo', restyling: 'Restyling del logo esistente' },
+  foto_pacchetto: { base: 'Base: circa 2 ore, 10-15 foto', standard: 'Standard: mezza giornata, 25-30 foto', completo: 'Completo: giornata intera, 45-50 foto' },
   foto_soggetti: { locale: 'Locale', prodotti: 'Prodotti', staff: 'Staff', piatti: 'Piatti', altro: 'Altro' },
   tempistiche: {
     asap: 'Il prima possibile', '1mese': 'Entro 1 mese', '3mesi': 'Entro 3 mesi', flessibile: 'Nessuna fretta', data: 'Data precisa',
   },
-  budget: { b1: '200 €', b2: '200 – 300 €', b3: '300 – 500 €', b4: '500 – 700 €', b5: '700 – 1.000 €', b6: '1.000 € o più', nd: 'Preferisce parlarne' },
+  budget: { b1: '200 €', b2: '200 – 300 €', b3: '300 – 500 €', b4: '500 – 700 €', b5: '700 – 1.000 €', b6: '1.000 – 1.500 €', b7: '1.500 – 2.500 €', b8: 'Oltre 2.500 €', nd: 'Preferisce parlarne' },
   dominio: { si: 'Sì', no: 'No', non_so: 'Non sa' },
-  funzionalita: { prenotazioni: 'Prenotazioni', ecommerce: 'Vendita online (e-commerce)', whatsapp: 'Chat WhatsApp', newsletter: 'Newsletter', download: 'Download di un file', area_riservata: 'Area riservata' },
+  funzionalita: { prenotazioni: 'Prenotazioni', ordini: 'Catalogo con ordini via email o WhatsApp', whatsapp: 'Chat WhatsApp', newsletter: 'Newsletter', download: 'Download di un file', area_riservata: 'Area riservata' },
   blog_gestione: { autonomo: 'Li pubblica il cliente in autonomia (serve un CMS)', io: 'Li manda il cliente, li pubblica Alessandro a ore', non_so: 'Non sa' },
   prenotazioni_tipo: { richiesta: 'Richiesta da confermare (form)', calendario: 'Calendario con i posti liberi (servizio esterno)', non_so: 'Non sa, chiede un consiglio' },
   newsletter_iscritti: { pochi: 'Meno di 500 nel primo anno', tanti: 'Più di 500 nel primo anno', non_so: 'Non sa' },
@@ -253,7 +254,7 @@ function normalize(raw) {
     newsletter_iscritti: one('newsletter_iscritti', L.newsletter_iscritti), newsletter_note: s('newsletter_note', 200),
     whatsapp_numero: s('whatsapp_numero', 30),
     download_tipo: one('download_tipo', L.download_tipo), download_cosa: s('download_cosa', 200),
-    ecommerce_note: s('ecommerce_note', 200), area_note: s('area_note', 200),
+    ordini_note: s('ordini_note', 200), area_note: s('area_note', 200),
 
     // Info per il sito
     servizi_principali: s('servizi_principali', 2000), servizi_dopo: flag('servizi_dopo'),
@@ -273,7 +274,7 @@ function normalize(raw) {
 
     extra: many('extra', L.extra).sort((a, z) => Object.keys(L.extra).indexOf(a) - Object.keys(L.extra).indexOf(z)),
     extraNote: {},
-    logo_tipo: '', foto_soggetti: [], foto_soggetti_altro: '', foto_disponibilita: '',
+    logo_tipo: '', foto_pacchetto: '', foto_soggetti: [], foto_soggetti_altro: '', foto_disponibilita: '',
     stampati_cosa: '', traduzioni_lingue: '',
     altro_bisogno: s('altro_bisogno', 1500),
 
@@ -293,6 +294,7 @@ function normalize(raw) {
   }
   if (b.extra.includes('logo')) b.logo_tipo = one('logo_tipo', L.logo_tipo);
   if (b.extra.includes('foto')) {
+    b.foto_pacchetto = one('foto_pacchetto', L.foto_pacchetto);
     b.foto_soggetti = many('foto_soggetti', L.foto_soggetti);
     if (b.foto_soggetti.includes('altro')) b.foto_soggetti_altro = s('foto_soggetti_altro', 200);
     b.foto_disponibilita = s('foto_disponibilita', 200);
@@ -316,7 +318,7 @@ function normalize(raw) {
   if (!has('newsletter')) { b.newsletter_iscritti = ''; b.newsletter_note = ''; }
   if (!has('whatsapp')) b.whatsapp_numero = '';
   if (!has('download')) { b.download_tipo = ''; b.download_cosa = ''; }
-  if (!has('ecommerce')) b.ecommerce_note = '';
+  if (!has('ordini')) b.ordini_note = '';
   if (!has('area_riservata')) b.area_note = '';
   if (!['si', 'alcuni'].includes(b.prezzi_mostra)) b.prezzi_note = '';
   if (!b.contatti_pubblici.includes('altri')) b.contatti_altri = '';
@@ -349,6 +351,7 @@ function normalize(raw) {
   if (b.cap && !CAP_RE.test(b.cap)) errors.cap = 'Il CAP è formato da 5 cifre.';
   if (b.whatsapp_numero && !PHONE_RE.test(b.whatsapp_numero)) errors.whatsapp_numero = 'Inserisci un numero di telefono valido.';
   if (b.extra.includes('logo') && !b.logo_tipo) errors.logo_tipo = 'Seleziona un\'opzione.';
+  if (b.extra.includes('foto') && !b.foto_pacchetto) errors.foto_pacchetto = 'Seleziona un\'opzione.';
 
   if (flag('marchio_diverso')) req('marchio');
 
@@ -425,7 +428,7 @@ function derived(b) {
   fd('Newsletter', [['Iscritti previsti', lab(L.newsletter_iscritti, b.newsletter_iscritti)], ['Frequenza e contenuti', b.newsletter_note]]);
   fd('WhatsApp', [['Numero', b.whatsapp_numero || (b.funzionalita.includes('whatsapp') ? (b.telefono ? `lo stesso del telefono (${b.telefono})` : 'non indicato') : '')]]);
   fd('File da scaricare', [['Cosa', b.download_cosa], ['Accesso', lab(L.download_tipo, b.download_tipo)]]);
-  fd('Vendita online', [['Prodotti', b.ecommerce_note]]);
+  fd('Catalogo e ordini', [['Prodotti', b.ordini_note]]);
   fd('Area riservata', [['A cosa serve', b.area_note]]);
 
   // Contatti che il cliente vuole sul sito
@@ -450,6 +453,7 @@ function derived(b) {
     const rows = [];
     if (id === 'logo' && b.logo_tipo) rows.push(['Tipo', lab(L.logo_tipo, b.logo_tipo)]);
     if (id === 'foto') {
+      rows.push(['Pacchetto', `${lab(L.foto_pacchetto, b.foto_pacchetto)} (prezzo da concordare)`]);
       rows.push(['Indirizzo', indirizzo]);
       if (fotoSoggetti.length) rows.push(['Cosa fotografare', fotoSoggetti.join(', ')]);
       if (b.foto_disponibilita) rows.push(['Disponibilità', b.foto_disponibilita]);
@@ -473,6 +477,7 @@ function quoteRows(q) {
   });
   est.included.forEach(id => rows.push([L.extra[id], 'incluso', '', '', 'compreso nella brand identity']));
   est.onDemand.forEach(id => rows.push([L.extra[id], `${RATE.hour} €/h`, '', 'a richiesta', 'non entra nel totale']));
+  est.toQuote.forEach(id => rows.push([L.extra[id], 'da concordare', '', 'da concordare', 'non entra nel totale: prezzo da definire con il cliente']));
   return rows;
 }
 
@@ -689,20 +694,20 @@ function buildMarkdown(b, d, ctx) {
   out.push('');
   out.push(`Usa questo brief per creare una **prima bozza statica** del sito di ${oneLine(b.attivita)}.`);
   out.push('');
-  out.push('1. **Tecnologia:** HTML, CSS e JavaScript puri, senza framework né build step. File di partenza: `index.html`, `style.css`, `script.js`. Se le sezioni sono poche, preferisci una one-page con ancore; altrimenti una pagina per sezione.');
+  out.push('1. **Tecnologia:** HTML, CSS e JavaScript puri, senza framework né build step. Metti il sito nella cartella `sito/` (file di partenza: `sito/index.html`, `sito/style.css`, `sito/script.js`); i file di lavoro restano fuori (punto 20). Se le sezioni sono poche, preferisci una one-page con ancore; altrimenti una pagina per sezione.');
   out.push('2. **Struttura:** includi tutte le sezioni must-have in un ordine logico per l\'obiettivo principale, anche se fanno superare il budget. Delle sezioni facoltative includi solo quelle "compresa nel prezzo" o "entra nel budget"; quelle "fuori budget" lasciale fuori e citale nelle note come possibile aggiunta. Non creare le sezioni da non mettere.');
   out.push('3. **Obiettivo e CTA:** ogni scelta (gerarchia, posizione dei pulsanti, contenuti in evidenza) deve servire l\'obiettivo principale e la call to action indicata. Se i due non coincidono, dai la priorità alla call to action e segnalalo nelle note.');
   out.push('4. **Stile:** la guida principale sono gli "Stili scelti dalla galleria": il primo è il più importante, gli altri lo sfumano. Apri gli esempi per capire il tono, senza copiarli, ed evita lo stile da evitare. Tieni il sito semplice da realizzare e mantenere: niente animazioni elaborate o effetti complessi, al massimo transizioni leggere. Poi rifinisci con i colori indicati ed evita i colori da escludere. Se il cliente vuole i colori del logo attuale, la palette parte dal logo (lo trovi tra le reference visive). Se stili, colori e logo si contraddicono, scegli la strada più coerente con l\'attività e spiega il perché nelle note. Usa i siti di ispirazione del cliente e le reference visive per capire il suo gusto.');
   out.push('5. **Qualità:** mobile-first e responsive, HTML semantico, accessibile (contrasti AA, testi alternativi, navigazione da tastiera), SEO di base (`title`, meta description, `lang`), immagini leggere.');
-  out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsanti per prenotazioni o WhatsApp, carrello e-commerce come segnaposto). Niente backend.');
+  out.push('6. **Funzionalità:** realizza solo la parte frontend (es. form contatti con validazione, mappa come embed segnaposto, pulsanti per prenotazioni o WhatsApp, catalogo con pulsante per ordinare via email o WhatsApp). Niente backend, niente carrello né pagamenti.');
   out.push(`7. **Lingue:** crea la bozza in ${mainLang}. Se sono richieste altre lingue, predisponi solo il selettore e la struttura, senza tradurre.`);
-  out.push('8. **Non inventare informazioni.** Usa i dati di "Info per il sito" (servizi, orari, persone, prezzi). Dove manca un dato (orari, prezzi, indirizzo, numeri, nomi, recensioni, servizi specifici…) inserisci un segnaposto evidente come `[DA FORNIRE: orari di apertura]` invece di inventarlo. Pubblica solo i contatti elencati in "Contatti da pubblicare"; se non ce ne sono, usa segnaposto. Mostra i prezzi solo se il cliente lo ha chiesto.');
+  out.push('8. **Dati mancanti.** Usa i dati di "Info per il sito" (servizi, orari, persone, prezzi). Dove manca un dato (orari, prezzi, nomi, recensioni, servizi specifici…) inserisci un esempio realistico e coerente con l\'attività, così la pagina si legge come un sito vero, ma segnalalo sempre con l\'etichetta "Da sostituire" (punto 19). Per telefono, indirizzo e altri contatti mancanti usa un valore chiaramente finto (es. `+39 000 000 0000`), mai uno che sembri reale. Pubblica solo i contatti elencati in "Contatti da pubblicare". Mostra i prezzi solo se il cliente lo ha chiesto.');
   if (copy) {
-    out.push('9. **Testi:** il cliente ha richiesto il copywriting. Scrivi testi segnaposto realistici, coerenti con attività, pubblico e obiettivo, e marca ogni blocco di testo con `[DA REVISIONARE]`.');
+    out.push('9. **Testi:** il cliente ha richiesto il copywriting. Scrivi testi realistici e definitivi nel tono, coerenti con attività, pubblico e obiettivo, con l\'etichetta "Da revisionare" (punto 19).');
   } else {
-    out.push(`9. **Testi:** il cliente non ha richiesto il copywriting (testi già pronti: ${lab(L.possesso, b.ha_testi) || 'non indicato'}). Usa le informazioni del brief dove possibile; per il resto inserisci segnaposto brevi come \`[TESTO DEL CLIENTE: presentazione]\`.`);
+    out.push(`9. **Testi:** il cliente non ha richiesto il copywriting (testi già pronti: ${lab(L.possesso, b.ha_testi) || 'non indicato'}). Usa le informazioni del brief dove possibile; per il resto scrivi testi riempitivi realistici (mai lorem ipsum), coerenti con l'attività, con l'etichetta "Da sostituire" (punto 19).`);
   }
-  out.push('10. **Immagini e logo:** usa segnaposto con proporzioni corrette e `alt` descrittivi. Non usare foto stock. Se il logo va creato o rifatto, metti il nome dell\'attività in testo come segnaposto.');
+  out.push('10. **Immagini e logo:** usa immagini vere, adatte all\'attività e di buona qualità, prese da banche immagini con licenza libera (Unsplash, Pexels) e **scaricate nella cartella `sito/img/`**: niente link a immagini esterne, così la bozza si vede uguale anche online. Ottimizzale (WebP o JPG, al massimo 2000 px di larghezza). Quando un\'immagine va sovrapposta ad altri elementi (un oggetto o una persona scontornati), usa un PNG o WebP con sfondo trasparente. Ogni immagine ha un `alt` descrittivo e l\'etichetta "Da sostituire" (punto 19); elenca le fonti in `NOTE_BOZZA.md`. Se il logo va creato o rifatto, scrivi il nome dell\'attività in testo al suo posto.');
   out.push(b.marchio
     ? `11. **Nome sul sito:** usa "${oneLine(b.marchio)}" (nome scelto dal cliente). "${oneLine(b.attivita)}" è il nome dell'attività: usalo solo dove serve, per esempio nei dati legali.`
     : `11. **Nome dell'attività:** è "${oneLine(b.attivita)}". Se sembra un tipo di attività (es. "Palestra") più che un nome, cerca il nome vero nei profili online e nelle reference visive, usalo e segnalalo nelle note.`);
@@ -711,7 +716,10 @@ function buildMarkdown(b, d, ctx) {
   out.push('14. **Alla fine** crea `NOTE_BOZZA.md` con: le scelte fatte, l\'elenco di tutte le informazioni mancanti o segnaposto da completare, e le domande da fare al cliente.');
   out.push('15. **Preventivo:** la sezione "Preventivo suggerito" non riguarda la bozza e non va mai mostrata nel sito. In `NOTE_BOZZA.md` aggiungi una breve sezione "Note sul preventivo": se la bozza ti fa pensare che il lavoro sia più grande o più piccolo del previsto (sezioni in più, contenuti mancanti, funzionalità complesse), proponi un aggiustamento motivato delle cifre suggerite, restando nelle forbici.');
   out.push('16. **Piè di pagina:** mostra i dati legali indicati (ragione sociale, P.IVA, CIN per le strutture ricettive) e i link a privacy e cookie policy; dove mancano, usa segnaposto.');
-  out.push('17. **Skill Impeccable:** se hai a disposizione la skill `impeccable`, usala per il design della bozza, sempre dentro i limiti di questo brief, a partire dal punto 4. Quando la bozza è pronta, esegui `audit` e poi `polish`, e correggi quello che emerge. Non usare `overdrive` né altri comandi che aggiungono effetti o animazioni elaborate. Se la skill non c\'è, procedi senza. In `NOTE_BOZZA.md` scrivi se l\'hai usata.');
+  out.push('17. **Skill Impeccable:** se hai a disposizione la skill `impeccable`, usala per il design della bozza, sempre dentro i limiti di questo brief. **Lavora senza fermarti a fare domande:** salta l\'intervista iniziale (ricava `PRODUCT.md` da questo brief) e scegli tu la direzione visiva più adatta agli stili indicati, senza sorteggi né pagine di scelta; spiega la scelta in `NOTE_BOZZA.md`. Quando la bozza è pronta, esegui `audit` e poi `polish`, e correggi quello che emerge. Non usare `overdrive`, `animate`, `delight` né altri comandi che aggiungono effetti o animazioni elaborate. Se la skill non c\'è, procedi senza.');
+  out.push('18. **Struttura e testi corti:** evita lo schema da modello già visto (titolo, tre schede uguali, recensioni, invito all\'azione). Valuta impaginazioni d\'impatto, per esempio un\'immagine a tutta larghezza con poco testo sopra. Nelle sezioni principali tieni i testi brevi: titoli di 3-7 parole, frasi sotto i titoli di una o due righe al massimo. I testi lunghi solo dove servono davvero (schede, approfondimenti, FAQ).');
+  out.push('19. **Etichette "Da sostituire" e "Da revisionare":** piccole e sobrie (una pillola in un angolo dell\'immagine o accanto al testo, carattere piccolo, colori della palette), senza rovinare l\'impaginazione. Usa una sola classe CSS (es. `.tbd`), così si nascondono tutte insieme con una riga. Niente testi tra parentesi quadre nella pagina.');
+  out.push('20. **Pronta da condividere:** la cartella `sito/` deve funzionare caricata così com\'è su un hosting statico (es. Cloudflare Pages): percorsi relativi, tutti i file dentro la cartella, nessun riferimento a `localhost`. Aggiungi `sito/_headers` con `X-Robots-Tag: noindex` per tutte le pagine, perché la bozza non finisca su Google. `BRIEF.md`, `NOTE_BOZZA.md` e gli eventuali file di lavoro (`PRODUCT.md`, `DESIGN.md`, `.impeccable/`) restano fuori da `sito/`.');
   out.push('');
 
   return out.join('\n');
@@ -958,6 +966,7 @@ function buildClientEmail(b, d) {
     'prezzi di lancio',
     est.site.tbd.length ? `più ${est.site.tbd.join(' e ')} da valutare` : '',
     est.onDemand.length ? 'supporto a ore escluso' : '',
+    est.toQuote.length ? 'servizio fotografico da concordare' : '',
   ].filter(Boolean).join(', ');
   const costi = costSummary(cst);
   const rows = [

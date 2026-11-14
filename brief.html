@@ -219,7 +219,7 @@
                 <label class="choice"><input type="radio" name="obiettivo" value="contatti"><span>Ricevere contatti e richieste</span></label>
                 <label class="choice"><input type="radio" name="obiettivo" value="prenotazioni"><span>Ricevere prenotazioni (appuntamenti, prove, tavoli…)</span></label>
                 <label class="choice"><input type="radio" name="obiettivo" value="portfolio"><span>Mostrare progetti e lavori realizzati</span></label>
-                <label class="choice"><input type="radio" name="obiettivo" value="vendere"><span>Vendere online</span></label>
+                <label class="choice"><input type="radio" name="obiettivo" value="vendere"><span>Far conoscere i prodotti e ricevere ordini</span></label>
                 <label class="choice"><input type="radio" name="obiettivo" value="altro"><span>Altro</span></label>
               </div>
               <div class="reveal" data-show-when="obiettivo=altro">
@@ -328,7 +328,7 @@
               <p class="hint" id="funz-hint">Form contatti e mappa sono già compresi nella sezione Contatti.</p>
               <div class="choices" aria-describedby="funz-hint">
                 <label class="choice"><input type="checkbox" name="funzionalita" value="prenotazioni"><span>Prenotare</span></label>
-                <label class="choice"><input type="checkbox" name="funzionalita" value="ecommerce"><span>Acquistare online</span></label>
+                <label class="choice"><input type="checkbox" name="funzionalita" value="ordini"><span>Sfogliare i prodotti e ordinare (via email o WhatsApp)</span></label>
                 <label class="choice"><input type="checkbox" name="funzionalita" value="whatsapp"><span>Scrivere su WhatsApp</span></label>
                 <label class="choice"><input type="checkbox" name="funzionalita" value="newsletter"><span>Iscriversi alla newsletter</span></label>
                 <label class="choice"><input type="checkbox" name="funzionalita" value="download"><span>Scaricare un file (PDF, catalogo…)</span></label>
@@ -411,11 +411,12 @@
                 </fieldset>
               </div></div></div>
 
-              <div class="reveal" data-show-when="funzionalita=ecommerce"><div class="reveal-inner"><div class="extra-panel">
-                <h3 class="extra-title">Vendita online</h3>
-                <div class="field field-nested" data-label="Cosa vendi online">
-                  <label for="f-ecom" class="sub-label">Cosa vendi e quanti prodotti, più o meno?</label>
-                  <input id="f-ecom" name="ecommerce_note" type="text" maxlength="200" placeholder="es. 30 vini, con spedizione in Italia">
+              <div class="reveal" data-show-when="funzionalita=ordini"><div class="reveal-inner"><div class="extra-panel">
+                <h3 class="extra-title">Catalogo e ordini</h3>
+                <p class="callout callout-small">Non realizzo negozi online con carrello e pagamenti: i prodotti si vedono nel sito e l'ordine arriva a te via email o WhatsApp.</p>
+                <div class="field field-nested" data-label="Cosa proponi">
+                  <label for="f-ordini" class="sub-label">Cosa proponi e quanti prodotti, più o meno?</label>
+                  <input id="f-ordini" name="ordini_note" type="text" maxlength="200" placeholder="es. 30 vini, ritiro in cantina o spedizione">
                 </div>
               </div></div></div>
 
@@ -851,7 +852,15 @@
 
               <div class="reveal" data-show-when="extra=foto"><div class="reveal-inner"><div class="extra-panel">
                 <h3 class="extra-title">Servizio fotografico sul posto</h3>
-                <p class="callout callout-small">Ti chiederò l'indirizzo completo dell'attività allo step 1.</p>
+                <p class="callout callout-small">Ti chiederò l'indirizzo completo dell'attività allo step 1. Il prezzo lo concordiamo insieme: dipende da quante foto servono e da quanto lavoro c'è sul posto.</p>
+                <fieldset class="field field-nested" data-label="Pacchetto fotografico" data-required-when="extra=foto">
+                  <legend class="sub-label">Quante foto ti servono, più o meno? <span class="req" aria-hidden="true">*</span></legend>
+                  <div class="choices choices-tight">
+                    <label class="choice"><input type="radio" name="foto_pacchetto" value="base"><span>Base: circa 2 ore, 10-15 foto</span></label>
+                    <label class="choice"><input type="radio" name="foto_pacchetto" value="standard"><span>Standard: mezza giornata, 25-30 foto</span></label>
+                    <label class="choice"><input type="radio" name="foto_pacchetto" value="completo"><span>Completo: giornata intera, 45-50 foto</span></label>
+                  </div>
+                </fieldset>
                 <fieldset class="field field-nested" data-label="Cosa fotografare">
                   <legend class="sub-label">Cosa fotografare?</legend>
                   <div class="choices choices-tight">
@@ -1001,7 +1010,9 @@
                 <label class="choice"><input type="radio" name="budget" value="b3"><span>300 – 500 €</span></label>
                 <label class="choice"><input type="radio" name="budget" value="b4"><span>500 – 700 €</span></label>
                 <label class="choice"><input type="radio" name="budget" value="b5"><span>700 – 1.000 €</span></label>
-                <label class="choice"><input type="radio" name="budget" value="b6"><span>1.000 € o più</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b6"><span>1.000 – 1.500 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b7"><span>1.500 – 2.500 €</span></label>
+                <label class="choice"><input type="radio" name="budget" value="b8"><span>Oltre 2.500 €</span></label>
                 <label class="choice"><input type="radio" name="budget" value="nd"><span>Preferisco parlarne</span></label>
               </div>
             </fieldset>
@@ -1106,6 +1117,6 @@
   </template>
 
   <script src="script.js?v=65"></script>
-  <script type="module" src="brief.js?v=8"></script>
+  <script type="module" src="brief.js?v=9"></script>
 </body>
 </html>

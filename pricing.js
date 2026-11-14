@@ -30,8 +30,8 @@ export const SITE = {
     newsletter: [25, 50],
     whatsapp: [0, 0],
     download: { libero: [0, 0], email: [15, 30] },
-    ecommerce: null,             // null = da valutare a parte
-    area_riservata: null,
+    ordini: [25, 50],            // catalogo con pulsante per ordinare (email o WhatsApp)
+    area_riservata: null,        // null = da valutare a parte
   },
 };
 
@@ -40,11 +40,12 @@ export const SITE = {
 //  unit      testo breve sotto il prezzo
 //  hourly    lavoro stimato a ore (la forbice è indicativa)
 //  onDemand  non entra nella stima: si paga a ore quando serve
+//  quote     non entra nella stima: prezzo da concordare (vedi FOTO_PACKS)
 //  perItem   la forbice vale per ogni formato / lingua indicata
 export const SERVICES = {
   logo:       { min: 80,  max: 150, unit: '2-3 proposte, 2 revisioni' },
   brand:      { min: 200, max: 350, unit: 'logo compreso', includes: ['logo'] },
-  foto:       { min: 100, max: 150, unit: 'mezza giornata, 10-15 foto editate' },
+  foto:       { quote: true,        unit: '3 pacchetti, da 10 a 50 foto' },
   biglietti:  { min: 40,  max: 80,  unit: 'grafica, stampa esclusa' },
   stampati:   { min: 50,  max: 120, unit: 'a formato, stampa esclusa', perItem: true },
   social:     { min: 50,  max: 100, unit: 'set di 5-8 formati' },
@@ -56,6 +57,13 @@ export const SERVICES = {
   supporto:   { onDemand: true,     unit: 'a richiesta, 30 €/h' },
 };
 
+// Servizio fotografico: il cliente sceglie un pacchetto, il prezzo si concorda a parte
+export const FOTO_PACKS = {
+  base: { label: 'Base', unit: 'circa 2 ore, 10-15 foto editate' },
+  standard: { label: 'Standard', unit: 'mezza giornata, 25-30 foto editate' },
+  completo: { label: 'Completo', unit: 'giornata intera, 45-50 foto editate' },
+};
+
 // ─── Pacchetti ───────────────────────────────────────────────────
 export const BUNDLES = [
   { id: 'identita', label: 'Pacchetto identità', items: ['logo', 'biglietti', 'firma'], min: 120, max: 220 },
@@ -63,7 +71,8 @@ export const BUNDLES = [
 
 // ─── Budget indicato dal cliente (step 6) ────────────────────────
 export const BUDGET = {
-  b1: [200, 200], b2: [200, 300], b3: [300, 500], b4: [500, 700], b5: [700, 1000], b6: [1000, Infinity],
+  b1: [200, 200], b2: [200, 300], b3: [300, 500], b4: [500, 700], b5: [700, 1000],
+  b6: [1000, 1500], b7: [1500, 2500], b8: [2500, Infinity],
 };
 
 // ═════════════════════════════════════════════════════════════════
@@ -71,7 +80,7 @@ export const BUDGET = {
 // ═════════════════════════════════════════════════════════════════
 export const FEATURE_LABEL = {
   prenotazioni: 'prenotazioni online', newsletter: 'newsletter', whatsapp: 'WhatsApp',
-  download: 'download di un file', ecommerce: 'e-commerce', area_riservata: 'area riservata',
+  download: 'download di un file', ordini: 'catalogo con ordini', area_riservata: 'area riservata',
 };
 const VARIANT_LABEL = {
   prenotazioni: { richiesta: 'richieste di prenotazione', calendario: 'calendario prenotazioni' },
@@ -162,9 +171,11 @@ export function estimate(b) {
 
   const items = [];
   const onDemand = [];
+  const toQuote = [];
   active.forEach(id => {
     const s = SERVICES[id];
     if (s.onDemand) { onDemand.push(id); return; }
+    if (s.quote) { toQuote.push(id); return; }
     if (bundle && bundle.items.includes(id)) return;
     const n = s.perItem ? qty(id) : 1;
     items.push({ id, qty: n, min: s.min * n, max: s.max * n });
@@ -206,7 +217,7 @@ export function estimate(b) {
 
   const total = { min: site.min + extras.min, max: site.max + extras.max };
 
-  return { site, items, included, onDemand, picked, extras, total, costs: liveCosts(b) };
+  return { site, items, included, onDemand, toQuote, picked, extras, total, costs: liveCosts(b) };
 }
 
 // ─── Costi vivi a carico del cliente ─────────────────────────────
@@ -223,8 +234,8 @@ export function liveCosts(b) {
   yearly.push(b.dominio === 'si'
     ? { id: 'dominio', label: 'Rinnovo del dominio', min: 10, max: 20, note: 'lo paghi già oggi' }
     : { id: 'dominio', label: 'Dominio (.it o .com)', min: 10, max: 20 });
-  if (funz.includes('ecommerce') || funz.includes('area_riservata')) {
-    yearly.push({ id: 'hosting', label: 'Hosting', min: 0, max: null, note: 'per e-commerce o area riservata' });
+  if (funz.includes('area_riservata')) {
+    yearly.push({ id: 'hosting', label: 'Hosting', min: 0, max: null, note: 'per l\'area riservata' });
   } else {
     yearly.push({ id: 'hosting', label: 'Hosting', min: 0, max: 0, note: 'gratuito per un sito vetrina' });
   }
@@ -242,7 +253,6 @@ export function liveCosts(b) {
   if (funz.includes('prenotazioni') && b.prenotazioni_tipo !== 'richiesta') {
     optional.push({ id: 'prenotazioni', label: 'Calendario prenotazioni', min: 0, max: 240, note: 'molti hanno un piano gratuito', per: 'anno' });
   }
-  if (funz.includes('ecommerce')) yearly.push({ id: 'ecommerce', label: 'Piattaforma e-commerce', min: 0, max: null, note: 'più le commissioni sulle vendite' });
 
   if (extra.includes('biglietti')) once.push({ id: 'stampa_biglietti', label: 'Stampa biglietti da visita', min: 20, max: 50, note: '250-500 pezzi' });
   if (extra.includes('stampati')) once.push({ id: 'stampa_materiali', label: 'Stampa dei materiali', min: 30, max: 150, note: 'in base a formato e quantità' });
@@ -298,12 +308,6 @@ export function suggest(b) {
         if (b.ha_logo === 'si') { t = 0.3; why = 'parte da un logo che il cliente ha già'; }
         else { t = 0.6; why = 'logo da creare insieme alla brand identity'; }
         break;
-      case 'foto': {
-        const n = arr(b.foto_soggetti).length;
-        t = n >= 3 ? 1 : n === 2 ? 0.6 : 0.3;
-        why = n ? `${n} ${n === 1 ? 'soggetto' : 'soggetti'} da fotografare` : 'soggetti non indicati';
-        break;
-      }
       case 'stampati':
         why = `${i.qty} ${i.qty === 1 ? 'formato' : 'formati'} stimati da “${str(b.stampati_cosa) || 'non specificato'}”`;
         break;
