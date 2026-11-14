@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=66">
+  <link rel="stylesheet" href="style.css?v=67">
 </head>
 <body>
 
@@ -138,73 +138,89 @@
       </aside>
     </section>
 
-    <!-- Experience -->
-    <section class="about-section">
-      <div class="section-header">
-        <span class="section-label" data-i18n="experienceLabel">Experience</span>
-      </div>
-
-      <div class="exp-row">
-        <div class="exp-left">
-          <p class="exp-role">Graphic &amp; Web Designer</p>
-          <p class="exp-company">Terranova</p>
-          <p class="exp-period" data-i18n="exp1Period">Feb 2024 - Present · Rimini, Italy</p>
-        </div>
-        <div class="exp-right">
-          <p class="exp-desc" data-i18n="exp1Desc">Works closely with the Brand Specialist to define and evolve Terranova's visual communication for the Men's department. Oversees the brand's online presence across terranova.com, Instagram, Facebook, and digital advertising channels.</p>
+    <!-- Experience + Education: timeline orizzontale, dalla più recente -->
+    <section class="about-section tl-section">
+      <div class="section-header tl-header">
+        <span class="section-label" data-i18n="pathLabel">Experience &amp; Education</span>
+        <div class="tl-ruler" id="tlRuler" aria-hidden="true">
+          <span class="tl-today"><span data-i18n="tlToday">Today</span> · <span id="tlDate"></span></span>
+          <span class="tl-ticks" id="tlTicks"><span class="tl-thumb" id="tlThumb"></span></span>
+          <span class="tl-start">2015</span>
         </div>
       </div>
 
-      <div class="exp-row">
-        <div class="exp-left">
-          <p class="exp-role">Communication Design Intern</p>
-          <p class="exp-company">Philips Domestic Appliances</p>
-          <p class="exp-period" data-i18n="exp2Period">Mar 2022 - Feb 2023 · Amsterdam, Netherlands</p>
-        </div>
-        <div class="exp-right">
-          <p class="exp-desc" data-i18n="exp2Desc">Developed new visual language for the Garment Care category (irons, steamers). Created packaging prototypes using Illustrator and Photoshop, and participated in workshops to define the next packaging standard.</p>
-        </div>
+      <div class="tl" id="timeline" tabindex="0" role="region" aria-labelledby="tlLabel">
+        <span id="tlLabel" class="visually-hidden" data-i18n="tlRegion">Timeline: drag or scroll sideways</span>
+        <svg class="tl-line" id="tlLine" aria-hidden="true"><path class="tl-path"/></svg>
+        <ol class="tl-track">
+        <li class="tl-item is-current" style="--y: 0px">
+          <article class="tl-card">
+            <span class="tl-node" aria-hidden="true"></span>
+            <div class="tl-top">
+              <span class="tl-years">2024 – <span data-i18n="tlNow">now</span></span>
+              <span class="tl-tag tl-tag--work" data-i18n="tagWork">Work</span>
+            </div>
+            <h3 class="tl-role">Graphic &amp; Web Designer</h3>
+            <p class="tl-company">Terranova</p>
+            <p class="tl-desc" data-i18n="exp1Desc">Works closely with the Brand Specialist to define and evolve Terranova's visual communication for the Men's department. Oversees the brand's online presence across terranova.com, Instagram, Facebook, and digital advertising channels.</p>
+            <p class="tl-period" data-i18n="exp1Period">Feb 2024 - Present · Rimini, Italy</p>
+          </article>
+        </li>
+        <li class="tl-item" style="--y: -46px">
+          <article class="tl-card">
+            <span class="tl-node" aria-hidden="true"></span>
+            <div class="tl-top">
+              <span class="tl-years">2025</span>
+              <span class="tl-tag tl-tag--study" data-i18n="tagStudy">Study</span>
+            </div>
+            <h3 class="tl-role">UI Design Master</h3>
+            <p class="tl-company">Talent Garden</p>
+            <p class="tl-desc" data-i18n="edu1Desc">11-week blended programme covering user-centred interface design, modular UI systems, prototyping, and user testing. Mentored by industry professionals throughout.</p>
+            <p class="tl-period" data-i18n="edu1Period">Sep 2025 - Dec 2025 · Rome, Italy</p>
+          </article>
+        </li>
+        <li class="tl-item" style="--y: 26px">
+          <article class="tl-card">
+            <span class="tl-node" aria-hidden="true"></span>
+            <div class="tl-top">
+              <span class="tl-years">2022 – 2023</span>
+              <span class="tl-tag tl-tag--work" data-i18n="tagWork">Work</span>
+            </div>
+            <h3 class="tl-role">Communication Design Intern</h3>
+            <p class="tl-company">Philips Domestic Appliances</p>
+            <p class="tl-desc" data-i18n="exp2Desc">Developed new visual language for the Garment Care category (irons, steamers). Created packaging prototypes using Illustrator and Photoshop, and participated in workshops to define the next packaging standard.</p>
+            <p class="tl-period" data-i18n="exp2Period">Mar 2022 - Feb 2023 · Amsterdam, Netherlands</p>
+          </article>
+        </li>
+        <li class="tl-item" style="--y: -30px">
+          <article class="tl-card">
+            <span class="tl-node" aria-hidden="true"></span>
+            <div class="tl-top">
+              <span class="tl-years">2019 – 2023</span>
+              <span class="tl-tag tl-tag--study" data-i18n="tagStudy">Study</span>
+            </div>
+            <h3 class="tl-role">Bachelor in Design</h3>
+            <p class="tl-company">Unirsm Design</p>
+            <p class="tl-desc" data-i18n="edu2Desc">Degree covering the history of product and communication design alongside practical workshops in web design, motion design, and sketching.</p>
+            <p class="tl-period" data-i18n="edu2Period">Oct 2019 - Mar 2023 · San Marino</p>
+          </article>
+        </li>
+        <li class="tl-item" style="--y: 34px">
+          <article class="tl-card">
+            <span class="tl-node" aria-hidden="true"></span>
+            <div class="tl-top">
+              <span class="tl-years">2015 – 2018</span>
+              <span class="tl-tag tl-tag--study" data-i18n="tagStudy">Study</span>
+            </div>
+            <h3 class="tl-role">Bachelor in Languages &amp; Intercultural Communication</h3>
+            <p class="tl-company">Università di Bologna</p>
+            <p class="tl-desc" data-i18n="edu3Desc">Inter-linguistic and intercultural communication in Italian and three foreign languages. Practical translation and language mediation skills.</p>
+            <p class="tl-period" data-i18n="edu3Period">Sep 2015 - Oct 2018 · Italy</p>
+          </article>
+        </li>
+        </ol>
       </div>
-    </section>
-
-    <!-- Education -->
-    <section class="about-section">
-      <div class="section-header">
-        <span class="section-label" data-i18n="educationLabel">Education</span>
-      </div>
-
-      <div class="exp-row">
-        <div class="exp-left">
-          <p class="exp-role">UI Design Master</p>
-          <p class="exp-company">Talent Garden</p>
-          <p class="exp-period" data-i18n="edu1Period">Sep 2025 - Dec 2025 · Rome, Italy</p>
-        </div>
-        <div class="exp-right">
-          <p class="exp-desc" data-i18n="edu1Desc">11-week blended programme covering user-centred interface design, modular UI systems, prototyping, and user testing. Mentored by industry professionals throughout.</p>
-        </div>
-      </div>
-
-      <div class="exp-row">
-        <div class="exp-left">
-          <p class="exp-role">Bachelor in Design</p>
-          <p class="exp-company">Unirsm Design</p>
-          <p class="exp-period" data-i18n="edu2Period">Oct 2019 - Mar 2023 · San Marino</p>
-        </div>
-        <div class="exp-right">
-          <p class="exp-desc" data-i18n="edu2Desc">Degree covering the history of product and communication design alongside practical workshops in web design, motion design, and sketching.</p>
-        </div>
-      </div>
-
-      <div class="exp-row about-footer-pad">
-        <div class="exp-left">
-          <p class="exp-role">Bachelor in Languages &amp; Intercultural Communication</p>
-          <p class="exp-company">Università di Bologna</p>
-          <p class="exp-period" data-i18n="edu3Period">Sep 2015 - Oct 2018 · Italy</p>
-        </div>
-        <div class="exp-right">
-          <p class="exp-desc" data-i18n="edu3Desc">Inter-linguistic and intercultural communication in Italian and three foreign languages. Practical translation and language mediation skills.</p>
-        </div>
-      </div>
+      <p class="tl-hint" aria-hidden="true"><span data-i18n="tlHint">Drag to explore</span> <span class="tl-hint-arrow">→</span></p>
     </section>
 
   </main>
@@ -214,6 +230,6 @@
     <span data-i18n="footerLocation">Rimini, Italy</span>
   </footer>
 
-  <script src="script.js?v=65"></script>
+  <script src="script.js?v=66"></script>
 </body>
 </html>
