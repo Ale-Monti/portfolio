@@ -711,6 +711,7 @@ function buildMarkdown(b, d, ctx) {
   out.push('14. **Alla fine** crea `NOTE_BOZZA.md` con: le scelte fatte, l\'elenco di tutte le informazioni mancanti o segnaposto da completare, e le domande da fare al cliente.');
   out.push('15. **Preventivo:** la sezione "Preventivo suggerito" non riguarda la bozza e non va mai mostrata nel sito. In `NOTE_BOZZA.md` aggiungi una breve sezione "Note sul preventivo": se la bozza ti fa pensare che il lavoro sia più grande o più piccolo del previsto (sezioni in più, contenuti mancanti, funzionalità complesse), proponi un aggiustamento motivato delle cifre suggerite, restando nelle forbici.');
   out.push('16. **Piè di pagina:** mostra i dati legali indicati (ragione sociale, P.IVA, CIN per le strutture ricettive) e i link a privacy e cookie policy; dove mancano, usa segnaposto.');
+  out.push('17. **Skill Impeccable:** se hai a disposizione la skill `impeccable`, usala per il design della bozza, sempre dentro i limiti di questo brief, a partire dal punto 4. Quando la bozza è pronta, esegui `audit` e poi `polish`, e correggi quello che emerge. Non usare `overdrive` né altri comandi che aggiungono effetti o animazioni elaborate. Se la skill non c\'è, procedi senza. In `NOTE_BOZZA.md` scrivi se l\'hai usata.');
   out.push('');
 
   return out.join('\n');
